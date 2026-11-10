@@ -1,0 +1,1076 @@
+{
+  "app": {
+    "title": "澄川制药 · SOP 变更闭环",
+    "company": "澄川制药"
+  },
+  "nav": {
+    "home": "首页",
+    "library": "文件库",
+    "changes": "变更",
+    "find": "找文件：输入编号或名称…",
+    "findEmpty": "没有找到"
+  },
+  "account": {
+    "label": "演示账号 · {{department}}",
+    "role": "QA / QC · 文件管理",
+    "signOut": "退出"
+  },
+  "demo": {
+    "trigger": "演示工具 · {{date}}",
+    "title": "演示工具",
+    "note": "只在演示时用，不属于产品界面。",
+    "date": "演示日期",
+    "dateHint": "只影响变更这条线上的日期；文件库的问题和提醒按样本截止日 {{asOf}} 算。",
+    "jump": "跳到某一步",
+    "checkpoints": {
+      "start": "开始 · 还没有变更（11-04）",
+      "assessing": "已发起 · 影响评估报告待确认（11-04）",
+      "exported": "评估结论已给出 · 报告已导出 · 审阅 AI 修订稿（11-18）",
+      "reviewed": "审阅已确认 · 待登记批准（11-20）",
+      "returning": "已批准、已发放、已培训 · 生效后乙班超期（12-25）",
+      "closable": "全部交回、培训完成 · 可关闭（12-28）"
+    },
+    "reset": "重置演示",
+    "resetHint": "清掉这台电脑上保存的演示操作，回到开始",
+    "script": {
+      "cleaningNote": "拆卸、清洁剂清洗两栏，按 03 版的底部出料阀和在线清洗重写。",
+      "cleaningReason": "新设备加了在线清洗，清洁记录里的拆卸、清洗步骤要跟着改；AI 没列出这份，因为它没写设备型号，也没引用 SOP-SB-021。",
+      "validationComment": "验证小组 11-18 前给出结论；结论出来前方案不动。",
+      "validationConclusion": "验证小组 11-18：原方案的取样点和清洗方式不适用新设备，按新设备修订后重新验证。",
+      "trainingConclusion": "教材没写设备型号；新设备的触摸屏和配方操作放进本次换版培训。",
+      "destructionRecord": "{{copy}} 文件销毁记录.jpg",
+      "legacyNote": "乙班称已销毁，12-26 补交《文件销毁记录》，扫描件留底",
+      "signInSheet": "{{role}} 培训签到表.jpg",
+      "examRecord": "{{role}} 培训考核记录.jpg"
+    },
+    "source": "源代码（AGPL-3.0）"
+  },
+  "common": {
+    "notThisRound": "这一轮原型不做",
+    "open": "打开 →",
+    "cancel": "取消",
+    "listSep": "、",
+    "pointSep": "；"
+  },
+  "status": {
+    "draft": "草稿",
+    "approved": "已批准待生效",
+    "current": "现行",
+    "obsolete": "已作废"
+  },
+  "category": {
+    "SMP": "管理规程",
+    "SOP": "操作规程",
+    "STP-BZ": "质量标准",
+    "STP-GY": "工艺规程",
+    "SOR": "记录模板",
+    "VP": "验证方案",
+    "PX": "培训教材"
+  },
+  "issue": {
+    "numberConflict": "编号冲突",
+    "multipleVersions": "多版本并存",
+    "oldPharmacopoeia": "引用旧版药典",
+    "obsoleteReference": "引用已作废文件",
+    "overdueReview": "超期未回顾",
+    "ledgerMismatch": "台账与文件不一致",
+    "missingCompanion": "配套缺失",
+    "unresolvedReference": "引用找不到"
+  },
+  "issueText": {
+    "listSeparator": "、",
+    "product": "{{name}}（品种 {{product}}）",
+    "productNoName": "品种 {{product}}",
+    "companion": {
+      "standard": "质量标准",
+      "process": "工艺规程",
+      "batchRecord": "批记录"
+    },
+    "found": "{{kind}} {{code}}",
+    "missing": "{{kind}}（{{code}}）",
+    "productDocuments": "{{product}}：已找到{{found}}；在已导入范围内未找到{{missing}}。",
+    "productDocumentsNoneFound": "{{product}}：在已导入范围内未找到{{missing}}。",
+    "inspectionRecord": "{{sop}} {{name}}：按台账登记的编号和记录的对应文件查了检验记录，在已导入范围内未找到 {{code}}。",
+    "cited": "{{who}}引用了 {{codes}}。"
+  },
+  "tier": {
+    "mustChange": "必须改",
+    "evaluate": "需评估",
+    "inform": "仅告知"
+  },
+  "station": {
+    "overview": {
+      "name": "概览",
+      "initiated": "{{date}} 发起",
+      "closable": "可关闭",
+      "closed": "已关闭 · {{date}}"
+    },
+    "assess": {
+      "name": "影响评估",
+      "draft": "报告待确认 · {{count}} 份",
+      "exported": "已导出 · 第 1 版"
+    },
+    "revise": {
+      "name": "审阅",
+      "waiting": "报告导出后开始",
+      "inProgress": "审阅中 · {{done}} / {{total}}",
+      "done": "已审阅 · {{total}} 份"
+    },
+    "rollout": {
+      "name": "换版追踪",
+      "waiting": "审阅确认后开始",
+      "approving": "已批准 {{approved}} / {{groups}} 组",
+      "returning": "已交回 {{returned}} / {{copies}}",
+      "overdue": "已交回 {{returned}} / {{copies}} · 超期 {{overdue}}",
+      "done": "已全部交回 · {{copies}} 份",
+      "toApprove": "待登记批准"
+    },
+    "training": {
+      "name": "培训",
+      "waiting": "审阅确认后出题",
+      "confirming": "待确认 · 已确认 {{confirmed}} / {{packs}} 个包",
+      "recording": "已确认 · 培训记录 {{trained}} / {{packs}}",
+      "done": "培训已完成 · {{packs}} 个包"
+    },
+    "done": "{{name}} ✓"
+  },
+  "change": {
+    "number": "{{no}}（演示）",
+    "noNumber": "（未填变更控制单号）",
+    "notFound": "找不到这个变更。重置演示后，之前发起的变更会清掉。"
+  },
+  "home": {
+    "tasks": {
+      "title": "待处理",
+      "empty": "现在没有要你动手的事。",
+      "continue": "继续 →",
+      "issues": "问题：{{count}} 条",
+      "handle": "去处理 →",
+      "fix": {
+        "reviseDocument": "要改文件 {{count}}",
+        "fixLedger": "改台账或收回旧版 {{count}}",
+        "review": "到期回顾 {{count}}"
+      },
+      "fixShort": {
+        "reviseDocument": "要改文件",
+        "fixLedger": "改台账或收回旧版",
+        "review": "到期回顾"
+      },
+      "confirmReport": "{{no}} · {{title}}：影响评估报告已生成，等你确认　{{count}} 份，其中 {{look}} 份需核对",
+      "confirmGo": "去确认 →",
+      "review": "{{no}} · {{title}}：审阅 AI 改好的修订稿　{{count}} 份待审阅",
+      "reviewGo": "去审阅 →",
+      "confirmReportEvaluate": "{{no}} · {{title}}：影响评估报告已生成，等你确认　{{count}} 份，其中 {{look}} 份需核对、{{evaluate}} 份需评估待结论",
+      "rolloutApprove": "{{no}} · {{title}}：换版追踪　{{count}} 组可登记批准",
+      "rolloutIssue": "{{no}} · {{title}}：换版追踪　{{count}} 个部门待发放新版",
+      "rolloutOverdue": "{{no}} · {{title}}：换版追踪　{{count}} 份旧版超期未交回",
+      "rolloutGo": "去换版追踪 →",
+      "trainingConfirm": "{{no}} · {{title}}：培训　{{count}} 个培训包待确认",
+      "trainingRecord": "{{no}} · {{title}}：培训　{{count}} 个培训包待上传培训记录",
+      "trainingGo": "去培训 →",
+      "closable": "{{no}} · {{title}}：各站都已完成，可关闭",
+      "closeGo": "去收尾 →"
+    },
+    "reminders": {
+      "title": "提醒",
+      "empty": "没有提醒。",
+      "dueSoon": "{{code}} {{name}}　将于 {{date}} 到期回顾",
+      "dueToday": "{{code}} {{name}}　今天到期，待回顾",
+      "due": "{{code}} {{name}}　已于 {{date}} 到期，待回顾",
+      "open": "打开这份文件 →"
+    },
+    "changes": {
+      "title": "正在进行的变更",
+      "empty": "没有进行中的变更。",
+      "col": {
+        "change": "变更",
+        "station": "进度",
+        "now": "当前状态",
+        "initiated": "申请部门 · 发起日期"
+      }
+    }
+  },
+  "library": {
+    "title": "文件库",
+    "ownFiles": "本厂文件",
+    "allOwn": "本厂文件 · 全部",
+    "count": "{{count}} 份",
+    "external": "外部标准",
+    "externalKinds": {
+      "pharmacopoeia": "《中国药典》",
+      "regulation": "药品监管法规",
+      "guideline": "技术指导原则",
+      "other": "其他外部标准"
+    },
+    "newFile": "＋ 新建文件",
+    "qaOnly": "只对 QA",
+    "filter": {
+      "status": "状态：{{first}}等 {{n}} 项",
+      "statusDefault": "默认只隐藏已作废",
+      "inChange": "在变更里",
+      "inChangeOne": "在变更里：{{no}}",
+      "noChanges": "还没有变更。",
+      "issues": "有问题",
+      "issuesOn": "只看有问题的",
+      "onlyIssues": "只看有问题的文件",
+      "statusOne": "状态：{{first}}",
+      "statusNone": "状态：未选",
+      "clear": "清掉这个条件",
+      "obsoleteNoOriginal": "其中 {{count}} 份没有原文"
+    },
+    "col": {
+      "code": "编号",
+      "name": "名称",
+      "status": "状态",
+      "version": "版本",
+      "effective": "生效日期",
+      "department": "起草部门",
+      "citedBy": "被引用",
+      "marks": "标记",
+      "role": "在这次变更里",
+      "category": "类别"
+    },
+    "group": {
+      "issues": "有问题 {{count}}",
+      "dueSoon": "到期回顾 {{count}}"
+    },
+    "mark": {
+      "replacedBy": "由 {{code}} 替代",
+      "replacedByVersion": "由 {{version}} 版替代",
+      "originalStillThere": "原文还在共享盘",
+      "ledgerOnly": "没有原文，只有台账记录",
+      "draftOf": "{{no}} 的修订稿",
+      "dueSoon": "{{date}} 到期回顾"
+    },
+    "role": {
+      "draft": "源头 · {{version}} 版修订稿",
+      "source": "源头 · {{version}} 版生效后作废",
+      "indirect": "间接相关 · 仅供参考",
+      "pending": "未确认",
+      "alsoIn": "也在 {{no}} 里"
+    },
+    "groupBy": "分组",
+    "groupByCategory": "类别 ▾"
+  },
+  "doc": {
+    "initiate": "基于这份文件发起变更",
+    "effective": "{{date}} 生效",
+    "set": "文件组：{{members}}",
+    "equipment": "设备 {{model}}（{{deviceNo}}）",
+    "issues": "这份文件有 {{count}} 个问题：",
+    "issueItem": "{{n}}. {{label}}（{{fix}}）",
+    "issueDetail": "{{n}}. {{text}}",
+    "inChange": {
+      "label": "在变更里：{{no}} {{title}}",
+      "source": "这份是源头，{{version}} 版在{{station}}",
+      "draft": "这份是修订稿，在{{station}}",
+      "impactTier": "这份受影响（{{tier}}）",
+      "impactPending": "这份在受影响的文件里，还没确认"
+    },
+    "ledgerRow": "{{copy}} · {{holder}} · {{status}} · {{remark}}",
+    "place": {
+      "field": {
+        "correspondingDoc": "文头「对应文件」",
+        "basis": "文头「依据」"
+      },
+      "header": "文头",
+      "clause": "§{{number}}",
+      "body": "正文"
+    },
+    "refs": {
+      "title": "引用关系",
+      "incoming": "谁引用了我",
+      "outgoing": "我引用了谁",
+      "counts": "{{docs}} 份文件 · {{places}} 处",
+      "places": "{{places}} 处",
+      "noIncoming": "没有文件按编号引用它。",
+      "noOutgoing": "它没有按编号引用别的文件。",
+      "sameSet": "同组",
+      "citedVersion": "写明 {{version}} 版",
+      "equipmentOnly": "只写了设备型号 {{model}}，没写编号",
+      "lookTwice": "需核对",
+      "hiddenObsolete": "另有 {{places}} 处在已作废的 {{codes}} 里，已隐藏。",
+      "obsoleteReplaced": "已作废 · 由 {{code}} 替代",
+      "obsolete": "已作废",
+      "notFound": "库里找不到",
+      "chapter": "《中国药典》通则 {{chapter}}",
+      "edition": "{{edition}} 年版",
+      "editionCurrent": "现行版",
+      "implicit": "泛指，没写编号",
+      "secondRing": "再往外一层",
+      "secondRingSummary": "谁又引用了 {{list}}",
+      "secondRingItem": "{{code}}（{{count}} 份）",
+      "whoCites": "引用 {{code}} 的：",
+      "draftNote": "这是修订稿，还没生效。新版生效、系统重新读取以后，它的引用关系才算进文件库。",
+      "obsoleteNote": "已作废的版本不算进引用关系。",
+      "implicitItem": "{{place}}「{{text}}」"
+    },
+    "issueLine": "{{n}} {{label}}"
+  },
+  "initiate": {
+    "crumb": "发起变更 · 修订一份文件",
+    "file": "拟修订文件",
+    "change": "换一份",
+    "title": "变更标题",
+    "titlePlaceholder": "概括本次变更的内容",
+    "how": "修订方式",
+    "upload": "上传修订稿（.docx）",
+    "place": "放入修订稿",
+    "placed": "已放入：{{file}}",
+    "preview": "看原件",
+    "noDraft": "演示里只有 SOP-SB-021-02 有修订稿（scenario-inputs/），这份文件没有。",
+    "draftUsed": "这份修订稿已经在变更 {{no}} 里了。",
+    "inSystem": "在系统里改",
+    "reason": "变更原因",
+    "reasonPlaceholder": "说明变更的原因和依据",
+    "requestedBy": "申请部门",
+    "controlNo": "变更控制单号",
+    "submit": "发起变更",
+    "saveDraft": "存为草稿",
+    "defaultTitle": "{{name}} {{from}} 换 {{to}}",
+    "defaultReason": "{{name}}由 {{from}} 换为 {{to}}，操作、参数和维护要求随之变化。"
+  },
+  "overview": {
+    "info": "变更信息",
+    "controlNo": "变更控制单号",
+    "title": "变更标题",
+    "type": "变更类型",
+    "typeRevision": "修订一份文件",
+    "source": "源头",
+    "sourceHow": "修订稿发起时放入",
+    "compare": "对比 →",
+    "reason": "变更原因",
+    "initiated": "申请部门 · 发起日期",
+    "effective": "新版生效日期",
+    "effectivePending": "待定（以批准件文头为准）",
+    "history": "修改记录",
+    "edit": "编辑",
+    "stations": "各站进度",
+    "row": {
+      "assess": "影响评估",
+      "revise": "审阅",
+      "reviseSummary": "报告导出后开始",
+      "rollout": "换版追踪",
+      "rolloutSummary": "审阅确认后开始",
+      "training": "培训",
+      "trainingSummary": "审阅确认后出题",
+      "exportedSummary": "报告第 1 版 · {{count}} 份 · {{date}} 导出",
+      "reviseReady": "AI 已改好 {{total}} 份修订稿 · 已审阅 {{done}} / {{total}}",
+      "draftSummary": "AI 已生成报告：{{count}} 份受影响的文件，其中 {{look}} 份需核对",
+      "rolloutProgress": "已批准 {{approved}} / {{groups}} 组 · 已交回 {{returned}} / {{copies}} 份",
+      "rolloutOverdue": "超期 {{count}} 份",
+      "trainingProgress": "{{packs}} 个培训包 · 已确认 {{confirmed}} · 培训已完成 {{trained}}"
+    },
+    "state": {
+      "inProgress": "进行中",
+      "notStarted": "未开始",
+      "toConfirm": "待确认",
+      "done": "完成"
+    },
+    "closing": "收尾",
+    "closingOpen": "还没完成："
+  },
+  "changes": {
+    "open": "进行中 {{count}}",
+    "closed": "已关闭 {{count}}",
+    "initiate": "发起变更",
+    "kinds": {
+      "revision": {
+        "name": "修订一份文件"
+      },
+      "newFile": {
+        "name": "新建一份文件"
+      },
+      "external": {
+        "name": "外部标准更新"
+      }
+    },
+    "col": {
+      "change": "变更",
+      "type": "类型",
+      "station": "进度",
+      "now": "当前状态",
+      "source": "源头",
+      "initiated": "申请部门 · 发起日期"
+    },
+    "noneClosed": "没有已关闭的变更。",
+    "closedOn": "已关闭 · {{date}}"
+  },
+  "error": {
+    "title": "页面出错了",
+    "notFound": "找不到这个页面。",
+    "backHome": "返回首页"
+  },
+  "assess": {
+    "source": "源头",
+    "changes": "改动 {{count}} 处",
+    "compareLink": "对比 →",
+    "listTitle": "受影响的文件",
+    "count": "{{count}} 份",
+    "stateDraft": "待确认",
+    "stateExported": "已导出 · 第 1 版 · {{date}}",
+    "aiExampleHint": "这是手写的示例，格式和预跑结果一样；预跑以后换成模型的结果",
+    "group": {
+      "removed": "移出的"
+    },
+    "flag": {
+      "modelOnly": "只写了设备型号，没写编号",
+      "notFound": "库里找不到",
+      "undetermined": "AI 没判断出来",
+      "added": "人工加入",
+      "notFoundCode": "库里找不到 {{codes}}",
+      "checkBasis": "核对原件和依据",
+      "check": "需核对",
+      "concluded": "评估后"
+    },
+    "add": {
+      "button": "＋ 加一份文件",
+      "title": "加一份文件到报告",
+      "file": "文件",
+      "search": "输入编号或名称",
+      "tier": "档位",
+      "note": "要改的地方 / 要评估什么",
+      "reason": "为什么加入",
+      "submit": "加入",
+      "inReport": "已在报告里",
+      "cancel": "取消"
+    },
+    "confirm": {
+      "button": "确认并导出",
+      "hint": "确认后锁定为第 1 版，审阅和换版按这一版走",
+      "blocked": "还有 {{count}} 份需评估没给评估结论，给完才能导出"
+    },
+    "detail": {
+      "open": "看原件和依据",
+      "meta": "{{category}} · {{department}}",
+      "basis": "依据",
+      "noAI": "AI 没给出判断：这一份要人看过再定。",
+      "modelOnly": "只写了设备型号 {{model}}，没写编号：确认是不是这台设备。",
+      "indirect": "它没有引用 {{source}}，引用的是报告里的 {{via}}；仅供参考。",
+      "added": "这份是人工加入的：{{reason}}",
+      "removed": "已移出报告（{{by}}决定 · {{date}}）{{note}}",
+      "aiMarker": "灰字是 AI 的判断",
+      "aiMarkerExample": "灰字是 AI 的判断（示例）",
+      "noteSuffix": "：{{note}}"
+    },
+    "note": {
+      "header": "文头",
+      "clause": "§{{number}} {{heading}}",
+      "body": "正文",
+      "hit": "命中：{{what}}",
+      "hitModel": "写着 {{text}}",
+      "hitModelTable": "表里写着 {{text}}",
+      "hitCode": "引用 {{text}}",
+      "hitField": "文头「{{field}}」写着 {{text}}",
+      "hitVia": "引用清单里的 {{text}}",
+      "aiOnly": "AI 另外发现，规则没命中",
+      "conclusion": {
+        "change": "要改",
+        "noChange": "不用改",
+        "evaluate": "待评估"
+      },
+      "points": "修改要点",
+      "rule": "规则",
+      "point": "{{from}} → {{to}}",
+      "source": "源 §{{number}}",
+      "drop": "不要这条",
+      "restore": "恢复",
+      "dropped": "已去掉",
+      "follows": "只写了编号，新版生效后自动指向 {{version}} 版。",
+      "textChange": "补充修改要点（规则和 AI 没写到的）",
+      "textEvaluate": "评估说明：由谁评估、评估什么",
+      "textOther": "备注（可不写）",
+      "reason": "和 AI 建议不同，写一句原因",
+      "notFound": "{{place}}写的 {{code}} 库里找不到：可能是编号写错，或这份文件没有收进来。系统不猜它指哪一份。",
+      "none": "规则在这份文件上没找到具体位置。",
+      "field": {
+        "correspondingDoc": "对应文件",
+        "basis": "依据"
+      }
+    },
+    "compare": {
+      "crumb": "源头：{{code}} 对比 {{from}} / {{to}}",
+      "legend": "左 {{from}} 版（{{fromStatus}}）· 右 {{to}} 版（{{toStatus}}）· 删掉的划线，新加的下划线，页边竖线 = 这一条有改动 · 规则比对，不用 AI",
+      "nav": "改动 {{n}} / {{total}}",
+      "prev": "上一处",
+      "next": "下一处",
+      "aiSummary": "AI 总结 · 暂无",
+      "aiSummaryHint": "预跑还没跑。预跑以后这里浮出 AI 写的改动要点，点一条两页同时跳过去；以两边原件为准。"
+    },
+    "report": {
+      "title": "变更影响评估报告",
+      "draft": "草稿",
+      "version": "第 1 版",
+      "print": "导出 PDF",
+      "printHint": "用浏览器打印，选「存储为 PDF」",
+      "company": "澄川制药有限公司",
+      "field": {
+        "controlNo": "变更控制单号",
+        "edition": "版次",
+        "source": "源头文件",
+        "content": "变更内容",
+        "generated": "生成",
+        "confirmed": "确认",
+        "state": "状态"
+      },
+      "sourceValue": "{{code}} {{name}}　{{from}} → {{to}}",
+      "content": "{{summary}}；文头 {{header}} 处、条款 {{clauses}} 处改动",
+      "generatedBy": "AI（示例）　{{date}}",
+      "confirmedBy": "{{department}}　{{date}}",
+      "pending": "待确认",
+      "stateDraft": "草稿",
+      "stateLocked": "已锁定",
+      "section": {
+        "undetermined": "〇　AI 没判断出来（{{count}} 份）",
+        "mustChange": "一　必须改（{{count}} 份）",
+        "evaluate": "二　需评估（{{count}} 份）",
+        "inform": "三　仅告知（{{count}} 份）",
+        "indirect": "四　间接相关，仅供参考（{{count}} 份）",
+        "edits": "五　人工调整（加入 {{added}} 份 · 移出 {{removed}} 份 · 评估结论 {{concluded}} 份）"
+      },
+      "col": {
+        "file": "文件",
+        "points": "要改的地方和修改要点",
+        "evaluate": "要评估什么",
+        "basis": "依据",
+        "relation": "说明"
+      },
+      "line": "{{place}}　{{text}}",
+      "via": "经 {{via}}",
+      "addedItem": "加入 {{code}} {{name}}（{{tier}}）：{{reason}}",
+      "removedItem": "移出 {{code}} {{name}}（{{by}}决定 · {{date}}）{{note}}",
+      "noEdits": "没有人工调整。",
+      "footer": "正式审批在 OA 的变更控制单里走；本报告作为附件，是签字时的依据。",
+      "pageFooter": "{{no}}　变更影响评估报告　{{edition}}",
+      "alsoChange": "另需改：{{text}}",
+      "addedMark": "（人工加入）",
+      "addedReason": "加入理由：{{reason}}",
+      "comment": "备注（{{department}}）：{{text}}",
+      "concludedItem": "{{code}} {{name}}：需评估 → {{tier}}（{{by}}决定 · {{date}}）{{note}}",
+      "conclusion": "需评估 → {{tier}}（{{by}}决定 · {{date}}）",
+      "evaluated": "评估项：{{text}}",
+      "decisionNote": "备注：{{note}}",
+      "noteSuffix": "：{{note}}",
+      "printDraft": "导出草稿 PDF",
+      "printDraftHint": "草稿可以随时导出，拿去讨论；文头写「草稿」，不锁定。用浏览器打印，选「存储为 PDF」",
+      "noEntries": "无。"
+    },
+    "action": {
+      "open": "看原件和依据",
+      "comment": "写备注",
+      "editComment": "改备注",
+      "commentPlaceholder": "比如：由谁评估、什么时候前给结论",
+      "save": "保存",
+      "cancel": "取消",
+      "remove": "移出报告",
+      "removeConfirm": "确认移出",
+      "restore": "放回报告",
+      "undoAdd": "撤销加入",
+      "addedReason": "加入理由：{{reason}}"
+    },
+    "toCheck": "{{count}} 份需核对",
+    "conclude": {
+      "action": "给出评估结论",
+      "mustChange": "需要修订 · 改为必须改",
+      "inform": "不需要修订 · 改为仅告知",
+      "save": "记录结论",
+      "withdraw": "撤销结论",
+      "moved": "需评估 → {{tier}}"
+    },
+    "stateEvaluate": "需评估 {{count}} 份待结论",
+    "decision": {
+      "removed": "移出报告",
+      "by": "{{by}}决定 · {{date}}",
+      "department": "决定部门",
+      "notePlaceholder": "备注（选填）"
+    }
+  },
+  "report": {
+    "group": {
+      "undetermined": "AI 没判断出来",
+      "mustChange": "必须改",
+      "evaluate": "需评估",
+      "inform": "仅告知",
+      "indirect": "间接相关 · 仅供参考"
+    },
+    "role": {
+      "sameSet": "同组",
+      "added": "人工加入",
+      "draft": "待确认"
+    }
+  },
+  "review": {
+    "waiting": "影响评估报告导出后，AI 按报告改好每份要改的文件，在这里审阅。",
+    "prev": "上一份",
+    "next": "下一份",
+    "of": "第 {{n}} / {{total}} 份",
+    "listTitle": "要审阅的修订稿 {{total}} 份 · 已审阅 {{done}}",
+    "status": {
+      "pending": "待审阅",
+      "reviewed": "已审阅"
+    },
+    "export": "导出 .docx",
+    "fileName": "{{code}} {{name}}（修订稿）",
+    "fileNameFinal": "{{code}} {{name}}（修订稿 · 已审阅）",
+    "confirm": "确认审阅",
+    "undo": "撤回",
+    "why": "报告：必须改 · {{places}}",
+    "whyAdded": "人工加入：{{reason}}",
+    "loading": "正在打开修订稿…",
+    "loadFailed": "修订稿打不开，刷新页面再试。",
+    "changesBy": "AI {{ai}} · {{department}} {{person}}",
+    "ruled": "按规则改 {{count}} 处",
+    "ruledWhat": {
+      "code": "文件编号",
+      "version": "版本号",
+      "signature": "签字",
+      "effective": "生效日期"
+    },
+    "noChanges": "没有改动。",
+    "byAi": "AI",
+    "type": {
+      "replace": "改",
+      "insert": "加",
+      "delete": "删",
+      "format": "改格式",
+      "table": "改表格",
+      "split": "分段",
+      "other": "改"
+    },
+    "reject": "不采用",
+    "undoMine": "撤销",
+    "reason": {
+      "person": "人工修改",
+      "ai": "AI 修订",
+      "point": "报告：{{text}} {{source}}",
+      "rewrite": "AI 重写",
+      "rewriteBasis": "AI 重写 · 依据报告：{{basis}}",
+      "code": "规则：引用的文件一起升版",
+      "header": {
+        "version": "规则：新版本号",
+        "effective": "规则：生效日期待定",
+        "signature": "规则：签字留空，走审批时再签"
+      },
+      "history": "AI：变更历史加一行"
+    },
+    "summary": "AI 修改总结",
+    "summaryExample": "AI 修改总结（示例）",
+    "collapse": "收起",
+    "toolbar": {
+      "undo": "撤销",
+      "redo": "重做",
+      "zoom": "缩放",
+      "search": "查找",
+      "font-family": "字体",
+      "font-size": "字号",
+      "bold": "加粗",
+      "italic": "倾斜",
+      "underline": "下划线",
+      "strikethrough": "删除线",
+      "text-color": "字体颜色",
+      "highlight-color": "突出显示",
+      "link": "链接",
+      "image": "插入图片",
+      "table": "插入表格",
+      "table-actions": "表格",
+      "insert-row-before": "上方插入行",
+      "insert-row-after": "下方插入行",
+      "insert-column-before": "左侧插入列",
+      "insert-column-after": "右侧插入列",
+      "delete-row": "删除行",
+      "delete-column": "删除列",
+      "delete-table": "删除表格",
+      "remove-borders": "去掉边框",
+      "merge-cells": "合并单元格",
+      "split-cell": "拆分单元格",
+      "fix-tables": "修复表格",
+      "text-align": "对齐",
+      "bullet-list": "项目符号",
+      "numbered-list": "编号",
+      "indent-decrease": "减少缩进",
+      "indent-increase": "增加缩进",
+      "line-height": "行距",
+      "copy-format": "格式刷",
+      "clear-formatting": "清除格式",
+      "table-of-contents": "目录",
+      "watermark": "水印",
+      "page-number": "页码",
+      "ruler": "标尺",
+      "formatting-marks": "显示编辑标记",
+      "measurement-unit": "度量单位"
+    },
+    "original": "原稿",
+    "originalOf": "现行 {{version}} 版，只读",
+    "draft": "修订稿",
+    "draftOfEdit": "{{version}} 版，直接在这里改",
+    "draftOfRead": "{{version}} 版，只读",
+    "draftOfFinal": "{{version}} 版定稿，只读",
+    "hideOriginal": "收起原稿",
+    "showOriginal": "对照原稿",
+    "nav": "改动 {{n}} / {{total}}",
+    "navNone": "改动 {{total}} 处",
+    "navHint": "逐处看内容上的改动；按规则改的 {{count}} 处（编号、版本号、签字、生效日期）在「全部」里",
+    "prevChange": "上一处改动",
+    "nextChange": "下一处改动",
+    "allChanges": "全部 {{count}}",
+    "close": "关闭",
+    "summaryCount": "{{label}} · {{count}} 条",
+    "docFormat": {
+      "label": "本文件格式",
+      "tooltip": "把光标所在的段落套成这份文件里同级段落的格式（字体、字号、加粗、缩进、段距）",
+      "chapter": "章标题（如「5　相关文件」）",
+      "clause": "条款（如「4.2」）",
+      "subclause": "子条款（如「4.3.1」）",
+      "body": "正文段落"
+    },
+    "formatWhat": {
+      "bold": "加粗",
+      "italic": "倾斜",
+      "underline": "下划线",
+      "strike": "删除线",
+      "font": "字体",
+      "size": "字号",
+      "color": "颜色",
+      "highlight": "突出显示",
+      "indent": "缩进",
+      "spacing": "段距",
+      "line": "行距",
+      "align": "对齐",
+      "other": "其他格式"
+    },
+    "settled": "含修订 {{count}} 处 · AI {{ai}} · {{department}} {{person}}",
+    "settledHint": "已确认审阅，修订都按接受显示；撤回后回到修订痕迹",
+    "list": {
+      "title": "要审阅的修订稿",
+      "count": "{{total}} 份 · 已审阅 {{done}}",
+      "col": {
+        "file": "文件",
+        "places": "报告里要改的地方",
+        "summary": "AI 改了什么",
+        "status": "状态"
+      },
+      "group": "{{total}} 份 · 已审阅 {{done}}",
+      "reviewedOn": "已审阅 · {{date}}",
+      "noSummary": "暂无 AI 总结",
+      "open": "审阅 →",
+      "view": "查看 →",
+      "back": "全部修订稿",
+      "concludedTag": "需评估 → 必须改"
+    },
+    "whyConcluded": "评估后改为必须改（{{by}}决定）{{note}}",
+    "whyConcludedNote": "：{{note}}"
+  },
+  "rollout": {
+    "title": "换版追踪",
+    "notYet": "影响评估报告导出后，这里按文件组列出要换版的文件和各部门持有的副本。",
+    "reviewing": "还有 {{count}} 份修订稿没确认审阅；所在的文件组审阅确认后才能登记批准。",
+    "toReview": "去审阅 →",
+    "summary": {
+      "plan": "{{groups}} 组 · {{copies}} 份 · 已批准 {{approved}} 组",
+      "returned": "已交回 {{returned}} / {{copies}}",
+      "overdue": "超期 {{count}} 份",
+      "legacy": "遗留 {{count}} 份"
+    },
+    "dates": {
+      "approved": "{{approved}} 批准 · {{date}} 生效 · 旧版 {{due}} 前交回",
+      "today": "今天 {{date}}"
+    },
+    "col": {
+      "department": "部门",
+      "group": "{{id}} 组",
+      "legacy": "上次换版遗留"
+    },
+    "head": {
+      "effective": "{{date}} 生效"
+    },
+    "row": {
+      "copies": "{{count}} 份"
+    },
+    "cell": {
+      "reviewing": "审阅中",
+      "awaiting": "等批准",
+      "toIssue": "待发放",
+      "toReturn": "待交回",
+      "overdue": "超期 {{days}} 天",
+      "returned": "已交回",
+      "copies": "{{count}} 份",
+      "newCopies": "新版 {{count}} 份",
+      "open": "旧版 {{count}} 份未交回",
+      "due": "{{date}} 前交回",
+      "legacyOpen": "{{count}} 份未交回",
+      "legacyYear": "{{year}} 年作废",
+      "legacyNoYear": "已作废"
+    },
+    "info": {
+      "title": "{{department}} × {{group}}",
+      "legacyTitle": "{{department}} · 上次换版遗留",
+      "close": "关闭",
+      "due": "期限",
+      "dueOn": "{{date}} 前",
+      "overdue": "超期 {{days}} 天",
+      "dueTbd": "生效后 {{days}} 个工作日内",
+      "slipLink": "{{holder}}的签收单 →"
+    },
+    "approve": {
+      "title": "登记批准",
+      "groups": "文件组 {{picked}} / {{total}}",
+      "approvedOn": "OA 批准日期",
+      "effectiveOn": "生效日期",
+      "badDates": "生效日期不能早于批准日期",
+      "submit": "登记",
+      "cancel": "取消",
+      "rule": "旧版在新版生效后 {{days}} 个工作日内交回（{{rule}}）",
+      "ruleNoCite": "旧版在新版生效后 {{days}} 个工作日内交回"
+    },
+    "dept": {
+      "reviewing": "审阅中",
+      "awaiting": "等批准",
+      "toIssue": "待发放",
+      "toReturn": "待交回 {{count}}",
+      "overdue": "超期 {{count}}",
+      "legacy": "遗留 {{count}}",
+      "done": "已全部交回",
+      "join": " + "
+    },
+    "slip": {
+      "list": "签收单 {{count}} 张",
+      "back": "← 看板",
+      "col": {
+        "department": "部门",
+        "status": "状态"
+      },
+      "heading": "{{department}} · 文件发放回收签收单",
+      "progress": "已交回 {{returned}} / {{copies}}",
+      "print": "打印",
+      "printLocked": "这个部门的文件组都批准后才能打印",
+      "paper": {
+        "title": "文件发放回收签收单",
+        "no": "签收单编号",
+        "controlNo": "变更控制单号",
+        "holder": "持有部门",
+        "effective": "新版生效日期",
+        "basis": "依据",
+        "basisValue": "{{rule}}：{{text}}",
+        "pending": "待定",
+        "issueTitle": "一　发放新版（{{count}} 份）",
+        "returnTitle": "二　回收旧版（{{count}} 份）",
+        "returnTitleLegacy": "二　回收旧版（{{count}} 份 + 遗留 {{legacy}} 份）",
+        "blankTitle": "三　旧版空白记录",
+        "blankText": "对应规程换版时同时收回（{{rule}}）。",
+        "blankTextNoRule": "对应规程换版时同时收回。",
+        "blankCount": "份数：",
+        "col": {
+          "code": "文件编号",
+          "name": "文件名称",
+          "version": "版本",
+          "copyNo": "副本号",
+          "count": "份数",
+          "remark": "备注"
+        },
+        "legacyRemark": "上次换版遗留",
+        "issuer": "发放人：",
+        "receiver": "接收人：",
+        "returner": "交回人：",
+        "collector": "回收人：",
+        "date": "日期：",
+        "footer": "签回后交{{qa}}存档；系统里的「已发放」「已交回」只是跟踪状态，本单是正式记录。"
+      }
+    },
+    "register": {
+      "issueTitle": "发放新版",
+      "reviewing": "还有 {{count}} 组在审阅，确认、批准后才能发放",
+      "locked": "还有 {{count}} 组没登记批准，批准后才能发放",
+      "issue": "登记已发放 · {{count}} 份",
+      "issued": "{{count}} 份新版已发放 {{date}}",
+      "undo": "撤销",
+      "undoIssueHint": "已有旧版登记交回，先撤销那些",
+      "returnTitle": "交回旧版",
+      "upload": "上传扫描件",
+      "uploading": "上传中…",
+      "returnedOn": "已交回 {{date}}",
+      "overdue": "超期 {{days}} 天",
+      "due": "{{date}} 前",
+      "notIssued": "批准后登记",
+      "note": "备注",
+      "notePlaceholder": "选填：部门的说法、补交安排…",
+      "save": "保存",
+      "legacyTitle": "上次换版遗留",
+      "legacyMeta": "{{version}} 版 · {{year}} 年作废",
+      "legacyMetaNoYear": "{{version}} 版 · 已作废",
+      "ledgerRemark": "台账备注：{{remark}}",
+      "logTitle": "记录",
+      "logEmpty": "还没有登记。",
+      "log": {
+        "approve": "登记批准 · {{target}}",
+        "withdrawApproval": "撤销批准 · {{target}}",
+        "issue": "登记已发放",
+        "undoIssue": "撤销发放登记",
+        "return": "{{target}} 记已交回 · 扫描件 {{file}}",
+        "undoReturn": "撤销交回 · {{target}}",
+        "note": "备注 · {{target}}",
+        "issueWithReturn": "登记已发放（随旧版交回一起登记）"
+      }
+    },
+    "approval": {
+      "waiting": "审阅已确认 · 待 OA 批准",
+      "pending": "还有 {{count}} 组没登记批准",
+      "register": "登记批准",
+      "withdraw": "撤销批准",
+      "withdrawHint": "已有部门登记发放，不能撤销"
+    }
+  },
+  "files": {
+    "choose": "选文件",
+    "demoFile": "演示数据，没有附文件"
+  },
+  "training": {
+    "title": "培训",
+    "notYet": "修订稿全部审阅确认后，按新版出培训包。",
+    "toReview": "去审阅 →",
+    "listDeadline": "{{deadline}}完成培训",
+    "deadline": "新版 {{date}} 生效前",
+    "deadlinePending": "新版生效前",
+    "rule": "{{rule}}：{{text}}",
+    "col": {
+      "audience": "培训对象",
+      "questions": "培训资料和考核题",
+      "status": "状态",
+      "deadline": "期限",
+      "records": "培训记录"
+    },
+    "duty": "§{{clause}} {{duty}}",
+    "fromAI": "AI 初稿 · {{count}} 道题",
+    "fromAIExample": "AI 示例 · {{count}} 道题",
+    "noAI": "暂无 AI 初稿",
+    "open": "打开 →",
+    "status": {
+      "toConfirm": "待确认",
+      "confirmed": "已确认 · {{date}}",
+      "trained": "培训已完成 · {{date}}",
+      "partly": "已确认 {{done}}/{{total}}"
+    },
+    "back": "← 全部培训包",
+    "confirm": "确认",
+    "unconfirm": "撤销确认",
+    "unconfirmHint": "已上传培训记录，不能撤销",
+    "export": "导出",
+    "records": {
+      "title": "培训记录",
+      "upload": "上传扫描件",
+      "uploading": "上传中…",
+      "undo": "撤销",
+      "needsConfirm": "培训资料、考核题都确认后才能上传"
+    },
+    "type": {
+      "single": "单选",
+      "judge": "判断",
+      "short": "简答"
+    },
+    "judgeYesShort": "对",
+    "judgeNoShort": "错",
+    "cancel": "取消",
+    "sheet": {
+      "title": {
+        "material": "{{subject}} · 培训资料",
+        "student": "{{subject}} · 考核题"
+      },
+      "controlNo": "变更控制单号",
+      "basis": "依据文件",
+      "audience": "培训对象",
+      "audienceValue": "{{role}}（{{departments}}）",
+      "deadline": "完成期限",
+      "name": "姓　　名",
+      "score": "得　　分",
+      "summary": "本次改动摘要",
+      "judgeBlank": "（　）",
+      "questions": "考核题"
+    },
+    "compare": "看改动对比 →",
+    "doc": {
+      "question": "{{n}}. {{stem}}（{{type}}）{{blank}}",
+      "emptySummary": "（AI 还没写改动摘要，在这里写给培训对象：这次改了什么、操作上要注意什么。）",
+      "emptyExam": "（AI 还没出题，在这里出题；答案写在旁边的答案表里。）",
+      "tab": {
+        "material": "① 培训资料",
+        "questions": "② 考核题"
+      },
+      "confirmedTag": "已确认 {{date}}"
+    },
+    "exportDialog": {
+      "title": {
+        "material": "导出培训资料",
+        "questions": "导出考核题"
+      },
+      "part": {
+        "material": "培训资料",
+        "student": "考核题 · 学员版",
+        "marking": "考核题 · 答案版"
+      },
+      "formats": {
+        "pdf": "PDF",
+        "word": "Word"
+      },
+      "working": "正在导出…",
+      "failed": "导出失败，再试一次。",
+      "fileName": "{{no}} {{role}} {{part}}.docx",
+      "version": {
+        "student": "学员版",
+        "marking": "答案版"
+      }
+    },
+    "answerKey": {
+      "show": "显示答案",
+      "title": "答案",
+      "ai": "AI 写的",
+      "aiExample": "AI 示例",
+      "edited": "QA 改过",
+      "n": "题号",
+      "answer": "答案",
+      "clause": "对应条款",
+      "clauseValue": "§{{clause}}",
+      "add": "＋ 加一行",
+      "drop": "删掉这一行",
+      "dropMark": "✕",
+      "restore": "恢复 AI 写的"
+    }
+  },
+  "closing": {
+    "closableTag": "可关闭",
+    "closedTag": "已关闭 · {{date}}",
+    "closed": "QA 负责人 {{date}} 在变更控制单上签字，变更已关闭。",
+    "allDone": "各站都已完成 · {{date}}",
+    "print": "打印收尾总览",
+    "signedOn": "签字日期",
+    "close": "记录关闭",
+    "reopen": "撤销关闭",
+    "openLine": "{{name}}：{{line}}",
+    "sum": {
+      "title": "变更收尾总览",
+      "content": "变更内容",
+      "initiated": "申请部门 · 发起",
+      "effective": "生　　效",
+      "printed": "打印日期",
+      "state": "状　　态",
+      "stations": "一　各阶段完成情况",
+      "station": "阶段",
+      "result": "结果",
+      "status": "状态",
+      "assess": "影响评估报告第 1 版，{{count}} 份受影响文件；{{date}} 导出",
+      "revise": "{{count}} 份修订稿，QA {{reviewed}} 审阅确认；OA 批准 {{approved}}",
+      "rollout": "{{groups}} 组 · {{departments}} 个部门 · {{copies}} 份受控副本：发放 {{copies}}、交回 {{copies}}（最后一份 {{last}}）",
+      "rolloutLegacy": "；上次换版遗留 {{count}} 份，见第三节",
+      "training": "{{count}} 个培训包（{{packs}}）；培训记录 {{records}} 份扫描件（最后一份 {{last}}）",
+      "versions": "二　新版本（{{count}} 份）",
+      "versionsEffective": "；{{date}} 生效，对应旧版已作废。",
+      "leftovers": "三　遗留事项",
+      "legacyLine": "{{copy}}（{{holder}}，上次换版遗留）：{{note}}",
+      "legacyReturned": "{{date}} 已交回",
+      "legacyOpen": "未交回",
+      "none": "无。",
+      "closeTitle": "四　关闭",
+      "closeText": "换版和培训均已完成，系统判断本变更可关闭。关闭由 QA 负责人在变更控制单上签字确认；本总览作为附件。",
+      "head": "QA 负责人：",
+      "date": "日期："
+    }
+  }
+}

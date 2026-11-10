@@ -1,0 +1,310 @@
+import type { TFunction } from 'i18next'
+import { ChevronDown, ChevronRight, X } from 'lucide-react'
+import { type ReactNode, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { shortDate } from '@/lib/format'
+import { Link, useNavigate, useSearchParams } from 'react-router'
+import { NotThisRound, Tag } from '@/components/common'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { documentPath } from '@/features/library/paths'
+import { reasonsOf } from '@/domain/issues'
+import { REPORT_GROUPS } from '@/domain/assessment'
+import { LIBRARY_CATEGORIES, type LibraryCategory } from '@/domain/library'
+import { changeNumber, reportRoleText } from '@/features/change/view'
+import { useChangeViews } from '@/features/home/tasks'
+import { cn } from '@/lib/utils'
+import { DEFAULT_STATUSES, type LibraryRow, libraryRows, STATUS_OPTIONS, type StatusOption } from './rows'
+
+const EXTERNAL_KINDS = ['pharmacopoeia', 'regulation', 'guideline', 'other'] as const
+
+/** 文件库 · 本厂文件: catalogue on the left, filters above the table (02 画面 1、2). */
+const COLUMNS = ['code', 'name', 'status', 'version', 'effective', 'department', 'citedBy', 'marks'] as const
+/** With a change filter (02 画面 3): what the file is in that change replaces version, dates and marks. */
+const CHANGE_COLUMNS = ['code', 'name', 'status', 'category', 'department', 'role'] as const
+
+export function LibraryPage() {
+  const { t } = useTranslation()
+  const [params, setParams] = useSearchParams()
+  // Only QA / QC and document control use the product (UX-51), so 问题 always show.
+  const isQA = true
+  const views = useChangeViews()
+  const rows = useMemo(() => libraryRows(views), [views])
+
+  const category = (LIBRARY_CATEGORIES as readonly string[]).includes(params.get('cat') ?? '') ? (params.get('cat') as LibraryCategory) : null
+  const statuses = (params.get('status')?.split(',').filter((s): s is StatusOption => (STATUS_OPTIONS as readonly string[]).includes(s)) ?? DEFAULT_STATUSES) as StatusOption[]
+  const changeId = params.get('change')
+  const onlyIssues = isQA && params.get('issues') === '1'
+  const update = (key: string, value: string | null) => {
+    const next = new URLSearchParams(params)
+    if (value === null) next.delete(key)
+    else next.set(key, value)
+    setParams(next, { replace: true })
+  }
+
+  const byStatus = rows.filter((r) => statuses.includes(r.status))
+  const filtered = byStatus.filter(
+    (r) =>
+      (!category || r.category === category) &&
+      (!changeId || r.inChanges.some((c) => c.view.record.id === changeId)) &&
+      (!onlyIssues || r.issues.length > 0),
+  )
+  const noOriginal = rows.filter((r) => r.status === 'obsolete' && r.version.origin === 'ledgerOnly' && (!category || r.category === category)).length
+  const countIn = (c: LibraryCategory) => byStatus.filter((r) => r.category === c).length
+
+  return (
+    <div className="flex h-full">
+      <aside className="w-56 shrink-0 overflow-auto border-r bg-background p-3 text-sm">
+        <CatalogItem active={!category} onClick={() => update('cat', null)} label={t('library.ownFiles')} count={byStatus.length} strong />
+        {LIBRARY_CATEGORIES.map((c) => (
+          <CatalogItem key={c} active={category === c} onClick={() => update('cat', c)} label={t(`category.${c}`)} count={countIn(c)} />
+        ))}
+        <div className="mt-4">
+          <NotThisRound className="block px-2 py-1 font-medium">{t('library.external')}</NotThisRound>
+          {EXTERNAL_KINDS.map((k) => (
+            <NotThisRound key={k} className="block py-1 pl-5">
+              {t(`library.externalKinds.${k}`)}
+            </NotThisRound>
+          ))}
+        </div>
+      </aside>
+
+      <div className="min-w-0 flex-1 overflow-auto bg-background">
+        <div className="flex items-center gap-3 border-b px-5 py-3">
+          <h1 className="text-lg font-semibold">{t('library.title')}</h1>
+          <NotThisRound className="ml-auto rounded-md border px-2.5 py-1 text-sm">{t('library.newFile')}</NotThisRound>
+        </div>
+        <div className="flex items-center gap-2 px-5 py-2.5 text-sm">
+          <span className="font-medium">{category ? t(`category.${category}`) : t('library.allOwn')}</span>
+          <span className="text-muted-foreground">{t('library.count', { count: filtered.length })}</span>
+          {changeId && (
+            <span className="flex items-center gap-1 rounded-md border border-foreground px-2 py-0.5 font-medium">
+              {t('library.filter.inChangeOne', { no: changeLabel(t, views, changeId) })}
+              <button type="button" aria-label={t('library.filter.clear')} title={t('library.filter.clear')} onClick={() => update('change', null)} className="rounded p-0.5 hover:bg-muted">
+                <X className="size-3.5" />
+              </button>
+            </span>
+          )}
+          <Filter label={statusLabel(t, statuses)} active={!sameStatuses(statuses, DEFAULT_STATUSES)}>
+            {STATUS_OPTIONS.map((s) => (
+              <label key={s} className="flex items-center gap-2 py-1">
+                <Checkbox
+                  checked={statuses.includes(s)}
+                  onCheckedChange={(on) => update('status', STATUS_OPTIONS.filter((x) => (x === s ? on === true : statuses.includes(x))).join(','))}
+                />
+                {t(`status.${s}`)}
+                <span className="ml-auto text-muted-foreground">
+                  {rows.filter((r) => r.status === s && (!category || r.category === category)).length}
+                  {s === 'obsolete' && noOriginal > 0 && ` · ${t('library.filter.obsoleteNoOriginal', { count: noOriginal })}`}
+                </span>
+              </label>
+            ))}
+            <p className="mt-1 text-xs text-muted-foreground">{t('library.filter.statusDefault')}</p>
+          </Filter>
+          {!changeId && (
+            <Filter label={t('library.filter.inChange')}>
+              {views.length === 0 && <p className="text-muted-foreground">{t('library.filter.noChanges')}</p>}
+              {views.map((v) => (
+                <label key={v.record.id} className="flex items-center gap-2 py-1">
+                  <Checkbox checked={false} onCheckedChange={(on) => on === true && update('change', v.record.id)} />
+                  <span className="font-mono text-xs">{changeNumber(t, v.record)}</span>
+                  <span className="truncate">{v.record.title}</span>
+                </label>
+              ))}
+            </Filter>
+          )}
+          {isQA && (
+            <Filter label={t(onlyIssues ? 'library.filter.issuesOn' : 'library.filter.issues')} active={onlyIssues}>
+              <label className="flex items-center gap-2 py-1">
+                <Checkbox checked={onlyIssues} onCheckedChange={(on) => update('issues', on === true ? '1' : null)} />
+                {t('library.filter.onlyIssues')}
+              </label>
+            </Filter>
+          )}
+          <NotThisRound className="ml-auto">
+            {t('library.groupBy')} <span className="rounded-md border px-2 py-0.5">{t('library.groupByCategory')}</span>
+          </NotThisRound>
+        </div>
+        {/* Arriving from the home page issues task (only issues), every group starts open. */}
+        <RowsTable key={String(onlyIssues)} rows={changeId ? byRoleInChange(filtered, changeId) : filtered} grouped={!category && !changeId} expanded={onlyIssues} isQA={isQA} changeId={changeId} />
+      </div>
+    </div>
+  )
+}
+
+/** 「状态：现行等 3 项」: 现行 named first when chosen (02 画面 1). */
+function statusLabel(t: TFunction, statuses: StatusOption[]): string {
+  const first = statuses.includes('current') ? 'current' : statuses[0]
+  if (!first) return t('library.filter.statusNone')
+  return statuses.length === 1 ? t('library.filter.statusOne', { first: t(`status.${first}`) }) : t('library.filter.status', { first: t(`status.${first}`), n: statuses.length })
+}
+
+const sameStatuses = (a: readonly StatusOption[], b: readonly StatusOption[]) => a.length === b.length && a.every((s) => b.includes(s))
+
+/** With a change filter: the draft and the source first, then the report by tier, indirect last (02 画面 3). */
+function byRoleInChange(rows: LibraryRow[], changeId: string): LibraryRow[] {
+  const rank = (r: LibraryRow) => {
+    const entry = r.inChanges.find((c) => c.view.record.id === changeId)
+    if (!entry) return 9
+    if (entry.role === 'draft') return 0
+    if (entry.role === 'source') return 1
+    const group = entry.view.report.entries.find((e) => e.version === r.version.key)?.group
+    return 2 + (group ? REPORT_GROUPS.indexOf(group) : 6)
+  }
+  return [...rows].sort((a, b) => rank(a) - rank(b))
+}
+
+function changeLabel(t: TFunction, views: ReturnType<typeof useChangeViews>, id: string) {
+  const v = views.find((x) => x.record.id === id)
+  return v ? changeNumber(t, v.record) : id
+}
+
+function CatalogItem({ label, count, active, onClick, strong }: { label: string; count: number; active: boolean; onClick: () => void; strong?: boolean }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn('flex w-full items-center rounded-md px-2 py-1 text-left hover:bg-muted', !strong && 'pl-5', strong && 'font-medium', active && 'bg-muted font-medium')}
+    >
+      {label}
+      <span className="ml-auto text-xs text-muted-foreground">{count}</span>
+    </button>
+  )
+}
+
+function Filter({ label, active, children }: { label: string; active?: boolean; children: ReactNode }) {
+  return (
+    <Popover>
+      <PopoverTrigger className={cn('flex items-center gap-1 rounded-md border px-2 py-0.5 text-sm hover:bg-muted aria-expanded:bg-muted', active && 'border-foreground font-medium')}>
+        {label}
+        <ChevronDown className="size-3.5 text-muted-foreground" />
+      </PopoverTrigger>
+      <PopoverContent align="start" className="w-64 p-3 text-sm">
+        {children}
+      </PopoverContent>
+    </Popover>
+  )
+}
+
+function RowsTable({ rows, grouped, expanded, isQA, changeId }: { rows: LibraryRow[]; grouped: boolean; expanded: boolean; isQA: boolean; changeId: string | null }) {
+  const { t } = useTranslation()
+  const [open, setOpen] = useState<Set<string>>(() => new Set(expanded ? LIBRARY_CATEGORIES : []))
+  const toggle = (c: string) => setOpen((s) => new Set(s.has(c) ? [...s].filter((x) => x !== c) : [...s, c]))
+
+  return (
+    <table className="w-full text-sm">
+      <thead className="text-left text-xs text-muted-foreground">
+        <tr className="border-y bg-muted/40">
+          {(changeId ? CHANGE_COLUMNS : COLUMNS).map((c) => (
+            <th key={c} className="px-3 py-2 font-normal first:pl-5">
+              {t(`library.col.${c}`)}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {grouped
+          ? LIBRARY_CATEGORIES.map((c) => {
+              const inGroup = rows.filter((r) => r.category === c)
+              if (inGroup.length === 0) return null
+              const withIssues = inGroup.filter((r) => r.issues.length > 0).length
+              const dueSoon = inGroup.filter((r) => r.dueSoon).length
+              const summary = [isQA && withIssues > 0 && t('library.group.issues', { count: withIssues }), dueSoon > 0 && t('library.group.dueSoon', { count: dueSoon })].filter(Boolean)
+              return [
+                <tr key={c} onClick={() => toggle(c)} className="cursor-pointer border-b hover:bg-muted/60">
+                  <td colSpan={COLUMNS.length} className="px-5 py-2">
+                    <button
+                      type="button"
+                      aria-expanded={open.has(c)}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        toggle(c)
+                      }}
+                      className="flex items-center gap-1.5 text-left"
+                    >
+                      {open.has(c) ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}
+                      <span className="font-medium">{t(`category.${c}`)}</span>
+                      <span className="text-muted-foreground">{t('library.count', { count: inGroup.length })}</span>
+                      {summary.length > 0 && <span className="ml-2 text-xs text-muted-foreground">{summary.join(' · ')}</span>}
+                    </button>
+                  </td>
+                </tr>,
+                ...(open.has(c) ? inGroup.map((r) => <Row key={`${r.version.key}`} row={r} isQA={isQA} changeId={null} />) : []),
+              ]
+            })
+          : rows.map((r) => <Row key={r.version.key} row={r} isQA={isQA} changeId={changeId} />)}
+      </tbody>
+    </table>
+  )
+}
+
+function Row({ row, isQA, changeId }: { row: LibraryRow; isQA: boolean; changeId: string | null }) {
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const obsolete = row.status === 'obsolete'
+  return (
+    <tr onClick={() => navigate(documentPath(row.version))} className={cn('cursor-pointer border-b hover:bg-muted/60', obsolete && 'text-muted-foreground')}>
+      <td className="py-2 pr-3 pl-5 font-mono text-xs whitespace-nowrap">
+        <Link to={documentPath(row.version)} onClick={(e) => e.stopPropagation()} className="hover:underline">
+          {row.code}
+        </Link>
+      </td>
+      <td className="px-3 py-2">{row.version.name}</td>
+      <td className="px-3 py-2 whitespace-nowrap">{t(`status.${row.status}`)}</td>
+      {changeId ? (
+        <>
+          <td className="px-3 py-2 whitespace-nowrap">{row.category ? t(`category.${row.category}`) : '—'}</td>
+          <td className="px-3 py-2 whitespace-nowrap">{row.department}</td>
+          <td className="px-3 py-2">
+            <RoleInChange row={row} changeId={changeId} />
+          </td>
+        </>
+      ) : (
+        <>
+          <td className="px-3 py-2">{row.version.version}</td>
+          <td className="px-3 py-2 whitespace-nowrap">{row.effectiveDate ?? '—'}</td>
+          <td className="px-3 py-2 whitespace-nowrap">{row.department}</td>
+          <td className="px-3 py-2">{row.citedBy ?? '—'}</td>
+          <td className="px-3 py-2">
+            <Marks row={row} isQA={isQA} />
+          </td>
+        </>
+      )}
+    </tr>
+  )
+}
+
+/** With a change filter, the last column says what the file is in that change (02 画面 3). */
+function RoleInChange({ row, changeId }: { row: LibraryRow; changeId: string }) {
+  const { t } = useTranslation()
+  const entry = row.inChanges.find((c) => c.view.record.id === changeId)
+  if (!entry) return null
+  const { view, role } = entry
+  const text =
+    role === 'draft'
+      ? t('library.role.draft', { version: view.newVersion.version })
+      : role === 'source'
+        ? t('library.role.source', { version: view.newVersion.version })
+        : (reportRoleText(t, view, row.version.key) ?? t('library.role.pending'))
+  // Also on another change's report (01 画面 3: 「未确认 · 也在 BG-2026-021 里」).
+  const others = row.inChanges.filter((c) => c.view.record.id !== changeId).map((c) => t('library.role.alsoIn', { no: changeNumber(t, c.view.record) }))
+  return <span className="text-xs">{[text, ...others].join(' · ')}</span>
+}
+
+function Marks({ row, isQA }: { row: LibraryRow; isQA: boolean }) {
+  const { t } = useTranslation()
+  const s = row.supersession
+  if (s) {
+    const replaced = s.replacedBy ? t('library.mark.replacedBy', { code: s.replacedBy }) : s.newerVersion ? t('library.mark.replacedByVersion', { version: s.newerVersion }) : null
+    const parts = s.hasOriginal ? [replaced, t('library.mark.originalStillThere')] : [t('library.mark.ledgerOnly'), replaced]
+    return <span className="text-xs">{parts.filter(Boolean).join(' · ')}</span>
+  }
+  const draft = row.inChanges.find((c) => c.role === 'draft')
+  return (
+    <span className="flex flex-wrap gap-1">
+      {draft && <span className="text-xs">{t('library.mark.draftOf', { no: changeNumber(t, draft.view.record) })}</span>}
+      {isQA && [...new Set(row.issues.flatMap(reasonsOf))].map((k) => <Tag key={k}>{t(`issue.${k}`)}</Tag>)}
+      {row.dueSoon && <Tag tone="muted">{t('library.mark.dueSoon', { date: shortDate(row.dueSoon) })}</Tag>}
+    </span>
+  )
+}

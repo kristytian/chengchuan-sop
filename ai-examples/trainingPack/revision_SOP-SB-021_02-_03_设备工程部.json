@@ -1,0 +1,77 @@
+{
+  "task": "trainingPack",
+  "subject": "revision:SOP-SB-021:02->03|设备工程部",
+  "inputVersions": [
+    "samples/02 操作规程/SOP-SB-021-02 乳化均质机（RH-300）使用、维护保养标准操作规程.docx",
+    "scenario-inputs/SOP-SB-021-03 乳化均质机（RH-500）使用、维护保养标准操作规程.docx"
+  ],
+  "inputHash": "6e5d0c96b18e61a7",
+  "promptVersion": "training-v1",
+  "model": "none · hand-written example",
+  "servedBy": "none · hand-written example",
+  "mode": "example",
+  "runAt": "2026-11-10T00:00:00.000Z",
+  "output": {
+    "summary": "乳化均质机由 RH-300（SB-RH-01）换为 RH-500（SB-RH-02）：底置式均质头（0–3600 rpm），主锅顶部 2 个 CIP 喷淋球，触摸屏按配方自动分段升速。维护保养的变化：每周改为检查 CIP 喷淋球是否堵塞、补充真空泵油；均质头机械密封改为每 500 运行小时更换；原来每月检查皮带张紧度和电机温升的一项取消；每年校准增加流量计。异常时操作人员按急停、挂“待修”标识后通知设备工程部。",
+    "questions": [
+      {
+        "clause": "4.5",
+        "type": "single",
+        "stem": "RH-500 每周的维护保养项目是？",
+        "options": [
+          "检查均质头机械密封，补充真空泵油",
+          "检查 CIP 喷淋球是否堵塞，补充真空泵油",
+          "检查皮带张紧度和电机温升"
+        ],
+        "answer": 1
+      },
+      {
+        "clause": "4.5",
+        "type": "single",
+        "stem": "均质头机械密封多久更换一次？",
+        "options": [
+          "每周",
+          "每 500 运行小时",
+          "每年"
+        ],
+        "answer": 1
+      },
+      {
+        "clause": "4.5",
+        "type": "single",
+        "stem": "每年需要校准哪些仪表？",
+        "options": [
+          "压力表、温度表",
+          "压力表、温度表、流量计",
+          "只校准流量计"
+        ],
+        "answer": 1
+      },
+      {
+        "clause": "4.5",
+        "type": "judge",
+        "stem": "RH-500 仍需每月检查皮带张紧度和电机温升。",
+        "options": [],
+        "answer": false
+      },
+      {
+        "clause": "4.1",
+        "type": "single",
+        "stem": "RH-500 的均质头是哪种形式，转速范围是多少？",
+        "options": [
+          "顶置式，0–3000 rpm",
+          "底置式，0–3600 rpm",
+          "底置式，0–3000 rpm"
+        ],
+        "answer": 1
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheReadTokens": 0,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": null
+}

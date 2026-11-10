@@ -1,0 +1,29 @@
+{
+  "task": "impactAnalysis",
+  "subject": "revision:SOP-SB-021:02->03|SOP-SC-035@00",
+  "inputVersions": [
+    "samples/02 操作规程/SOP-SB-021-02 乳化均质机（RH-300）使用、维护保养标准操作规程.docx",
+    "scenario-inputs/SOP-SB-021-03 乳化均质机（RH-500）使用、维护保养标准操作规程.docx",
+    "samples/02 操作规程/SOP-SC-035-00 配制岗位标准操作规程.docx"
+  ],
+  "inputHash": "c36d9b912c6b5f06",
+  "promptVersion": "impact-v1",
+  "model": "none · hand-written example",
+  "servedBy": "none · hand-written example",
+  "mode": "example",
+  "runAt": "2026-11-08T00:00:00.000Z",
+  "output": {
+    "tier": "inform",
+    "cannotDetermine": false,
+    "confidence": 0.9,
+    "clauses": [],
+    "reason": "没有引用 SOP-SB-021，只在 §4.4、§5 引用清单里的 SOP-SC-031；本身不写设备和参数，不受这次换型影响。"
+  },
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheReadTokens": 0,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": null
+}

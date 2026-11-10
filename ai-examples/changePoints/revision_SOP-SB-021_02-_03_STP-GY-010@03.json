@@ -1,0 +1,55 @@
+{
+  "task": "changePoints",
+  "subject": "revision:SOP-SB-021:02->03|STP-GY-010@03",
+  "inputVersions": [
+    "samples/02 操作规程/SOP-SB-021-02 乳化均质机（RH-300）使用、维护保养标准操作规程.docx",
+    "scenario-inputs/SOP-SB-021-03 乳化均质机（RH-500）使用、维护保养标准操作规程.docx",
+    "samples/03 质量标准与工艺规程/STP-GY-010-03 尿素乳膏工艺规程.docx"
+  ],
+  "inputHash": "691c21b83757e09f",
+  "promptVersion": "points-v1",
+  "model": "none · hand-written example",
+  "servedBy": "none · hand-written example",
+  "mode": "example",
+  "runAt": "2026-11-08T00:00:00.000Z",
+  "output": {
+    "annotations": [
+      {
+        "clause": "4.4",
+        "conclusion": "change",
+        "points": [
+          {
+            "text": "均质转速 2500–3000 → 2800–3400 rpm",
+            "from": "2500–3000 rpm",
+            "to": "2800–3400 rpm",
+            "source": [
+              "4.3.3"
+            ]
+          },
+          {
+            "text": "真空度 −0.06 至 −0.08 → −0.07 至 −0.09 MPa",
+            "from": "−0.06 至 −0.08 MPa",
+            "to": "−0.07 至 −0.09 MPa",
+            "source": [
+              "4.3.4"
+            ]
+          }
+        ],
+        "note": "均质时间：源头没改，不动。"
+      },
+      {
+        "clause": "5",
+        "conclusion": "noChange",
+        "points": [],
+        "note": ""
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheReadTokens": 0,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": null
+}

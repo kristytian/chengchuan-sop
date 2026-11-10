@@ -1,0 +1,57 @@
+{
+  "task": "revisionDraft",
+  "subject": "revision:SOP-SB-021:02->03|SOR-SC-041-R01@01",
+  "inputVersions": [
+    "samples/02 操作规程/SOP-SB-021-02 乳化均质机（RH-300）使用、维护保养标准操作规程.docx",
+    "scenario-inputs/SOP-SB-021-03 乳化均质机（RH-500）使用、维护保养标准操作规程.docx",
+    "samples/04 记录模板/SOR-SC-041-R01 乳化均质机清洁记录.docx"
+  ],
+  "inputHash": "8ab8478f6cd803f4",
+  "promptVersion": "revision-v2",
+  "model": "none · hand-written example",
+  "servedBy": "none · hand-written example",
+  "mode": "example",
+  "runAt": "2026-11-09T00:00:00.000Z",
+  "output": {
+    "summary": [
+      {
+        "text": "拆卸一栏改为拆底部出料阀阀芯、取样阀，底置均质头不拆",
+        "at": "body",
+        "near": "拆"
+      },
+      {
+        "text": "清洁剂清洗一栏加上经 CIP 喷淋球喷淋",
+        "at": "body",
+        "near": "CIP"
+      },
+      {
+        "text": "对应文件改为 SOP-SC-041-02",
+        "at": "header"
+      }
+    ],
+    "rewrites": [
+      {
+        "clause": "body",
+        "block": 1,
+        "row": 1,
+        "cell": 1,
+        "text": "拆下底部出料阀阀芯、取样阀；底置均质头不拆卸"
+      },
+      {
+        "clause": "body",
+        "block": 1,
+        "row": 3,
+        "cell": 1,
+        "text": "0.5% 清洁剂约 80 L 经 CIP 喷淋球喷淋，均质 1500 rpm 循环 10 分钟"
+      }
+    ],
+    "history": null
+  },
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheReadTokens": 0,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": null
+}

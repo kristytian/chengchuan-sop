@@ -1,0 +1,37 @@
+{
+  "task": "revisionDraft",
+  "subject": "revision:SOP-SB-021:02->03|SOR-SB-021-R01@02",
+  "inputVersions": [
+    "samples/02 操作规程/SOP-SB-021-02 乳化均质机（RH-300）使用、维护保养标准操作规程.docx",
+    "scenario-inputs/SOP-SB-021-03 乳化均质机（RH-500）使用、维护保养标准操作规程.docx",
+    "samples/04 记录模板/SOR-SB-021-R01 乳化均质机使用日志.docx"
+  ],
+  "inputHash": "b9a659fb79d26086",
+  "promptVersion": "revision-v2",
+  "model": "none · hand-written example",
+  "servedBy": "none · hand-written example",
+  "mode": "example",
+  "runAt": "2026-11-09T00:00:00.000Z",
+  "output": {
+    "summary": [
+      {
+        "text": "表头设备改为 RH-500 型真空乳化均质机，设备编号 SB-RH-02",
+        "at": "body",
+        "near": "RH"
+      },
+      {
+        "text": "对应文件改为 SOP-SB-021-03",
+        "at": "header"
+      }
+    ],
+    "rewrites": [],
+    "history": null
+  },
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheReadTokens": 0,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": null
+}

@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>和 Claude 一起把四个模块做完：协作指南</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm 18mm 16mm; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; color: #1f2328; font-size: 10.5pt; line-height: 1.65; margin: 0; }
+  h1 { font-size: 24pt; line-height: 1.25; margin: 0 0 4pt; }
+  h2 { font-size: 15pt; margin: 22pt 0 6pt; padding-bottom: 4pt; border-bottom: 2px solid #1f2328; break-after: avoid; }
+  h3 { font-size: 11.5pt; margin: 14pt 0 4pt; break-after: avoid; }
+  p { margin: 5pt 0; }
+  .sub { color: #57606a; font-size: 11pt; margin-bottom: 14pt; }
+  .meta { color: #57606a; font-size: 9pt; margin-bottom: 16pt; }
+  .three { display: flex; gap: 8pt; margin: 10pt 0; }
+  .three > div { flex: 1; border: 1.2px solid #1f2328; border-radius: 6px; padding: 8pt 10pt; }
+  .three b { display: block; font-size: 11.5pt; margin-bottom: 2pt; }
+  table { width: 100%; border-collapse: collapse; margin: 8pt 0; font-size: 9.6pt; break-inside: auto; }
+  th, td { border: 1px solid #c9ced4; padding: 5pt 7pt; vertical-align: top; text-align: left; }
+  th { background: #f0f2f4; }
+  tr { break-inside: avoid; }
+  .tag { display: inline-block; font-size: 8.5pt; padding: 0 6pt; border-radius: 9px; border: 1px solid #8c959f; color: #57606a; white-space: nowrap; }
+  .done { background: #dff5e1; border-color: #7bc58a; color: #1a5c2a; }
+  .todo { background: #fff3d6; border-color: #e0b84d; color: #7a5a00; }
+  .now { background: #1f2328; border-color: #1f2328; color: #fff; }
+  .prompt { background: #f6f8fa; border: 1px solid #c9ced4; border-left: 4px solid #1f2328; border-radius: 4px; padding: 7pt 10pt; margin: 6pt 0 10pt; font-size: 9.8pt; break-inside: avoid; white-space: pre-wrap; }
+  .note { background: #fff8e6; border: 1px solid #ecd48a; border-radius: 4px; padding: 6pt 10pt; margin: 8pt 0; break-inside: avoid; }
+  ul { margin: 4pt 0 4pt 16pt; padding: 0; }
+  li { margin: 2pt 0; }
+  .step { break-inside: avoid; margin: 10pt 0; padding: 8pt 10pt; border: 1px solid #c9ced4; border-radius: 6px; }
+  .step h3 { margin: 0 0 3pt; }
+  .step .k { color: #57606a; font-size: 9pt; }
+  svg { display: block; margin: 8pt auto; }
+  .pb { break-before: page; }
+</style>
+</head>
+<body>
+
+<h1>和 Claude 一起把四个模块做完</h1>
+<div class="sub">协作指南：怎么分工、怎么发散再收敛、每一步该怎么给我下指令</div>
+<div class="meta">澄川制药 · SOP 变更闭环原型　|　2026-11-03　|　依据：docs/ 下的产品定义、数据模型、样本库清单，以及目前已做完的数据层</div>
+
+<h2>0. 先说结论</h2>
+<div class="three">
+  <div><b>你拍板，我提方案</b>你判断「这对 QA 有没有用」、定审美和取舍；我读资料、给出多个方向、动手做、检查遗漏。</div>
+  <div><b>每一轮只做一件事</b>发散 → 收敛 → 做 → 看 → 调。一轮对应一个模块或一个页面，不要一次要「整套」。</div>
+  <div><b>定下来的写进文件</b>每个决定记进 design/decisions.md。聊天会被压缩，文件不会，下次接着做不用重讲。</div>
+</div>
+<p>到目前为止，后台已经做完：样本导入、文件组、引用关系、13 条待确认问题、影响清单的计算。<b>四个模块的界面还都是空壳。</b>接下来的工作，重点是界面和交互，也就是产品定义里要求的「一条主流程、关键状态、一段可交互原型」。</p>
+
+<h2>1. 我们现在在双钻的哪一步</h2>
+<svg width="640" height="150" viewBox="0 0 640 150" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, PingFang SC, sans-serif">
+  <polygon points="10,75 100,20 190,75 100,130" fill="#dff5e1" stroke="#1f2328"/>
+  <polygon points="190,75 280,30 370,75 280,120" fill="#dff5e1" stroke="#1f2328"/>
+  <polygon points="330,75 420,20 510,75 420,130" fill="#fff3d6" stroke="#1f2328"/>
+  <polygon points="510,75 590,35 630,75 590,115" fill="#f0f2f4" stroke="#1f2328"/>
+  <text x="100" y="78" text-anchor="middle" font-size="13">发现</text>
+  <text x="280" y="78" text-anchor="middle" font-size="13">定义</text>
+  <text x="420" y="78" text-anchor="middle" font-size="13">发展（发散）</text>
+  <text x="575" y="78" text-anchor="middle" font-size="12">交付·验证</text>
+  <polygon points="420,8 413,0 427,0" fill="#1f2328"/>
+  <text x="420" y="145" text-anchor="middle" font-size="12" font-weight="bold">▲ 我们在这里</text>
+  <text x="100" y="12" text-anchor="middle" font-size="10" fill="#57606a">第一颗钻：问题对不对</text>
+  <text x="560" y="12" text-anchor="middle" font-size="10" fill="#57606a">第二颗钻：方案对不对</text>
+</svg>
+<table>
+  <tr><th style="width:15%">阶段</th><th>已有的材料</th><th style="width:12%">状态</th></tr>
+  <tr><td>发现</td><td>两家厂 5 场访谈；三个断点：改不全、换不全、做不对，都有访谈证据</td><td><span class="tag done">已有</span></td></tr>
+  <tr><td>定义</td><td>5 个角色；定位「纯辅助，不替代 OA」；MVP 范围；明确不做的东西；AI 五条原则；成功标准</td><td><span class="tag done">已有</span></td></tr>
+  <tr><td>发展</td><td><b>缺：用户旅程、用户流程、页面清单、界面方向。</b>这是第二颗钻的发散，也是现在要做的</td><td><span class="tag now">现在</span></td></tr>
+  <tr><td>交付</td><td>把定下来的方向做成可点的界面（后台数据已就绪）</td><td><span class="tag todo">之后</span></td></tr>
+  <tr><td>验证与迭代</td><td>可用性测试 → 记录缺陷 → 回改。测试观察点已在产品定义的「成功标准」里</td><td><span class="tag todo">之后</span></td></tr>
+</table>
+<p>产品范围（做哪些模块、不做什么）已经收敛，不用重新发散。我们发散的是<b>怎么让人用得顺手</b>，不是做什么。</p>
+
+<h2>2. 分工：谁做什么</h2>
+<table>
+  <tr><th style="width:14%"></th><th>具体事项</th></tr>
+  <tr><td><b>你</b></td><td>判断一个界面「对 QA 有没有用」；审美和取舍；你对访谈的记忆和细节；拍板；找真人做可用性测试</td></tr>
+  <tr><td><b>我</b></td><td>读资料并指出依据；给出多个方向并比较；画线框、做可点的页面；检查状态有没有遗漏；跑检查、截图对照；把决定写进文件</td></tr>
+  <tr><td><b>一起</b></td><td>旅程里每一步「这个人当时在想什么」；每个模块的流程；哪些方向留、哪些舍</td></tr>
+</table>
+<h3>我的几个倾向，你要提前知道</h3>
+<ul>
+  <li><b>容易太快收敛到常见做法。</b>所以发散时请明说「至少一个方案要和常见做法不一样」。</li>
+  <li><b>容易附和你。</b>想让我提反对意见，就说「先反驳，再决定同不同意」。</li>
+  <li><b>看不到你没给我的东西。</b>在线的「项目总控」、访谈原话、你脑子里的判断，我都看不到。涉及这些时，请贴给我或截图。</li>
+  <li><b>聊天太长会被压缩。</b>所以重要决定一定要落进 design/ 下的文件。</li>
+</ul>
+<div class="note">项目规则（CLAUDE.md）已经约定：动手前我先说计划；新增依赖、改数据结构、删文件，先等你确认；全程只用虚构的澄川制药。</div>
+
+<h2>3. 路线：七步，每步先发散再收敛</h2>
+<p>前三步都不写代码，产出是文档和线框；第五步开始才做界面。「几轮」只是粗略的估计，具体看你想聊多深。</p>
+
+<div class="step"><h3>第 1 步　用户旅程</h3>
+<div class="k">发散：把每个角色在场景一里的每一步摊开　|　收敛：选出最关键的时刻　|　约 2–3 轮</div>
+<p>产出：场景一的旅程图（谁在什么时候做什么、想什么、卡在哪、机会点）；场景二的简版。5 个角色：QA 文件管理员、起草人、部门持有人、QA 负责人、培训对象。</p>
+<p>要找的是「关键时刻」，例如：QA 面对 196 条引用，凭什么敢点「确认」？起草人拿到清单，凭什么信「必须改」这一档？这些时刻决定界面该花力气的地方。</p></div>
+
+<div class="step"><h3>第 2 步　功能与用户流程</h3>
+<div class="k">发散：每个模块可能有的功能　|　收敛：MVP 里留哪些　|　约 3–4 轮（每模块一轮）</div>
+<p>产出：每个模块的主流程图，加上关键状态：空状态、AI 低置信、「找不到」、被驳回。再加一份页面清单（共有哪些屏、各自要回答用户什么问题）。</p></div>
+
+<div class="step"><h3>第 3 步　界面方向（线框）</h3>
+<div class="k">发散：每个关键页面 3 个方向的线框　|　收敛：选定　|　每模块约 2 轮</div>
+<p>我会用灰度的简单页面当线框，直接在浏览器里看，不是画图。必须在 1366×768 下可用，这是项目的硬约束。</p></div>
+
+<div class="step"><h3>第 4 步　收敛：整体框架和视觉基调</h3>
+<div class="k">约 1–2 轮</div>
+<p>定跨模块的导航、「当前变更」怎么贯穿四个模块、色彩与信息密度、共用组件（状态标签、文件编号、条款查看器）。字体用系统字体，不加载外部资源。</p></div>
+
+<div class="step"><h3>第 5 步　做</h3>
+<div class="k">每个模块 2–4 轮</div>
+<p>先共用层：交互状态存在浏览器里，加「重置演示」按钮；再按顺序做：<b>依赖图 → 影响清单 → 换版追踪 → 培训包</b>。每个模块都做完三样：主流程、关键状态、可点的原型。</p></div>
+
+<div class="step"><h3>第 6 步　整体走查与打磨</h3>
+<div class="k">约 2 轮</div>
+<p>按场景一、场景二从头点一遍，检查衔接、文案、空状态。这一步修掉你自己能发现的问题，留给真人测试的才是真问题。</p></div>
+
+<div class="step"><h3>第 7 步　用户测试与修改</h3>
+<div class="k">需要你找人；之后若干轮</div>
+<p>我帮你写测试脚本和任务（观察点来自产品定义：起草人能不能找全 9 份、QA 能不能一眼看出哪个部门没换、愿不愿意把清单附进变更控制单），帮你整理记录、排优先级、改界面。<b>测试结果我不会替你编。</b></p></div>
+
+<h2>4. 现在就可以发散的问题</h2>
+<p>这些是我从现有资料里看出的分歧点。每一条都有至少两种明显不同的做法，值得第 3 步时各出一版线框比一比。</p>
+<table>
+  <tr><th style="width:15%">模块</th><th>可以发散的问题</th></tr>
+  <tr><td>依赖图</td><td>
+    <ul>
+      <li>主视图是<b>关系图</b>、<b>文件×文件矩阵</b>，还是<b>列表 + 侧栏</b>？35 份文件、196 条引用，图可能很乱</li>
+      <li>确认引用是<b>收件箱式</b>逐条处理，还是<b>在图上直接点</b>？</li>
+      <li>低置信和「找不到」怎么长得不一样？13 条待确认问题放独立页还是抽屉？</li>
+    </ul></td></tr>
+  <tr><td>变更影响清单</td><td>
+    <ul>
+      <li>新旧版差异和受影响文件，是<b>左右并排</b>、<b>上下分区</b>，还是<b>清单为主、点开才看差异</b>？</li>
+      <li>分档怎么操作：表格里下拉、看板拖拽，还是三栏分组？</li>
+      <li>导出给变更控制单的那一版，长什么样？导出后「不再变」怎么让人感觉到？</li>
+    </ul></td></tr>
+  <tr><td>换版追踪</td><td>
+    <ul>
+      <li>部门×文件看板是<b>热力矩阵</b>，还是<b>任务列表</b>，还是<b>按班组的卡片</b>？</li>
+      <li>「旧版还没交回」的红格怎么突出才既醒目又不吓人？</li>
+      <li>签收单核销这一步放在看板里，还是单独一页？</li>
+    </ul></td></tr>
+  <tr><td>换版培训包</td><td>
+    <ul>
+      <li>摘要和题目的编辑界面，是否要和<b>条款原文并排</b>，让溯源一眼可见？</li>
+      <li>题目是卡片还是表格？「无法出确定答案」的条款怎么单独标出？</li>
+    </ul></td></tr>
+  <tr><td>跨模块</td><td>
+    <ul>
+      <li>导航是<b>侧栏</b>，还是<b>按场景步骤的横向流程条</b>（更贴近「闭环」）？</li>
+      <li>一个贯穿四个模块的「当前变更」状态条要不要？放哪？</li>
+      <li>QA 才能看到的内容（待确认清单），怎么让人明白「这只有你看得到」？</li>
+    </ul></td></tr>
+</table>
+
+<h2>5. Prompt 模板（可直接复制，把【】换成你的内容）</h2>
+
+<h3>A. 开启一步（对齐）</h3>
+<div class="prompt">我们开始【第 N 步：xxx】。
+请先读【docs/product-definition.md 的哪一节 / design/ 下的哪个文件】。
+先不要动手，用不超过 10 行告诉我：你理解的目标是什么、这一步的产出是什么、你还缺哪些信息要我补。</div>
+
+<h3>B. 发散</h3>
+<div class="prompt">现在做【模块 / 页面】。使用者是【角色】，这一刻他要做的决定是【……】。
+请给我 3 个方向明显不同的方案，其中至少一个和常见做法不一样。
+每个说明：核心思路、适合什么情况、牺牲了什么、在 1366×768 下会遇到什么麻烦。
+先用文字和简单线框，不要写正式代码，也不要先推荐——最后再说你的倾向和理由。</div>
+
+<h3>C. 收敛</h3>
+<div class="prompt">我选方案【B】，但想把【A 里的 xxx】借过来，【C 的 xxx】不要。
+先反驳我：这样组合会有什么问题？
+然后列出还没定的问题，写进 design/decisions.md（日期 + 决定 + 理由 + 放弃了什么）。</div>
+
+<h3>D. 动手做</h3>
+<div class="prompt">按 decisions.md 里【某一条】的定稿，把【页面】做成可点的页面。
+数据用现成的（已经算好的文件、引用和问题），状态要覆盖：空状态、AI 低置信、找不到、被驳回。
+先说计划，我确认后再做。做完在 1366×768 下截图，并列出和定稿不一致的地方。</div>
+
+<h3>E. 走查（让我扮演用户找碴）</h3>
+<div class="prompt">站在【QA 文件管理员】的角度，把场景一从【导入】点到【可关闭】走一遍。
+每一步说：他想做什么、屏幕上有没有给他线索、哪里会卡住、哪里让他不敢点。
+最后按严重程度列出 5 个最该改的问题。</div>
+
+<h3>F. 纠偏（我做偏了）</h3>
+<div class="prompt">停。你刚才做的和我要的不一样：我要的是【……】，你做成了【……】（附截图，圈出位置）。
+请先说你为什么这么理解，再回到【上一个定稿】的状态重来，只改我指出的这一处。</div>
+
+<h3>G. 收尾</h3>
+<div class="prompt">这一块做完了。请：1）跑 npm run check；2）把本轮的决定补进 decisions.md；
+3）更新 design/ 下对应的文件；4）告诉我哪些事情还没验证；然后等我确认再提交。</div>
+
+<h2>6. 让合作更顺的几个习惯</h2>
+<ul>
+  <li><b>一条消息一件事。</b>「把依赖图和影响清单都做了」会比分两条做得差。</li>
+  <li><b>告诉我依据在哪。</b>「按 docs/product-definition.md 的成功标准」比「按我们说的」更不容易跑偏。</li>
+  <li><b>想讨论就明说「先不要动手」。</b>我默认会倾向于动手做。</li>
+  <li><b>不满意要说具体哪里、为什么。</b>「不对」比「间距太挤，QA 要同时看 5 项」难改得多。截图圈出来最好。</li>
+  <li><b>看不懂我在干嘛，直接打断。</b>说「用一句人话讲」。</li>
+  <li><b>别逼我马上选。</b>发散阶段让我多给方向；要比较时再让我收。</li>
+  <li><b>每完成一块就提交。</b>方便你回头对比，也方便退回。</li>
+  <li><b>涉及花钱的事我会先问。</b>比如调用 AI 预跑要 API 密钥、要付费；这些现在都不影响界面，可以放到做培训包时再决定。</li>
+</ul>
+
+<div style="break-inside: avoid">
+<h2>7. 第一轮可以这样开始</h2>
+<p>直接把下面这段发给我，就是「第 1 步：用户旅程」的开场：</p>
+<div class="prompt">我们开始第 1 步：用户旅程。
+请读 docs/product-definition.md 的「用户与角色」「核心场景」，以及 docs/data-model.md 的「场景一的落点」。
+先不要动手，也不要出完整的旅程图。先给我 2 种组织旅程图的方式（比如按角色分行，还是按场景步骤分行），说明各自适合讲什么故事，再告诉我你推荐哪一种、为什么。
+最后列出你认为旅程里最关键的 3–5 个「时刻」，我来判断对不对。</div>
+</div>
+<p>这一轮聊完，我会把结论写进 <b>design/journey-scenario1.md</b> 和 <b>design/decisions.md</b>。</p>
+
+<div class="note"><b>还没定、请你想一想：</b>作品集的读者是谁（招聘方、设计同行，还是药企从业者）？这会影响旅程图和界面要强调的东西。不用现在回答，第 1 步里我会再问你。</div>
+
+</body>
+</html>

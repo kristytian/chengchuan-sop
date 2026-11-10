@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>依赖图 · 线框第一轮：三个方向</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #eceef0; font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; color: #222; font-size: 14px; line-height: 1.65; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 24px 16px 40px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  h2 { font-size: 16px; margin: 26px 0 8px; padding-bottom: 4px; border-bottom: 2px solid #222; }
+  .muted { color: #666; }
+  .cards { display: flex; gap: 12px; margin: 12px 0; }
+  .card { flex: 1; background: #fff; border: 1px solid #aaa; border-radius: 8px; padding: 12px 14px; }
+  .card b { font-size: 15px; }
+  .card a { display: inline-block; margin-top: 8px; color: #111; font-weight: 600; }
+  table { border-collapse: collapse; width: 100%; background: #fff; font-size: 13.5px; }
+  th, td { border: 1px solid #b9bdc1; padding: 8px 10px; vertical-align: top; text-align: left; }
+  th { background: #e1e3e5; }
+  td:first-child { font-weight: 600; width: 13%; }
+  .box { background: #fff; border: 1.5px solid #222; border-radius: 8px; padding: 12px 16px; margin: 10px 0; }
+  ol, ul { margin: 6px 0 6px 20px; padding: 0; }
+  li { margin: 3px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>依赖图 · 线框第一轮：三个方向</h1>
+<p class="muted">第 3 步 · 2026-11-03。对象：依赖图模块的主工作台，也就是 QA 确认 196 条引用的地方（旅程时刻 1「凭什么敢点确认」）。灰度线框，尺寸 1366×768，内容取自真实样本，黄色便签是说明。导入进度、待确认清单、双向依赖 A/B 留到下一轮。</p>
+
+<div class="cards">
+  <div class="card"><b>方向 1 · 收件箱式</b><br>以「引用」为中心。左边是待处理的引用，按「可批量 / 需逐条看」、再按原因分组；右边看原文、做决定。<br><a href="dependency-graph-r1-inbox.html">打开 →</a>（2 个画面）</div>
+  <div class="card"><b>方向 2 · 按文件阅读</b><br>以「文件」为中心。打开一份 SOP，引用直接在原文句子里标出；右边处理选中的那条，并显示双向依赖。批量按文件来。<br><a href="dependency-graph-r1-document.html">打开 →</a>（1 个画面）</div>
+  <div class="card"><b>方向 3 · 关系图</b><br>以「关系」为中心。文件是节点，引用是连线，文件组用虚框圈起来；在图上点线确认。<br><a href="dependency-graph-r1-graph.html">打开 →</a>（1 个画面）</div>
+</div>
+
+<h2>对比</h2>
+<table>
+  <tr><th></th><th>方向 1 · 收件箱式</th><th>方向 2 · 按文件阅读</th><th>方向 3 · 关系图</th></tr>
+  <tr><td>核心思路</td><td>把引用当作一件件待办，按原因分组处理</td><td>像读文件一样，在原文里确认引用</td><td>把整个文件库画成一张关系网</td></tr>
+  <tr><td>适合</td><td>处理大量引用；同一类问题一起处理（例如同一个编号指向不明的 8 处）；批量 150 条很顺</td><td>判断一条引用对不对：前后整句话都在眼前，最能回答「凭什么敢确认」</td><td>看结构：文件组、设备、作废文件、库里没有的文件一目了然；作品集里很好看</td></tr>
+  <tr><td>牺牲了什么</td><td>上下文只有引用所在的那一条，看不到整份文件</td><td>一份一份地过比较慢；同一类问题分散在不同文件里，不好一起处理</td><td>作为干活的工具效率低：要找线、点线；文字信息只能放在侧栏</td></tr>
+  <tr><td>批量怎么做</td><td>一次通过 150 条，先抽查几条</td><td>按文件通过（例如 SOP-SC-031-02 的 5 条）</td><td>通过图里所有虚线</td></tr>
+  <tr><td>1366×768 下的麻烦</td><td>基本没有，两栏够用</td><td>三栏很挤（文件树、原文、侧栏），原文要滚动</td><td>聚焦一份文件的邻居时还能看；切到全部 35 份会很乱（见方向 3 右下角）</td></tr>
+  <tr><td>对应的决定</td><td>UX-04 批量规则</td><td>UX-06 B 版（侧栏）在这里自然出现</td><td>UX-08 关系图要不要做</td></tr>
+</table>
+
+<h2>我的倾向（最后再说，供你参考）</h2>
+<div class="box">
+<p><b>用方向 1 做主工作台，把方向 2 和方向 3 的长处借进来：</b></p>
+<ul>
+  <li><b>从方向 2 借「在原文里看」：</b>方向 1 右侧的原文框，可以展开成整份文件，引用在句子里高亮。这样既能按原因批量处理，又不丢上下文。</li>
+  <li><b>方向 3 不做工作台，改用在「单份文件的双向依赖」独立页（UX-06 的 A 版）：</b>只画一份文件和它的邻居，用来看结构、核对确认结果；不画全部 35 份。</li>
+  <li><b>理由：</b>QA 的主要任务是把 46 条逐条处理完、把 150 条放心地批量通过，方向 1 最贴合这个任务；但时刻 1 的核心是「看得到原文才敢确认」，这正是方向 2 的长处。</li>
+</ul>
+<p class="muted">这只是我的倾向，你完全可以选单独某一个，或者别的组合。</p>
+</div>
+
+<h2>请你判断</h2>
+<ol>
+  <li><b>选哪个方向，或者怎么组合？</b>可以说「选 2」，也可以说「1 为主，借 2 的什么、3 的什么」。</li>
+  <li><b>已作废文件里的引用要不要默认隐藏？</b>（SMP-WJ-001-03、SOP-SC-031-01 两份作废文件里也识别出了引用。线框里放了一个「只看现行文件」的开关，默认关。）</li>
+  <li><b>哪里看着不对、或者想再发散？</b>直接说哪个画面、哪个地方。</li>
+</ol>
+</div>
+</body>
+</html>

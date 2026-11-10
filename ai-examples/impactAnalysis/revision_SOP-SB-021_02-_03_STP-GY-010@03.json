@@ -1,0 +1,32 @@
+{
+  "task": "impactAnalysis",
+  "subject": "revision:SOP-SB-021:02->03|STP-GY-010@03",
+  "inputVersions": [
+    "samples/02 操作规程/SOP-SB-021-02 乳化均质机（RH-300）使用、维护保养标准操作规程.docx",
+    "scenario-inputs/SOP-SB-021-03 乳化均质机（RH-500）使用、维护保养标准操作规程.docx",
+    "samples/03 质量标准与工艺规程/STP-GY-010-03 尿素乳膏工艺规程.docx"
+  ],
+  "inputHash": "691c21b83757e09f",
+  "promptVersion": "impact-v1",
+  "model": "none · hand-written example",
+  "servedBy": "none · hand-written example",
+  "mode": "example",
+  "runAt": "2026-11-08T00:00:00.000Z",
+  "output": {
+    "tier": "mustChange",
+    "cannotDetermine": false,
+    "confidence": 0.85,
+    "clauses": [
+      "4.4",
+      "5"
+    ],
+    "reason": "源头 §1、§2 换了设备型号和编号，§4.3.3、§4.3.4 改了均质转速和真空度；本文件 §4.4 关键工艺参数表写着 RH-300（SB-RH-01）和这两项参数，要随之修改。§5 只写了编号 SOP-SB-021，不用改。"
+  },
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheReadTokens": 0,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": null
+}

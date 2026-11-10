@@ -1,0 +1,32 @@
+{
+  "task": "impactAnalysis",
+  "subject": "revision:SOP-SB-021:02->03|SOR-SB-021-R01@02",
+  "inputVersions": [
+    "samples/02 操作规程/SOP-SB-021-02 乳化均质机（RH-300）使用、维护保养标准操作规程.docx",
+    "scenario-inputs/SOP-SB-021-03 乳化均质机（RH-500）使用、维护保养标准操作规程.docx",
+    "samples/04 记录模板/SOR-SB-021-R01 乳化均质机使用日志.docx"
+  ],
+  "inputHash": "9cfa9f4e89e5e571",
+  "promptVersion": "impact-v1",
+  "model": "none · hand-written example",
+  "servedBy": "none · hand-written example",
+  "mode": "example",
+  "runAt": "2026-11-08T00:00:00.000Z",
+  "output": {
+    "tier": "mustChange",
+    "cannotDetermine": false,
+    "confidence": 0.95,
+    "clauses": [
+      "header",
+      "body"
+    ],
+    "reason": "和源头同组，换版时一起换。文头「对应文件」写明 SOP-SB-021-02，要改成 03；表头的设备型号、设备编号要换成 RH-500（SB-RH-02）。记录栏目（转速、时间、真空度）不用改。"
+  },
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheReadTokens": 0,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": null
+}

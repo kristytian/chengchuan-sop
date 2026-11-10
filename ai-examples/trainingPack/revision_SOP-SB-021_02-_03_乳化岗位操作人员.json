@@ -1,0 +1,99 @@
+{
+  "task": "trainingPack",
+  "subject": "revision:SOP-SB-021:02->03|乳化岗位操作人员",
+  "inputVersions": [
+    "samples/02 操作规程/SOP-SB-021-02 乳化均质机（RH-300）使用、维护保养标准操作规程.docx",
+    "scenario-inputs/SOP-SB-021-03 乳化均质机（RH-500）使用、维护保养标准操作规程.docx"
+  ],
+  "inputHash": "14f856ead1bf5cc7",
+  "promptVersion": "training-v1",
+  "model": "none · hand-written example",
+  "servedBy": "none · hand-written example",
+  "mode": "example",
+  "runAt": "2026-11-10T00:00:00.000Z",
+  "output": {
+    "summary": "乳化均质机由 RH-300（SB-RH-01）换为 RH-500（SB-RH-02）。操作上的变化：开机改为登录触摸屏、调用对应品种配方；刮壁搅拌转速改为 20–35 rpm；均质由配方自动分段升速到 2800–3400 rpm，不得手动越级调速；均质期间真空度改为 −0.07 至 −0.09 MPa；停机后先确认破真空完成，再打开底部出料阀出料。开机前多一项检查：底置均质头机械密封冷却水已开启，流量计读数 ≥ 2 L/min。每批检查改为均质头有无异响、机械密封冷却水是否正常；触摸屏报警、异响或超温时按急停。",
+    "questions": [
+      {
+        "clause": "4.2.2",
+        "type": "single",
+        "stem": "开机前检查底置均质头的机械密封冷却水，流量计读数应不低于多少？",
+        "options": [
+          "1 L/min",
+          "2 L/min",
+          "5 L/min"
+        ],
+        "answer": 1
+      },
+      {
+        "clause": "4.3.1",
+        "type": "single",
+        "stem": "合上总电源后，下一步应该做什么？",
+        "options": [
+          "面板自检完成后设定夹套温度",
+          "登录触摸屏，调用对应品种配方",
+          "直接启动均质"
+        ],
+        "answer": 1
+      },
+      {
+        "clause": "4.3.2",
+        "type": "single",
+        "stem": "投料后启动刮壁搅拌，转速范围是？",
+        "options": [
+          "20–40 rpm",
+          "20–35 rpm",
+          "0–50 rpm"
+        ],
+        "answer": 1
+      },
+      {
+        "clause": "4.3.3",
+        "type": "judge",
+        "stem": "均质由配方自动分段升速，操作人员可以手动越级调速以缩短时间。",
+        "options": [],
+        "answer": false
+      },
+      {
+        "clause": "4.3.4",
+        "type": "single",
+        "stem": "均质期间真空度应保持在？",
+        "options": [
+          "−0.06 至 −0.08 MPa",
+          "−0.07 至 −0.09 MPa",
+          "−0.095 MPa"
+        ],
+        "answer": 1
+      },
+      {
+        "clause": "4.5",
+        "type": "single",
+        "stem": "每批生产，操作人员要检查什么？",
+        "options": [
+          "均质头有无异响，机械密封冷却水是否正常",
+          "CIP 喷淋球是否堵塞",
+          "皮带张紧度和电机温升"
+        ],
+        "answer": 0
+      },
+      {
+        "clause": "4.6",
+        "type": "single",
+        "stem": "触摸屏报警或出现异响、超温时，应先怎么做？",
+        "options": [
+          "按急停，挂“待修”标识，通知设备工程部",
+          "降速后继续观察",
+          "直接断开总电源"
+        ],
+        "answer": 0
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheReadTokens": 0,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": null
+}

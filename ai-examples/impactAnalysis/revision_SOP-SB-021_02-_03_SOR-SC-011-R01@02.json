@@ -1,0 +1,32 @@
+{
+  "task": "impactAnalysis",
+  "subject": "revision:SOP-SB-021:02->03|SOR-SC-011-R01@02",
+  "inputVersions": [
+    "samples/02 操作规程/SOP-SB-021-02 乳化均质机（RH-300）使用、维护保养标准操作规程.docx",
+    "scenario-inputs/SOP-SB-021-03 乳化均质机（RH-500）使用、维护保养标准操作规程.docx",
+    "samples/04 记录模板/SOR-SC-011-R01 克霉唑乳膏批生产记录.docx"
+  ],
+  "inputHash": "af0fe83664ecd50d",
+  "promptVersion": "impact-v1",
+  "model": "none · hand-written example",
+  "servedBy": "none · hand-written example",
+  "mode": "example",
+  "runAt": "2026-11-08T00:00:00.000Z",
+  "output": {
+    "tier": "mustChange",
+    "cannotDetermine": false,
+    "confidence": 0.6,
+    "clauses": [
+      "header",
+      "body"
+    ],
+    "reason": "「四、乳化均质」写着设备 RH-300 / SB-RH-01，要换型号和编号。规定参数要看对应工艺规程 STP-GY-011-02，但库里找不到这份文件，转速、真空度要不要改没法判断。"
+  },
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheReadTokens": 0,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": null
+}

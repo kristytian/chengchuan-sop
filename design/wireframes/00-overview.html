@@ -1,0 +1,149 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><title>总览 · 结构和入口（最新）</title><style>
+* { box-sizing: border-box; }
+body { margin: 0; background: #d9dcdf; font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; color: #222; font-size: 13px; }
+.page-head { max-width: 1366px; margin: 0 auto; padding: 18px 4px 10px; }
+.page-head h1 { font-size: 20px; margin: 0 0 4px; } .page-head p { margin: 2px 0; color: #555; line-height: 1.6; }
+.frame-title { max-width: 1366px; margin: 18px auto 6px; font-weight: 600; color: #333; }
+.frame { width: 1366px; height: 768px; margin: 0 auto 8px; background: #fff; border: 1px solid #888; display: flex; overflow: hidden; position: relative; }
+.nav { width: 224px; background: #f1f2f3; border-right: 1px solid #c8cbce; padding: 14px 12px; flex-shrink: 0; }
+.nav .brand { font-weight: 700; font-size: 14px; } .nav .brand small { display: block; font-weight: 400; color: #777; font-size: 11px; }
+.nav .item { margin-top: 6px; padding: 7px 10px; border-radius: 6px; color: #555; } .nav .item.on { background: #dcdfe2; color: #111; font-weight: 600; }
+.main { flex: 1; display: flex; flex-direction: column; min-width: 0; position: relative; }
+.bar { height: 52px; border-bottom: 1px solid #c8cbce; display: flex; align-items: center; gap: 14px; padding: 0 16px; flex-shrink: 0; }
+.bar h2 { font-size: 16px; margin: 0; }
+.muted { color: #777; } .small { font-size: 11.5px; } .b { font-weight: 600; }
+.btn { display: inline-block; padding: 6px 12px; border: 1px solid #888; border-radius: 5px; background: #fff; } .btn.pri { background: #333; color: #fff; border-color: #333; }
+.chip { display: inline-block; padding: 0 6px; border: 1px solid #aaa; border-radius: 3px; background: #f4f5f6; font-size: 12px; }
+.tag { display: inline-block; padding: 0 6px; border-radius: 9px; border: 1px dashed #777; font-size: 10.5px; color: #444; margin-left: 4px; }
+.lock { display: inline-block; padding: 1px 8px; border-radius: 10px; background: #333; color: #fff; font-size: 11px; }
+.toggle { display: inline-block; border: 1px solid #999; border-radius: 12px; padding: 1px 8px; font-size: 11px; background: #fff; }
+.body { flex: 1; display: flex; min-height: 0; }
+.col { border-right: 1px solid #d5d8db; overflow: hidden; display: flex; flex-direction: column; } .col:last-child { border-right: 0; }
+.sec { padding: 7px 14px 4px; font-weight: 600; color: #444; font-size: 12px; background: #f6f7f8; border-bottom: 1px solid #e1e3e5; }
+.row { padding: 7px 14px; border-bottom: 1px solid #eceef0; line-height: 1.5; } .row.sel { background: #e4e6e8; border-left: 3px solid #333; padding-left: 11px; }
+.box { border: 1px solid #b9bdc1; border-radius: 6px; padding: 10px 12px; margin: 10px 14px; }
+.quote { background: #f6f7f8; border-left: 3px solid #999; padding: 6px 10px; line-height: 1.7; }
+mark { background: #cfd3d7; padding: 0 2px; border-radius: 2px; } mark.sel { background: #333; color: #fff; }
+.ud { border-bottom: 2px dashed #555; background: #eceef0; } .u { border-bottom: 2px solid #555; }
+.ann { position: absolute; background: #fffbe0; border: 1px solid #d6c66a; color: #5a4d00; font-size: 11.5px; line-height: 1.5; padding: 5px 8px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,.15); }
+.ann b { color: #3d3400; }
+.steps { display: flex; gap: 6px; align-items: center; } .step { padding: 4px 10px; border: 1px solid #b9bdc1; border-radius: 14px; font-size: 12px; } .step.on { background: #333; color: #fff; border-color: #333; } .step.done { background: #e4e6e8; }
+.cards { display: flex; gap: 12px; padding: 14px 16px 0; } .scard { flex: 1; border: 1px solid #b9bdc1; border-radius: 8px; padding: 10px 14px; } .scard .n { font-size: 26px; font-weight: 700; }
+.pbar { height: 10px; background: #eceef0; border-radius: 5px; overflow: hidden; } .pbar i { display: block; height: 100%; background: #555; }
+.stage { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid #eceef0; } .dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #555; flex-shrink: 0; margin-top: 2px; text-align: center; font-size: 11px; line-height: 14px; } .dot.ok { background: #555; color: #fff; } .dot.run { border-style: dashed; }
+table.cmp { border-collapse: collapse; width: 100%; background: #fff; font-size: 13px; } table.cmp th, table.cmp td { border: 1px solid #b9bdc1; padding: 8px 10px; vertical-align: top; text-align: left; line-height: 1.6; } table.cmp th { background: #eceef0; }
+.btn.dis { background: #d5d8db; border-color: #c0c4c8; color: #666; }
+.chg { display: inline-block; font-size: 10px; border: 1px solid #555; border-radius: 3px; padding: 0 3px; margin-right: 4px; line-height: 14px; vertical-align: 1px; }
+.st { display: inline-block; font-size: 11px; padding: 0 7px; border-radius: 9px; border: 1px solid #888; margin-left: 6px; }
+.st.ok { background: #e4e6e8; border-color: #c0c4c8; } .st.run { border-style: dashed; } .st.todo { background: #333; color: #fff; border-color: #333; }
+.grp { padding: 9px 14px; border-bottom: 1px solid #eceef0; line-height: 1.5; } .grp.sel { background: #e4e6e8; border-left: 3px solid #333; padding-left: 11px; }
+.wrap { max-width: 1366px; margin: 0 auto; padding: 0 4px 30px; } .wrap h2 { font-size: 16px; margin: 22px 0 8px; } .wrap .box2 { background: #fff; border: 1.5px solid #222; border-radius: 8px; padding: 10px 16px; line-height: 1.7; }
+
+.btn.dis { background: #d5d8db; border-color: #c0c4c8; color: #666; }
+.st { display: inline-block; white-space: nowrap; font-size: 11px; padding: 0 7px; border-radius: 9px; border: 1px solid #888; }
+.st.ok { background: #e4e6e8; border-color: #c0c4c8; } .st.todo { border-style: dashed; }
+.seg { display: inline-flex; border: 1px solid #888; border-radius: 6px; overflow: hidden; font-size: 12px; } .seg span { padding: 3px 10px; } .seg span.on { background: #333; color: #fff; }
+.strip { height: 36px; border-bottom: 1px solid #d5d8db; display: flex; align-items: center; gap: 18px; padding: 0 16px; font-size: 12px; background: #f6f7f8; flex-shrink: 0; }
+table.tbl { border-collapse: collapse; width: 100%; font-size: 12.5px; } table.tbl th { text-align: left; font-weight: 600; color: #555; background: #f6f7f8; padding: 6px 10px; border-bottom: 1px solid #d5d8db; font-size: 12px; }
+table.tbl td { padding: 6px 10px; border-bottom: 1px solid #eceef0; vertical-align: top; line-height: 1.45; } table.tbl tr.sel td { background: #e4e6e8; } table.tbl tr.sel td:first-child { box-shadow: inset 3px 0 0 #333; }
+.dd { display: inline-block; min-width: 76px; border: 1px solid #999; border-radius: 4px; padding: 1px 6px; background: #fff; font-size: 12px; } .dd.empty { color: #888; border-style: dashed; }
+.ai { border: 1px dashed #888; border-radius: 6px; padding: 7px 10px; background: #fafafa; }
+.me { border: 1.5px solid #333; border-radius: 6px; padding: 8px 10px; }
+s { color: #777; } .add { font-weight: 600; border-bottom: 2px solid #333; }
+.radio { display: inline-block; border: 1px solid #999; border-radius: 4px; padding: 3px 10px; margin-right: 4px; font-size: 12px; } .radio.on { background: #333; color: #fff; border-color: #333; }
+.kcol { flex: 1; background: #f1f2f3; border-radius: 8px; margin: 10px 5px; display: flex; flex-direction: column; min-width: 0; } .kcol h4 { margin: 0; padding: 8px 10px; font-size: 13px; }
+.card { background: #fff; border: 1px solid #b9bdc1; border-radius: 6px; margin: 0 8px 8px; padding: 7px 9px; font-size: 12px; line-height: 1.45; } .card.low { border-style: dashed; } .card.sel { border: 2px solid #333; }
+.drop { border: 1.5px dashed #999; border-radius: 6px; margin: 0 8px 8px; padding: 14px; text-align: center; color: #888; font-size: 12px; }
+.tier { display: block; border: 1px solid #888; border-radius: 6px; padding: 8px 12px; margin-bottom: 6px; } .tier.on { background: #333; color: #fff; border-color: #333; } .tier small { display: block; font-size: 11px; opacity: .75; }
+.ptab td { border: 1px solid #c8cbce; padding: 3px 8px; font-size: 12px; } .ptab { border-collapse: collapse; margin: 4px 0; }
+
+.snav { width: 180px; background: #f1f2f3; border-right: 1px solid #c8cbce; padding: 14px 10px; flex-shrink: 0; }
+.snav .item { margin-top: 4px; padding: 7px 10px; border-radius: 6px; color: #555; } .snav .item.on { background: #dcdfe2; color: #111; font-weight: 600; }
+.snav .sub { padding: 4px 10px 4px 22px; font-size: 12px; color: #555; } .snav .sub.on { color: #111; font-weight: 600; }
+.badge { display: inline-block; min-width: 18px; padding: 0 5px; border-radius: 9px; background: #333; color: #fff; font-size: 11px; text-align: center; margin-left: 4px; }
+.tbar { height: 48px; border-bottom: 1px solid #c8cbce; display: flex; align-items: center; gap: 18px; padding: 0 16px; background: #f1f2f3; flex-shrink: 0; }
+.tbar .tab { padding: 4px 10px; border-radius: 6px; color: #555; } .tbar .tab.on { background: #dcdfe2; color: #111; font-weight: 600; }
+.search { border: 1px solid #999; border-radius: 6px; padding: 4px 10px; color: #888; background: #fff; width: 300px; font-size: 12px; }
+.stabs { display: flex; border-bottom: 1px solid #c8cbce; flex-shrink: 0; } .stabs > div { flex: 1; padding: 6px 14px; border-right: 1px solid #e1e3e5; font-size: 12px; color: #666; }
+.stabs > div.on { background: #fff; color: #111; box-shadow: inset 0 -3px 0 #333; } .stabs b { display: block; font-size: 13px; color: inherit; }
+.loop { display: flex; align-items: stretch; gap: 0; padding: 8px 16px; border-bottom: 1px solid #c8cbce; flex-shrink: 0; }
+.loop .st2 { flex: 1; border: 1px solid #b9bdc1; padding: 5px 10px 5px 18px; font-size: 12px; color: #666; clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%, 12px 50%); background: #f6f7f8; margin-right: -6px; }
+.loop .st2:first-child { clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%); padding-left: 10px; }
+.loop .st2.done { background: #e4e6e8; } .loop .st2.on { background: #333; color: #fff; } .loop .st2 b { display: block; font-size: 13px; }
+.back { font-size: 12px; padding: 5px 10px; border: 1.5px dashed #555; border-radius: 6px; margin-left: 14px; display: flex; align-items: center; }
+.task { border: 1px solid #b9bdc1; border-radius: 6px; padding: 8px 12px; margin: 0 0 8px; font-size: 12.5px; line-height: 1.5; } .task .from { font-size: 11px; color: #666; }
+.mloop { display: flex; gap: 3px; margin-top: 4px; } .mloop span { flex: 1; height: 6px; background: #e1e3e5; border-radius: 3px; } .mloop span.done { background: #888; } .mloop span.on { background: #333; }
+table.map { border-collapse: collapse; width: 100%; background: #fff; font-size: 13px; } table.map th, table.map td { border: 1px solid #b9bdc1; padding: 6px 10px; text-align: left; vertical-align: top; line-height: 1.55; } table.map th { background: #eceef0; }
+.newp { display: inline-block; font-size: 11px; border: 1px dashed #555; border-radius: 3px; padding: 0 4px; }
+.menu { position: absolute; background: #fff; border: 1px solid #888; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,.2); padding: 4px 0; font-size: 12px; } .menu div { padding: 6px 12px; line-height: 1.5; }
+.flowline { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; background: #fff; border: 1.5px solid #222; border-radius: 8px; padding: 10px 14px; font-size: 13px; } .flowline span.s { border: 1px solid #888; border-radius: 6px; padding: 3px 8px; }
+
+.menu { position: absolute; background: #fff; border: 1px solid #888; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,.2); padding: 4px 0; font-size: 12px; }
+.fcol { width: 236px; border-right: 1px solid #d5d8db; overflow: hidden; flex-shrink: 0; }
+.fsec { padding: 5px 14px 2px; font-size: 11.5px; color: #666; font-weight: 600; }
+.frow { padding: 2px 14px; font-size: 12px; display: flex; } .frow span:last-child { margin-left: auto; color: #666; } .frow.on { background: #e4e6e8; font-weight: 600; box-shadow: inset 3px 0 0 #333; }
+.frow.off { color: #999; }
+
+.life { display: inline-flex; border: 1px solid #888; border-radius: 6px; overflow: hidden; font-size: 12.5px; } .life span { padding: 4px 12px; border-right: 1px solid #c8cbce; } .life span:last-child { border-right: 0; }
+.life span.on { background: #333; color: #fff; } .life span.zero { color: #aaa; }
+tr.grp td { background: #f1f2f3; font-weight: 600; font-size: 12.5px; } tr.grp.fold td { font-weight: 400; color: #444; }
+
+.cbx { margin-right: 6px; }
+.paperwrap { background: #e4e6e8; padding: 10px 12px; overflow: hidden; flex: 1; position: relative; }
+.paperwrap::after { content: ""; position: absolute; right: 2px; top: 6px; bottom: 6px; width: 6px; border-radius: 3px; background: #cfd2d5; }
+.paperwrap::before { content: ""; position: absolute; right: 2px; top: 6px; height: 32%; width: 6px; border-radius: 3px; background: #8a8f94; z-index: 1; }
+.paper { width: 540px; min-height: 780px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.25); padding: 12px 24px; font-family: "Songti SC", "STSong", "SimSun", serif; font-size: 12px; line-height: 1.68; color: #111; }
+.paper .ph { font-size: 10.5px; color: #555; text-align: center; border-bottom: 1px solid #888; padding-bottom: 2px; margin-bottom: 8px; }
+.paper table.dh { border-collapse: collapse; width: 100%; font-size: 11px; line-height: 1.45; margin-bottom: 6px; }
+.paper table.dh td { border: 1px solid #333; padding: 2px 6px; } .paper table.dh td.k { text-align: center; width: 15%; white-space: nowrap; }
+.paper .h1 { font-family: "Heiti SC", "STHeiti", "SimHei", sans-serif; font-weight: 600; margin-top: 3px; }
+.paper .cl { padding-left: 2.5em; text-indent: -2.5em; }
+.paper .ind { padding-left: 2em; }
+.paper .pf { font-size: 10px; color: #555; border-top: 1px solid #888; margin-top: 6px; padding-top: 2px; display: flex; justify-content: space-between; }
+.dochead { padding: 7px 14px; border-bottom: 1px solid #d5d8db; font-size: 12px; display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
+.st5 { display: inline-block; font-size: 11px; padding: 0 6px; border: 1px solid #999; border-radius: 3px; background: #f4f5f6; white-space: nowrap; }
+.st5.draft { border-style: dashed; background: #fff; } .st5.obs { color: #888; background: #fff; border-color: #c8cbce; }
+table.tbl.cmpt td { padding: 4px 10px; } table.tbl tr.obs td { color: #888; }
+table.tbl tr.g5 td { background: #f1f2f3; padding: 7px 10px; border-bottom: 1px solid #e1e3e5; } table.tbl tr.g5 .gn { font-weight: 600; display: inline-block; min-width: 168px; }
+table.tbl tr.g5 .gs { font-size: 12px; color: #444; }
+.act { display: flex; gap: 10px; align-items: center; margin-top: 7px; } .act .btn { min-width: 116px; text-align: center; } .act .small { flex: 1; }
+.lcol { flex: 1; min-width: 0; }
+.lsec { margin-top: 8px; padding: 3px 8px; background: #f1f2f3; border-radius: 4px; font-weight: 600; font-size: 12px; color: #444; }
+.lrow { padding: 5px 8px; border-bottom: 1px solid #eceef0; font-size: 12.5px; }
+.lrow .q { margin: 4px 0 2px; padding: 4px 8px; background: #f6f7f8; border-left: 3px solid #999; font-size: 12px; line-height: 1.6; }
+.hidden-note { margin-top: 6px; font-size: 11.5px; color: #555; }
+.cand { border: 1px solid #b9bdc1; border-radius: 6px; padding: 6px 10px; margin-top: 6px; font-size: 12.5px; }
+.how { background: #f6f7f8; border: 1px solid #d5d8db; border-radius: 6px; padding: 7px 10px; margin-top: 8px; font-size: 12px; line-height: 1.7; }
+.rk { font-size: 11px; color: #444; border: 1px solid #b9bdc1; border-radius: 3px; padding: 0 5px; background: #fff; white-space: nowrap; }
+
+.acct { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; padding: 2px 9px 2px 2px; border: 1px solid #c8cbce; border-radius: 16px; background: #fff; white-space: nowrap; }
+.av { width: 24px; height: 24px; border-radius: 12px; background: #555; color: #fff; font-size: 11px; display: inline-flex; align-items: center; justify-content: center; }
+.crumb { font-size: 13px; color: #555; white-space: nowrap; } .crumb .cur { font-size: 16px; font-weight: 600; color: #111; } .crumb u { color: #333; } .crumb .sl { color: #999; margin: 0 6px; }
+.hwrap { padding: 4px 18px; width: 880px; }
+.hsec { display: flex; align-items: baseline; gap: 10px; margin: 16px 0 6px; } .hsec .t { font-size: 14px; font-weight: 600; } .hsec .n { color: #666; font-size: 12px; }
+.setup { margin: 12px 18px 0; border: 1.5px solid #333; border-radius: 8px; padding: 12px 16px; background: #f6f7f8; width: 812px; }
+.setup .stps { display: flex; margin-top: 10px; }
+.setup .sp { flex: 1; border-top: 4px solid #d5d8db; padding-top: 6px; font-size: 12px; line-height: 1.55; margin-right: 10px; } .setup .sp:last-child { margin-right: 0; }
+.setup .sp.done { border-color: #999; } .setup .sp.on { border-color: #333; }
+.empty { color: #777; font-size: 12.5px; padding: 8px 12px; border: 1px dashed #c8cbce; border-radius: 6px; }
+table.chg { border-collapse: collapse; width: 100%; font-size: 12.5px; } table.chg th { text-align: left; font-weight: 600; color: #555; font-size: 12px; padding: 5px 10px; border-bottom: 1px solid #c8cbce; }
+table.chg td { padding: 8px 10px; border-bottom: 1px solid #e1e3e5; vertical-align: middle; }
+.tree { width: 214px; background: #f6f7f8; border-right: 1px solid #d5d8db; padding: 8px 0; flex-shrink: 0; overflow: hidden; font-size: 12.5px; }
+.tree .tg { padding: 7px 14px 4px; font-weight: 600; display: flex; } .tree .tg.on { background: #e4e6e8; box-shadow: inset 3px 0 0 #333; }
+.tree .ti { padding: 4px 14px 4px 28px; display: flex; color: #333; } .tree .ti.on { background: #e4e6e8; font-weight: 600; box-shadow: inset 3px 0 0 #333; }
+.tree .c { margin-left: auto; color: #777; font-weight: 400; } .tree .tsep { height: 1px; background: #d5d8db; margin: 8px 14px; }
+.fbar { display: flex; gap: 8px; align-items: center; padding: 7px 14px; border-bottom: 1px solid #e1e3e5; flex-shrink: 0; font-size: 12px; }
+.fdd { border: 1px solid #999; border-radius: 5px; padding: 2px 8px; background: #fff; white-space: nowrap; } .fdd.set { border-color: #333; background: #333; color: #fff; }
+.fchip { border: 1px solid #333; border-radius: 12px; padding: 1px 9px; background: #e4e6e8; white-space: nowrap; }
+.ccard { margin: 10px 14px 6px; border: 1px solid #b9bdc1; border-radius: 8px; padding: 9px 12px; display: flex; align-items: center; gap: 16px; font-size: 12.5px; flex-shrink: 0; }
+.phl { height: 8px; background: #e4e6e8; border-radius: 2px; margin: 9px 0; }
+.phbox { border: 1.5px dashed #999; border-radius: 6px; color: #666; font-family: -apple-system, "PingFang SC", sans-serif; font-size: 12px; text-align: center; padding: 10px; margin: 18px 30px; background: #fafafa; }
+.frm { display: grid; grid-template-columns: 120px 1fr; gap: 10px 14px; align-items: start; font-size: 12.5px; }
+.frm .k { color: #555; padding-top: 5px; text-align: right; }
+.inp { border: 1px solid #999; border-radius: 5px; padding: 5px 9px; background: #fff; line-height: 1.55; } .inp.ph { color: #999; }
+.dim { position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: rgba(0,0,0,.35); z-index: 4; }
+.modal { position: absolute; background: #fff; border: 1.5px solid #333; border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,.3); overflow: hidden; z-index: 5; }
+.menu, .ann { z-index: 6; }
+.radio { display: flex; gap: 8px; flex-direction: column; } .radio .o { border: 1px solid #b9bdc1; border-radius: 6px; padding: 6px 10px; line-height: 1.5; } .radio .o.on { border: 2px solid #333; padding: 5px 9px; background: #f6f7f8; }
+table.map th, table.map td { padding: 4px 10px; font-size: 12.5px; line-height: 1.45; }
+</style></head><body><div class="page-head"><h1>总览 · 结构和入口（最新）</h1><p>第 3 步 · 2026-11-05。按你 11-05 的意见重新整理（决定见 design/decisions.md 的 UX-43 到 UX-47）。线框分成四份：<b>00 总览</b>（这一份）、<a href="01-home.html">01 首页</a>、<a href="02-library.html">02 文件库</a>、<a href="03-change.html">03 变更</a>。每份只放最新的、方向已经定了的样子（方向 B），方向 A 和各轮的旧画面不再放进来。</p></div><div class="wrap" style="break-before:auto"><h2>结构：三个空间，一条闭环</h2><div class="flowline"><b>首页</b><span class="s">首次导入（一次性）</span><span class="s">待处理</span><span class="s">提醒</span><span class="s">正在进行的变更</span></div><div style="height:8px"></div><div class="flowline"><b>文件库</b><span class="s">本厂文件（按类别）</span><span class="s">外部标准（外来文件清单）</span><span class="s">一份文件：原件 + 引用关系</span></div><div style="height:8px"></div><div class="flowline"><b>变更</b><span class="s">概览</span><span class="s">影响评估</span><span class="s">修订</span><span class="s">换版追踪</span><span class="s">培训</span><span class="muted">5 个页签；新版生效后，系统读到新版本，回到文件库</span></div><p class="small muted" style="margin-top:8px">顶栏三项：首页、文件库、变更。变更里是 5 个页签，每一站都能点，只高亮当前这一页；「发起」是创建变更的动作，发起时的信息和收尾都在「概览」。影响评估只读、只定范围；修订里动手改；换版追踪和培训在新版批准到生效之间并行。</p><h2>全站约定</h2><ol style="line-height:1.85"><li><b>右上角是账号菜单，</b>没有「当前身份」切换。演示时在菜单里「切换演示账号」。只对 QA 的内容直接显示给 QA。</li><li><b>任务页、文件页用面包屑</b>（如「首页 / 核对引用」「文件库 / 操作规程 / SOP-SB-021-02」），不另放「← 返回」按钮。</li><li><b>状态写「站名 · 状态」，</b>如「影响评估 · 进行中 2 / 10」，不写由哪个角色在做：各厂由谁评估、谁修订不一样。</li><li><b>AI 的建议是小灰字</b>「AI：必须改」，不加框；人选的才是结论，两者一直分开。</li><li><b>药厂文件一律按原件显示：</b>页眉、文头表、条款编号、宋体和黑体；页宽 540px、A4 比例，通到底可以往下滚。改动用修订痕迹：删的划线、加的下划线、页边竖线。</li><li><b>界面上不出现「低置信」「直接」这类术语，</b>说成「只写了设备型号，要多看一眼」「引用了 SOP-SB-021」。</li><li><b>换版只认签收单：</b>签了才算交回，没签就是没交回；QA 照签回的单子登记，不做部门扫码。</li><li><b>一站只做一种事：</b>影响评估只定范围，原件只读；修订才动手改，而且要改就全部改完：每条「要改」都套用、自己改，或写理由不改。</li></ol></div><div class="wrap"><h2 style="break-after:avoid">入口地图</h2><table class="map" style="break-inside:auto"><tr><th style="width:3%">#</th><th style="width:20%">从</th><th style="width:24%">到</th><th>入口长什么样</th><th style="width:16%">画在哪</th></tr><tr><td>1</td><td>首页 · 首次导入</td><td>核对引用</td><td>「开始核对 →」</td><td>首页 1、4</td></tr><tr><td>2</td><td>首页 · 待处理</td><td>问题</td><td>「去处理 →」</td><td>首页 2、7</td></tr><tr><td>3</td><td>首页 · 待处理</td><td>变更里轮到我的一步</td><td>「去复核 →」「继续 →」</td><td>首页 2、3</td></tr><tr><td>4</td><td>首页 · 正在进行的变更</td><td>这个变更的概览</td><td>点一行</td><td>首页 2，变更 4</td></tr><tr><td>5</td><td>核对引用 · 逐条核对</td><td>变更 · 发起（修订）</td><td>「发起变更」，原因预填，回来接着看下一条</td><td>首页 5</td></tr><tr><td>6</td><td>问题 · 一个根源</td><td>变更 · 发起 / 并入已有的变更</td><td>「发起变更」「并入已有的变更 ▾」</td><td>首页 7</td></tr><tr><td>7</td><td>文件库 · 一份文件</td><td>变更 · 发起（修订）</td><td>「基于这份文件发起变更」</td><td>文件库 4，变更 2</td></tr><tr><td>8</td><td>文件库 · 一份文件</td><td>它所在的变更</td><td>「在变更里：…　打开 →」</td><td>文件库 4、5</td></tr><tr><td>9</td><td>文件库 · 一份文件（QA）</td><td>问题</td><td>「这份文件有 n 个问题　去处理 →」</td><td>文件库 5</td></tr><tr><td>10</td><td>文件库 · 按变更筛选</td><td>这个变更</td><td>变更卡上的「打开变更 →」</td><td>文件库 3</td></tr><tr><td>11</td><td>文件库 · 标题栏</td><td>变更 · 发起（新建一份文件）</td><td>「＋ 新建文件」</td><td>文件库 1，变更 3</td></tr><tr><td>12</td><td>文件库 · 一条外部标准</td><td>变更 · 发起（外部标准更新）</td><td>「登记新版本」，勾「登记后发起变更」</td><td>文件库 7、8</td></tr><tr><td>13</td><td>变更 · 概览</td><td>各站</td><td>每一站一行「打开 →」；也可以直接点页签</td><td>变更 4</td></tr><tr><td>14</td><td>影响评估 · 左栏「源头」</td><td>源头对比 02 / 03；场景二是文件库里那条标准</td><td>「对比 →」「打开 →」</td><td>变更 5、11、12</td></tr><tr><td>15</td><td>影响评估 · 一份受影响的文件</td><td>文件库 · 这份文件</td><td>文件编号本身可以点</td><td>变更 5</td></tr><tr><td>16</td><td>影响评估 · 可能缺少的文件</td><td>变更 · 发起（新建一份文件）</td><td>选「新建一份文件」，带一行来源</td><td>变更 10、3</td></tr><tr><td>17</td><td>影响评估 · 导出定稿页</td><td>修订</td><td>页签「修订」</td><td>变更 14、15</td></tr><tr><td>18</td><td>换版追踪 · 看板的列头</td><td>这一组批准</td><td>演示时「标记已批准」；这一列从「等批准」变成「待发放」</td><td>变更 16</td></tr><tr><td>19</td><td>换版追踪 · 看板的部门名</td><td>这个部门的签收单</td><td>点部门名：打印签收单，签回后登记交回</td><td>变更 17、18</td></tr><tr><td>20</td><td>培训 · 列表</td><td>出题</td><td>「打开 →」</td><td>变更 19、20</td></tr><tr><td>21</td><td>培训 · 出题</td><td>导出培训资料、考核题</td><td>「确认并导出」</td><td>变更 20、22</td></tr><tr><td>22</td><td>变更 · 概览（可关闭）</td><td>关闭变更</td><td>「可关闭」只是提示；「关闭变更」填签字日期</td><td>变更 23</td></tr><tr><td>23</td><td>新版生效后系统重新读取</td><td>首页 · 问题</td><td>对不上的（如旧版原文还在「现行」目录）自动进问题</td><td>首页 2、8</td></tr></table></div><div class="wrap"><h2>画到哪了</h2><table class="map"><tr><th style="width:14%">空间</th><th>页面</th><th style="width:24%">线框</th></tr><tr><td>首页</td><td>首次导入、日常（QA / 设备工程部）、核对引用（批量 / 逐条 / 指向不明）、问题（要改文件 / 改台账）</td><td>01-home.html，8 张</td></tr><tr><td>文件库</td><td>本厂文件、选类别、按变更筛选、一份文件（两种）、外部标准（清单 / 一条标准 / 登记新版本）</td><td>02-library.html，8 张</td></tr><tr><td>变更</td><td>列表和发起 3 张；概览 2 张；影响评估 10 张（只读，只定范围）；修订 1 张；换版追踪 3 张；培训 4 张</td><td>03-change.html，23 张</td></tr><tr><td>首页</td><td>修订、换版、培训轮到我的待办（去修订、去登记交回、去出题）</td><td>下一轮画</td></tr><tr><td>变更</td><td>场景二的换版（4 组 · 3 部门 · 12 份）；设备工程部维护人员的培训包</td><td>下一轮画</td></tr><tr><td>待细化</td><td>原型里修订只做套用建议、在条款和表格单元格里改字；正式产品要不要增删条款、和 Word 怎么来回</td><td>第 5 步写代码前定</td></tr></table><p class="small muted">以前各轮的线框（structure-r1、dependency-graph-r1…r5、impact-list-r1…r6、new-file-r1）留在 design/wireframes/ 里当过程记录，不再更新，也不放进 PDF。</p></div></body></html>

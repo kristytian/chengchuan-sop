@@ -1,0 +1,73 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><title>方向 2 · 按文件阅读</title><style>
+* { box-sizing: border-box; }
+body { margin: 0; background: #d9dcdf; font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; color: #222; font-size: 13px; }
+.page-head { max-width: 1366px; margin: 0 auto; padding: 18px 4px 10px; }
+.page-head h1 { font-size: 20px; margin: 0 0 4px; }
+.page-head p { margin: 2px 0; color: #555; line-height: 1.6; }
+.frame-title { max-width: 1366px; margin: 18px auto 6px; font-weight: 600; color: #333; }
+.frame { width: 1366px; height: 768px; margin: 0 auto 8px; background: #fff; border: 1px solid #888; display: flex; overflow: hidden; position: relative; }
+.nav { width: 224px; background: #f1f2f3; border-right: 1px solid #c8cbce; padding: 14px 12px; flex-shrink: 0; }
+.nav .brand { font-weight: 700; font-size: 14px; } .nav .brand small { display: block; font-weight: 400; color: #777; font-size: 11px; }
+.nav .item { margin-top: 6px; padding: 7px 10px; border-radius: 6px; color: #555; } .nav .item.on { background: #dcdfe2; color: #111; font-weight: 600; }
+.nav .note { position: absolute; bottom: 10px; left: 12px; width: 200px; font-size: 10.5px; color: #888; }
+.main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.bar { height: 52px; border-bottom: 1px solid #c8cbce; display: flex; align-items: center; gap: 14px; padding: 0 16px; flex-shrink: 0; }
+.bar h2 { font-size: 16px; margin: 0; }
+.muted { color: #777; } .small { font-size: 11.5px; } .b { font-weight: 600; }
+.tabs { display: flex; gap: 4px; } .tab { padding: 5px 11px; border: 1px solid #b9bdc1; border-radius: 14px; background: #fff; } .tab.on { background: #333; color: #fff; border-color: #333; }
+.btn { display: inline-block; padding: 6px 12px; border: 1px solid #888; border-radius: 5px; background: #fff; } .btn.pri { background: #333; color: #fff; border-color: #333; }
+.chip { display: inline-block; padding: 0 6px; border: 1px solid #aaa; border-radius: 3px; background: #f4f5f6; font-size: 12px; }
+.tag { display: inline-block; padding: 0 6px; border-radius: 9px; border: 1px dashed #777; font-size: 11px; color: #444; }
+.body { flex: 1; display: flex; min-height: 0; }
+.col { border-right: 1px solid #d5d8db; overflow: hidden; display: flex; flex-direction: column; } .col:last-child { border-right: 0; }
+.sec { padding: 8px 14px 4px; font-weight: 600; color: #444; font-size: 12px; background: #f6f7f8; border-bottom: 1px solid #e1e3e5; }
+.row { padding: 8px 14px; border-bottom: 1px solid #eceef0; } .row.sel { background: #e4e6e8; border-left: 3px solid #333; padding-left: 11px; }
+.box { border: 1px solid #b9bdc1; border-radius: 6px; padding: 10px 12px; margin: 10px 14px; }
+.quote { background: #f6f7f8; border-left: 3px solid #999; padding: 8px 10px; line-height: 1.7; }
+mark { background: #cfd3d7; padding: 0 2px; border-radius: 2px; }
+.u { border-bottom: 2px solid #555; } .ud { border-bottom: 2px dashed #555; background: #eceef0; }
+.ann { position: absolute; background: #fffbe0; border: 1px solid #d6c66a; color: #5a4d00; font-size: 11.5px; line-height: 1.5; padding: 5px 8px; border-radius: 4px; max-width: 250px; box-shadow: 0 1px 2px rgba(0,0,0,.15); }
+.ann b { color: #3d3400; }
+.radio { margin: 6px 0; } .radio i { display: inline-block; width: 12px; height: 12px; border: 1.5px solid #555; border-radius: 50%; vertical-align: -2px; margin-right: 6px; }
+.radio.on i { background: radial-gradient(#333 45%, transparent 50%); }
+table.cmp { border-collapse: collapse; width: 100%; background: #fff; font-size: 13px; }
+table.cmp th, table.cmp td { border: 1px solid #b9bdc1; padding: 8px 10px; vertical-align: top; text-align: left; line-height: 1.6; }
+table.cmp th { background: #eceef0; }
+.wrap { max-width: 1366px; margin: 0 auto; padding: 0 4px 30px; }
+a { color: #222; }
+</style></head><body><div class="page-head"><h1>方向 2 · 按文件阅读</h1><p>以「文件」为中心：左边按文件夹列出 35 份文件；中间像读文件一样看原文，引用直接在句子里标出；右边处理选中的那条，并显示这份文件的双向依赖。批量按文件来。</p><p class="muted">灰度线框，尺寸 1366×768。内容取自真实样本 SOP-SC-031-02（§4.5、§4.6 和第 6 章略）。黄色便签是说明。</p><p><a href="dependency-graph-r1.html">← 回到三个方向的对比</a></p></div><div class="frame-title">画面：打开 SOP-SC-031-02，选中 §4.1 的「SOP-SC-028」</div><div class="frame"><div class="nav"><div class="brand">澄川制药<small>SOP 变更闭环原型</small></div><div style="height:10px"></div><div class="item on">依赖图</div><div class="item">变更影响清单</div><div class="item">换版追踪</div><div class="item">换版培训包</div><div class="note">侧栏宽度按现在的骨架画（224px），导航形式第 4 步再定</div></div><div class="main"><div class="bar"><h2>引用确认 · 按文件</h2><span class="muted">已确认 0 / 196</span><span class="muted">已看完 0 / 35 份文件</span><span style="margin-left:auto" class="small">☐ 只看现行文件（已作废文件里的引用也算在内，要不要隐藏待定）</span></div><div class="body"><div class="col" style="width:270px">
+<div class="sec">01 管理规程</div>
+<div class="row small">SMP-WJ-001-04 文件管理规程 <span class="tag">2</span></div><div class="row small">SMP-WJ-003-03 记录管理规程 <span class="tag">2</span></div><div class="row small muted">…另 8 份</div>
+<div class="sec">02 操作规程</div>
+<div class="row small">SOP-QC-011-03 微生物限度检查… <span class="tag">2</span></div>
+<div class="row small sel">SOP-SC-031-02 乳化岗位标准操作规程 <span class="tag">4</span></div>
+<div class="row small">SOP-SC-041-01 乳化均质机清洁… <span class="tag">2</span></div><div class="row small muted">…另 7 份</div>
+<div class="sec">03 质量标准与工艺规程</div><div class="row small">STP-BZ-510-02 尿素乳膏质量标准 <span class="tag">7</span></div><div class="row small muted">…另 3 份</div>
+<div class="sec">04 记录模板</div><div class="row small">SOR-QC-011-R01 微生物限度检查记录 <span class="tag">5</span></div><div class="row small muted">…另 8 份</div>
+<div class="sec">05 验证与培训</div><div class="row small muted">2 份</div>
+<div class="row small muted" style="margin-top:auto">数字 = 这份文件里要逐条看的引用</div></div><div class="col" style="width:560px">
+<div style="padding:10px 16px; border-bottom:1px solid #e1e3e5"><div class="b" style="font-size:15px">SOP-SC-031-02　乳化岗位标准操作规程</div>
+<div class="small muted">现行 02 版 · 生产技术部 · 引用 9 条：可批量 5、需逐条看 4</div>
+<div style="margin-top:6px"><span class="btn pri">确认本文件可批量的 5 条</span></div></div>
+<div style="padding:8px 16px; line-height:1.9; overflow:hidden">
+<div><span class="b">4　程序</span></div>
+<div>4.1 生产前准备：核对批生产指令和物料标签；配料按 <span class="ud">SOP-SC-028</span> 执行，经复核后转入乳化间。</div>
+<div>4.2 设备检查：乳化均质机按 <span class="u">SOP-SB-021</span> 进行操作前检查，确认“已清洁”标识在有效期内。</div>
+<div>4.3 水相、油相制备：水相加热至 75–80 °C 并保温；油相加热至 75–80 °C，至全部熔化。</div>
+<div>4.4 乳化：真空吸入油相，开启刮壁搅拌 30 rpm，均质转速 2800 rpm，均质 10 分钟。</div>
+<div>4.7 清场：生产结束后按<span class="ud">相关清洁规程</span>执行设备清洁和清场。</div>
+<div>4.8 填写批生产记录乳化工序页，并在 <span class="u">SOR-SB-021-R01</span> 上登记设备使用情况。</div>
+<div><span class="b">5　相关文件</span></div>
+<div><span class="u">SOP-SB-021</span> 乳化均质机使用、维护保养标准操作规程</div>
+<div><span class="ud">SOP-SC-028</span> 配制岗位标准操作规程</div>
+<div><span class="u">SOP-SC-041</span> 乳化均质机清洁标准操作规程</div>
+<div><span class="ud">各品种工艺规程</span></div>
+<div class="small muted" style="margin-top:6px">实线下划线 = 可批量　虚线底纹 = 需逐条看</div>
+</div></div><div class="col" style="flex:1">
+<div class="box" style="border-width:1.5px"><div class="b">§4.1 「SOP-SC-028」</div><div class="small">引用已作废的文件</div>
+<div class="small muted" style="margin-top:4px">台账：2025-09-01 作废，由 SOP-SC-035 替代</div>
+<div style="margin-top:8px; display:flex; flex-direction:column; gap:6px"><span class="btn pri">确认，记为待确认问题</span><span class="btn">改指向 SOP-SC-035</span><span class="btn">驳回</span></div></div>
+<div class="box"><div class="b small">这份文件的双向依赖</div>
+<div class="small" style="margin-top:4px">我引用了谁：SOP-SB-021、SOP-SC-041、SOR-SB-021-R01、SOP-SC-028（作废）</div>
+<div class="small" style="margin-top:4px">谁引用了我：PX-SC-031-02、STP-GY-010-03、3 份批记录…</div>
+<div class="small muted" style="margin-top:4px">在独立页打开 →</div></div></div></div><div class="ann" style="left:1090px; top:470px; width:250px"><b>在原文里确认（中栏）：</b>QA 看到引用前后的整句话，判断更有底。这是时刻 1「凭什么敢点确认」的直接回答。</div><div class="ann" style="left:1090px; top:580px; width:250px"><b>批量按文件来：</b>一份一份地过，比一次性通过 150 条更有掌控感，但更慢。</div></div></div></body></html>

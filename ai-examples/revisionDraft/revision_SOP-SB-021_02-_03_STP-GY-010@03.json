@@ -1,0 +1,42 @@
+{
+  "task": "revisionDraft",
+  "subject": "revision:SOP-SB-021:02->03|STP-GY-010@03",
+  "inputVersions": [
+    "samples/02 操作规程/SOP-SB-021-02 乳化均质机（RH-300）使用、维护保养标准操作规程.docx",
+    "scenario-inputs/SOP-SB-021-03 乳化均质机（RH-500）使用、维护保养标准操作规程.docx",
+    "samples/03 质量标准与工艺规程/STP-GY-010-03 尿素乳膏工艺规程.docx"
+  ],
+  "inputHash": "65792e4753b5f842",
+  "promptVersion": "revision-v2",
+  "model": "none · hand-written example",
+  "servedBy": "none · hand-written example",
+  "mode": "example",
+  "runAt": "2026-11-09T00:00:00.000Z",
+  "output": {
+    "summary": [
+      {
+        "text": "§4.4 设备改为 RH-500 型真空乳化均质机（SB-RH-02）",
+        "at": "4.4",
+        "near": "RH"
+      },
+      {
+        "text": "§4.4 均质转速 2500–3000 → 2800–3400 rpm，真空度 −0.06 至 −0.08 → −0.07 至 −0.09 MPa",
+        "at": "4.4",
+        "near": "2800"
+      },
+      {
+        "text": "§7 变更历史加 04 版一行",
+        "at": "7"
+      }
+    ],
+    "rewrites": [],
+    "history": "设备换为 RH-500（SB-RH-02），均质转速、真空度相应修订"
+  },
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheReadTokens": 0,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": null
+}

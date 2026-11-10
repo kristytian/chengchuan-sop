@@ -1,0 +1,33 @@
+{
+  "task": "impactAnalysis",
+  "subject": "revision:SOP-SB-021:02->03|VP-QJ-003@01",
+  "inputVersions": [
+    "samples/02 操作规程/SOP-SB-021-02 乳化均质机（RH-300）使用、维护保养标准操作规程.docx",
+    "scenario-inputs/SOP-SB-021-03 乳化均质机（RH-500）使用、维护保养标准操作规程.docx",
+    "samples/05 验证与培训/VP-QJ-003-01 乳化均质机（RH-300）清洁验证方案.docx"
+  ],
+  "inputHash": "10fd64dea3ce5761",
+  "promptVersion": "impact-v1",
+  "model": "none · hand-written example",
+  "servedBy": "none · hand-written example",
+  "mode": "example",
+  "runAt": "2026-11-08T00:00:00.000Z",
+  "output": {
+    "tier": "evaluate",
+    "cannotDetermine": false,
+    "confidence": 0.75,
+    "clauses": [
+      "1",
+      "2",
+      "4.2"
+    ],
+    "reason": "方案验证的是 RH-300 的清洁程序。新设备换成底置均质头、加了在线清洗（源 §4.1），清洁程序会跟着 SOP-SC-041 改，原验证结论能不能沿用、要不要重做，要验证小组评估，不只是改型号。§4.2 取样点 S1 写的是顶置均质头，也要按新设备重新确定。"
+  },
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheReadTokens": 0,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": null
+}

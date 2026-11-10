@@ -1,0 +1,43 @@
+{
+  "task": "revisionDraft",
+  "subject": "revision:SOP-SB-021:02->03|SOP-SC-041@01",
+  "inputVersions": [
+    "samples/02 操作规程/SOP-SB-021-02 乳化均质机（RH-300）使用、维护保养标准操作规程.docx",
+    "scenario-inputs/SOP-SB-021-03 乳化均质机（RH-500）使用、维护保养标准操作规程.docx",
+    "samples/02 操作规程/SOP-SC-041-01 乳化均质机清洁标准操作规程.docx"
+  ],
+  "inputHash": "fe1cd658c9869603",
+  "promptVersion": "revision-v2",
+  "model": "none · hand-written example",
+  "servedBy": "none · hand-written example",
+  "mode": "example",
+  "runAt": "2026-11-09T00:00:00.000Z",
+  "output": {
+    "summary": [
+      {
+        "text": "§1、§2 设备型号和编号换成 RH-500（SB-RH-02）",
+        "at": "1",
+        "near": "RH"
+      },
+      {
+        "text": "§4.2 拆卸改为拆底部出料阀，底置均质头不拆，随主锅由 CIP 喷淋球在线清洗",
+        "at": "4.2",
+        "near": "拆卸"
+      }
+    ],
+    "rewrites": [
+      {
+        "clause": "4.2",
+        "text": "拆卸：拆下底部出料阀阀芯和取样阀；底置均质头不拆卸，随主锅由 CIP 喷淋球在线清洗。"
+      }
+    ],
+    "history": "设备换为 RH-500（SB-RH-02）：§1、§2 设备型号和编号；§4.2 拆卸改为底置均质头随 CIP 在线清洗"
+  },
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheReadTokens": 0,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": null
+}
