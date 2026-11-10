@@ -6,6 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { SETTINGS } from '@/domain/settings'
 import { shortDate } from '@/lib/format'
 import { CHECKPOINTS, useDemo } from '@/store/demo'
+import { useChangeViews } from '@/features/home/tasks'
 
 /**
  * Demo-only controls — demo date, jump to a step, reset — kept out of the
@@ -17,7 +18,9 @@ import { CHECKPOINTS, useDemo } from '@/store/demo'
 export function DemoControls() {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { date, setDate, reset, jumpTo } = useDemo()
+  const { date, setDate, reset, jumpTo, skipGeneration } = useDemo()
+  // AI at work somewhere (R1-02): the demo can skip the wait.
+  const working = useChangeViews().some((v) => v.ai.assess || v.ai.revise || v.ai.training)
   const [open, setOpen] = useState(false)
 
   const restart = (run: () => void) => {
@@ -49,6 +52,11 @@ export function DemoControls() {
           />
         </div>
         <p className="-mt-2 text-xs text-muted-foreground">{t('demo.dateHint', { asOf: SETTINGS.asOf })}</p>
+        {working && (
+          <button type="button" onClick={skipGeneration} className="self-start rounded-md border px-2.5 py-1 text-sm hover:bg-muted">
+            {t('ai.skip')}
+          </button>
+        )}
 
         <div className="flex flex-col gap-1">
           <p className="text-xs text-muted-foreground">{t('demo.jump')}</p>

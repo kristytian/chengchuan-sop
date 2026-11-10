@@ -15,6 +15,7 @@ import { CHANGE_SIDE } from '../layout'
 import { type ChangeView, sourceLabel } from '../view'
 import { AddEntryDialog } from './AddEntryDialog'
 import { canEditReport, departments, entryAnchor } from './model'
+import { AssessGenerating } from './Generating'
 import { ReportDocument } from './ReportView'
 
 /**
@@ -36,6 +37,7 @@ export function AssessPage() {
     setSelected(version)
     document.getElementById(entryAnchor(version))?.scrollIntoView({ block: 'center', behavior: 'smooth' })
   }
+  if (view.ai.assess) return <AssessGenerating view={view} progress={view.ai.assess} />
 
   return (
     <div className="flex h-full print:block print:h-auto">

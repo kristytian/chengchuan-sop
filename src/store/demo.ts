@@ -99,25 +99,16 @@ export interface RolloutLogEntry {
 
 export const emptyRollout = (): Rollout => ({ approvals: {}, issued: {}, returns: {}, notes: {}, log: [] })
 
-/** One row of a pack's answer key: 题号, the answer, the clause it rests on. */
-export interface AnswerRow {
-  n: string
-  answer: string
-  clause: string
-}
-
 /** The two documents of a training pack, in the order they are handed out. */
 export type PackDocId = 'material' | 'questions'
 
 /**
- * 培训 of one pack (UX-53): the 考核题 answer key as QA left it (null keeps
- * AI's), when QA confirmed each document — the 培训资料 and 考核题 Word
- * documents themselves are working copies like 审阅 drafts (store/drafts.ts);
- * the answer key is confirmed with the 考核题 — and the training records
- * (签到表、考核记录) scanned in; the first marks it trained.
+ * 培训 of one pack (UX-53): when QA confirmed each document — the 培训资料
+ * and 考核题 Word documents themselves are working copies like 审阅 drafts
+ * (store/drafts.ts); the answer key is AI's, shown only (R1, 11-10) — and the
+ * training records (签到表、考核记录) scanned in; the first marks it trained.
  */
 export interface PackRecord {
-  answerKey?: AnswerRow[] | null
   confirmed: Partial<Record<PackDocId, string>>
   records: { on: string; file: UploadRef }[]
 }
@@ -171,7 +162,6 @@ interface DemoActions {
   undoReturn: (changeId: string, copyNo: string) => void
   setCopyNote: (changeId: string, copyNo: string, note: string) => void
   // 培训
-  setAnswerKey: (changeId: string, role: string, answerKey: AnswerRow[] | null) => void
   confirmPackDoc: (changeId: string, role: string, doc: PackDocId) => void
   unconfirmPackDoc: (changeId: string, role: string, doc: PackDocId) => void
   /** A training record (签到表 / 考核记录) scanned in, dated today. */
@@ -182,7 +172,21 @@ interface DemoActions {
   reopenChange: (changeId: string) => void
 }
 
-export type DemoState = DemoData & DemoActions
+/** Where AI works in front of the user (R1-02). */
+export type AiStage = 'assess' | 'revise' | 'training'
+
+/**
+ * When AI started on a change's stage (ms), keyed `${changeId}:${stage}` —
+ * kept in memory only: after a reload, a reset or a jump it has finished.
+ */
+export interface AiRuns {
+  generating: Record<string, number>
+  startGeneration: (changeId: string, stage: AiStage) => void
+  /** 演示工具 · 跳过 AI 等待. */
+  skipGeneration: () => void
+}
+
+export type DemoState = DemoData & DemoActions & AiRuns
 
 const initial = (): DemoData => ({ date: DEMO.startDate, changes: [], assessments: {}, reviews: {}, rollouts: {}, trainings: {} })
 
@@ -266,18 +270,18 @@ export const useDemo = create<DemoState>()(
       initiateRevision: (input) => {
         const { changes, date } = get()
         const id = `c${changes.length + 1}`
-        set({ changes: [...changes, { id, ...input, initiatedOn: date }] })
+        set((s) => ({ changes: [...changes, { id, ...input, initiatedOn: date }], generating: { ...s.generating, [`${id}:assess`]: Date.now() } }))
         return id
       },
       reset: () => {
         clearDrafts()
         void clearUploads()
-        set(initial())
+        set({ ...initial(), generating: {} })
       },
       jumpTo: (checkpoint) => {
         clearDrafts()
         void clearUploads()
-        set(checkpointState(checkpoint))
+        set({ ...checkpointState(checkpoint), generating: {} })
       },
       removeEntry: (changeId, key, by, note) => set((s) => editAssessment(s, changeId, (a) => ({ ...a, removed: { ...a.removed, [key]: { by, on: s.date, note } } }))),
       restoreEntry: (changeId, key) =>
@@ -310,7 +314,10 @@ export const useDemo = create<DemoState>()(
             return { ...a, conclusions }
           }),
         ),
-      exportReport: (changeId) => set((s) => editAssessment(s, changeId, (a) => ({ ...a, exportedOn: s.date }))),
+      exportReport: (changeId) => set((s) => ({ ...editAssessment(s, changeId, (a) => ({ ...a, exportedOn: s.date })), generating: { ...s.generating, [`${changeId}:revise`]: Date.now() } })),
+      generating: {},
+      startGeneration: (changeId, stage) => set((s) => ({ generating: { ...s.generating, [`${changeId}:${stage}`]: Date.now() } })),
+      skipGeneration: () => set({ generating: {} }),
       approveGroup: (changeId, group, approvedOn, effectiveOn) =>
         set((s) => editRollout(s, changeId, (r) => ({ ...r, approvals: { ...r.approvals, [group]: { approvedOn, effectiveOn } } }), { action: 'approve', target: group })),
       withdrawApproval: (changeId, group) =>
@@ -333,7 +340,6 @@ export const useDemo = create<DemoState>()(
         set((s) =>
           editRollout(s, changeId, (r) => ({ ...r, notes: note ? { ...r.notes, [copyNo]: note } : without(r.notes, copyNo) }), { action: 'note', target: copyNo }),
         ),
-      setAnswerKey: (changeId, role, answerKey) => set((s) => editPack(s, changeId, role, (p) => ({ ...p, answerKey }))),
       confirmPackDoc: (changeId, role, doc) => set((s) => editPack(s, changeId, role, (p) => ({ ...p, confirmed: { ...p.confirmed, [doc]: s.date } }))),
       unconfirmPackDoc: (changeId, role, doc) =>
         set((s) =>

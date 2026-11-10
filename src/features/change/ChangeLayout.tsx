@@ -1,15 +1,19 @@
+import { Check, ChevronRight } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { NavLink, Outlet, useParams } from 'react-router'
 import { cn } from '@/lib/utils'
 import { useAssessment, useChangeRecord, useDemo, useReviews, useRollout, useTraining } from '@/store/demo'
+import { useAiClock } from './ai-progress'
 import { CHANGE_SIDE } from './layout'
-import { type ChangeView, changeNumber, changeView, STATIONS, stationDone, stationLine } from './view'
+import { type ChangeView, changeView, STATIONS, stationDone, stationLine } from './view'
 
 /**
- * A change: one title row — number and short title on the left, as wide as
- * every station's left column (UX-43), then five tabs sharing the rest, each
- * with its status line; a finished station gets ✓; only the open tab is
- * highlighted (UX-47).
+ * A change (R1-03, 11-10): 概览 is the change's home and the four stations
+ * are steps under it. The left block — the title, 「← 概览」 — is the way
+ * back to 概览 from any station (as wide as every
+ * station's left column, UX-43); the rest is a step bar ① 影响评估 → ②
+ * 审阅 → ③ 换版追踪 → ④ 培训, each with its status line, a finished one
+ * ticked, the open one highlighted.
  */
 export function ChangeLayout() {
   const { t } = useTranslation()
@@ -20,29 +24,41 @@ export function ChangeLayout() {
   const rollout = useRollout(id)
   const today = useDemo((s) => s.date)
   const training = useTraining(id)
-  const view = record ? changeView(record, assessment, reviews, rollout, today, training) : null
+  const clock = useAiClock()
+  const view = record ? changeView(record, assessment, reviews, rollout, today, training, clock) : null
   if (!view) return <p className="p-8 text-sm text-muted-foreground">{t('change.notFound')}</p>
+  const steps = STATIONS.filter((s) => s !== 'overview')
+  const active = 'bg-muted shadow-[inset_0_-2px_0_var(--foreground)]'
 
   return (
     <div className="flex h-full flex-col print:block print:h-auto">
       <div className="flex shrink-0 items-stretch border-b bg-background print:hidden">
-        <div className={cn(CHANGE_SIDE, 'flex shrink-0 items-center gap-2 border-r px-4 py-2')}>
-          <span className="shrink-0 rounded-sm border px-1 font-mono text-[11px] leading-5 text-muted-foreground">{changeNumber(t, view.record)}</span>
-          <span title={view.record.title} className="truncate text-[13px] font-semibold">
-            {view.record.title}
-          </span>
-        </div>
-        <nav className="flex min-w-0 flex-1">
-          {STATIONS.map((s) => (
-            <NavLink
-              key={s}
-              to={`/changes/${view.record.id}/${s}`}
-              className={({ isActive }) => cn('flex min-w-0 flex-1 flex-col justify-center border-r px-4 py-2 last:border-r-0 hover:bg-muted/60', isActive && 'bg-muted shadow-[inset_0_-2px_0_var(--foreground)]')}
-            >
-              <span className="text-sm font-medium">{stationDone(view, s) ? t('station.done', { name: t(`station.${s}.name`) }) : t(`station.${s}.name`)}</span>
-              <span className="truncate text-xs text-muted-foreground">{stationLine(t, view, s)}</span>
-            </NavLink>
-          ))}
+        <NavLink to={`/changes/${view.record.id}/overview`} className={({ isActive }) => cn(CHANGE_SIDE, 'flex shrink-0 flex-col justify-center gap-0.5 border-r px-4 py-2 hover:bg-muted/60', isActive && active)}>
+          {({ isActive }) => (
+            <>
+              <span title={view.record.title} className="truncate text-[13px] font-semibold">
+                {view.record.title}
+              </span>
+              <span className="text-xs text-muted-foreground">{t(isActive ? 'change.overview' : 'change.backToOverview')}</span>
+            </>
+          )}
+        </NavLink>
+        <nav aria-label={t('change.steps')} className="flex min-w-0 flex-1">
+          {steps.map((s, i) => {
+            const done = stationDone(view, s)
+            return (
+              <NavLink key={s} to={`/changes/${view.record.id}/${s}`} className={({ isActive }) => cn('flex min-w-0 flex-1 items-center gap-2.5 py-2 pl-4 hover:bg-muted/60', isActive && active)}>
+                <span className={cn('flex size-5 shrink-0 items-center justify-center rounded-full border text-[11px] tabular-nums', done && 'border-foreground bg-foreground text-background')}>
+                  {done ? <Check className="size-3" aria-label={t('change.stepDone')} /> : i + 1}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-medium">{t(`station.${s}.name`)}</span>
+                  <span className="block truncate text-xs text-muted-foreground">{stationLine(t, view, s)}</span>
+                </span>
+                {i < steps.length - 1 && <ChevronRight className="mr-1 size-4 shrink-0 text-muted-foreground/50" aria-hidden />}
+              </NavLink>
+            )
+          })}
         </nav>
       </div>
       <div className="min-h-0 flex-1 overflow-auto print:overflow-visible">

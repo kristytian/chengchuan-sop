@@ -108,13 +108,15 @@
     "assess": {
       "name": "影响评估",
       "draft": "报告待确认 · {{count}} 份",
-      "exported": "已导出 · 第 1 版"
+      "exported": "已导出 · {{date}}",
+      "ai": "AI 生成报告中 · {{done}} / {{total}}"
     },
     "revise": {
       "name": "审阅",
       "waiting": "报告导出后开始",
       "inProgress": "审阅中 · {{done}} / {{total}}",
-      "done": "已审阅 · {{total}} 份"
+      "done": "已审阅 · {{total}} 份",
+      "ai": "AI 修订中 · {{done}} / {{total}}"
     },
     "rollout": {
       "name": "换版追踪",
@@ -130,14 +132,18 @@
       "waiting": "审阅确认后出题",
       "confirming": "待确认 · 已确认 {{confirmed}} / {{packs}} 个包",
       "recording": "已确认 · 培训记录 {{trained}} / {{packs}}",
-      "done": "培训已完成 · {{packs}} 个包"
-    },
-    "done": "{{name}} ✓"
+      "done": "培训已完成 · {{packs}} 个包",
+      "ai": "AI 出包中 · {{done}} / {{total}}"
+    }
   },
   "change": {
     "number": "{{no}}（演示）",
     "noNumber": "（未填变更控制单号）",
-    "notFound": "找不到这个变更。重置演示后，之前发起的变更会清掉。"
+    "notFound": "找不到这个变更。重置演示后，之前发起的变更会清掉。",
+    "backToOverview": "← 概览",
+    "steps": "变更步骤",
+    "stepDone": "已完成",
+    "overview": "概览"
   },
   "home": {
     "tasks": {
@@ -207,15 +213,8 @@
     "filter": {
       "status": "状态：{{first}}等 {{n}} 项",
       "statusDefault": "默认只隐藏已作废",
-      "inChange": "在变更里",
-      "inChangeOne": "在变更里：{{no}}",
-      "noChanges": "还没有变更。",
-      "issues": "有问题",
-      "issuesOn": "只看有问题的",
-      "onlyIssues": "只看有问题的文件",
       "statusOne": "状态：{{first}}",
       "statusNone": "状态：未选",
-      "clear": "清掉这个条件",
       "obsoleteNoOriginal": "其中 {{count}} 份没有原文"
     },
     "col": {
@@ -250,7 +249,16 @@
       "alsoIn": "也在 {{no}} 里"
     },
     "groupBy": "分组",
-    "groupByCategory": "类别 ▾"
+    "groupByCategory": "类别 ▾",
+    "views": "文件库视图",
+    "view": {
+      "all": "全部",
+      "change": "在变更里",
+      "issues": "有问题",
+      "due": "到期回顾"
+    },
+    "empty": "没有符合的文件。",
+    "emptyNoChange": "没有进行中的变更。"
   },
   "doc": {
     "initiate": "基于这份文件发起变更",
@@ -354,7 +362,7 @@
       "rolloutSummary": "审阅确认后开始",
       "training": "培训",
       "trainingSummary": "审阅确认后出题",
-      "exportedSummary": "报告第 1 版 · {{count}} 份 · {{date}} 导出",
+      "exportedSummary": "{{count}} 份受影响文件 · {{date}} 导出",
       "reviseReady": "AI 已改好 {{total}} 份修订稿 · 已审阅 {{done}} / {{total}}",
       "draftSummary": "AI 已生成报告：{{count}} 份受影响的文件，其中 {{look}} 份需核对",
       "rolloutProgress": "已批准 {{approved}} / {{groups}} 组 · 已交回 {{returned}} / {{copies}} 份",
@@ -408,7 +416,7 @@
     "listTitle": "受影响的文件",
     "count": "{{count}} 份",
     "stateDraft": "待确认",
-    "stateExported": "已导出 · 第 1 版 · {{date}}",
+    "stateExported": "已导出 · {{date}}",
     "aiExampleHint": "这是手写的示例，格式和预跑结果一样；预跑以后换成模型的结果",
     "group": {
       "removed": "移出的"
@@ -437,7 +445,7 @@
     },
     "confirm": {
       "button": "确认并导出",
-      "hint": "确认后锁定为第 1 版，审阅和换版按这一版走",
+      "hint": "确认后锁定，审阅和换版按这份报告走",
       "blocked": "还有 {{count}} 份需评估没给评估结论，给完才能导出"
     },
     "detail": {
@@ -500,13 +508,11 @@
     "report": {
       "title": "变更影响评估报告",
       "draft": "草稿",
-      "version": "第 1 版",
       "print": "导出 PDF",
       "printHint": "用浏览器打印，选「存储为 PDF」",
       "company": "澄川制药有限公司",
       "field": {
         "controlNo": "变更控制单号",
-        "edition": "版次",
         "source": "源头文件",
         "content": "变更内容",
         "generated": "生成",
@@ -541,7 +547,7 @@
       "removedItem": "移出 {{code}} {{name}}（{{by}}决定 · {{date}}）{{note}}",
       "noEdits": "没有人工调整。",
       "footer": "正式审批在 OA 的变更控制单里走；本报告作为附件，是签字时的依据。",
-      "pageFooter": "{{no}}　变更影响评估报告　{{edition}}",
+      "pageFooter": "{{no}}　变更影响评估报告",
       "alsoChange": "另需改：{{text}}",
       "addedMark": "（人工加入）",
       "addedReason": "加入理由：{{reason}}",
@@ -553,7 +559,8 @@
       "noteSuffix": "：{{note}}",
       "printDraft": "导出草稿 PDF",
       "printDraftHint": "草稿可以随时导出，拿去讨论；文头写「草稿」，不锁定。用浏览器打印，选「存储为 PDF」",
-      "noEntries": "无。"
+      "noEntries": "无。",
+      "pageFooterDraft": "{{no}}　变更影响评估报告　草稿"
     },
     "action": {
       "open": "看原件和依据",
@@ -648,8 +655,8 @@
       "code": "规则：引用的文件一起升版",
       "header": {
         "version": "规则：新版本号",
-        "effective": "规则：生效日期待定",
-        "signature": "规则：签字留空，走审批时再签"
+        "effective": "规则：生效日期批准时填，登记批准后由系统写入",
+        "signature": "规则：签字在 OA 审批时签"
       },
       "history": "AI：变更历史加一行"
     },
@@ -1023,15 +1030,10 @@
       "title": "答案",
       "ai": "AI 写的",
       "aiExample": "AI 示例",
-      "edited": "QA 改过",
       "n": "题号",
       "answer": "答案",
       "clause": "对应条款",
-      "clauseValue": "§{{clause}}",
-      "add": "＋ 加一行",
-      "drop": "删掉这一行",
-      "dropMark": "✕",
-      "restore": "恢复 AI 写的"
+      "clauseValue": "§{{clause}}"
     }
   },
   "closing": {
@@ -1055,7 +1057,7 @@
       "station": "阶段",
       "result": "结果",
       "status": "状态",
-      "assess": "影响评估报告第 1 版，{{count}} 份受影响文件；{{date}} 导出",
+      "assess": "影响评估报告，{{count}} 份受影响文件；{{date}} 导出",
       "revise": "{{count}} 份修订稿，QA {{reviewed}} 审阅确认；OA 批准 {{approved}}",
       "rollout": "{{groups}} 组 · {{departments}} 个部门 · {{copies}} 份受控副本：发放 {{copies}}、交回 {{copies}}（最后一份 {{last}}）",
       "rolloutLegacy": "；上次换版遗留 {{count}} 份，见第三节",
@@ -1072,5 +1074,23 @@
       "head": "QA 负责人：",
       "date": "日期："
     }
+  },
+  "ai": {
+    "working": {
+      "assess": "AI 正在生成影响评估报告",
+      "revise": "AI 正在按报告修订文件",
+      "training": "AI 正在出培训包"
+    },
+    "count": {
+      "assess": "已分析 {{done}} / {{total}} 份",
+      "revise": "已改好 {{done}} / {{total}} 份",
+      "training": "已出 {{done}} / {{total}} 个包"
+    },
+    "item": {
+      "done": "已完成",
+      "working": "进行中",
+      "waiting": "排队中"
+    },
+    "skip": "跳过 AI 等待"
   }
 }

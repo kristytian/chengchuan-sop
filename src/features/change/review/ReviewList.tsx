@@ -3,6 +3,8 @@ import { Tag } from '@/components/common'
 import { displayCode } from '@/data/model'
 import { shortDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
+import type { AiProgress } from '../ai-progress'
+import { AiItemState } from '../AiWorking'
 import { concludedText, reportPlaces } from './labels'
 import type { ReviewTarget } from './model'
 
@@ -15,11 +17,13 @@ const WIDTH: Record<(typeof COLS)[number], string> = { file: 'w-[30%]', places: 
  * report says it must change, what AI changed, and where it stands. A row
  * opens the draft. A 需评估 document whose 评估结论 is 必须改 is here too, marked so.
  */
-export function ReviewList({ targets, onOpen }: { targets: ReviewTarget[]; onOpen: (i: number) => void }) {
+/** While AI is still revising (R1-02), the drafts it has not finished are listed but cannot be opened yet. */
+export function ReviewList({ targets, onOpen, progress }: { targets: ReviewTarget[]; onOpen: (i: number) => void; progress: AiProgress | null }) {
   const { t } = useTranslation()
   // Grouped by 起草部门, for reference: QA reviews them all (UX-51).
   const departments = [...new Set(targets.map((x) => x.department))]
   const done = targets.filter((x) => x.review.reviewedOn).length
+  const ready = (i: number) => !progress || i < progress.done
 
   return (
     <div className="h-full overflow-auto">
@@ -27,6 +31,7 @@ export function ReviewList({ targets, onOpen }: { targets: ReviewTarget[]; onOpe
         <div className="flex items-baseline gap-3">
           <h1 className="text-lg font-semibold">{t('review.list.title')}</h1>
           <span className="text-sm text-muted-foreground">{t('review.list.count', { total: targets.length, done })}</span>
+          {progress && <span className="text-sm text-ai">{t('station.revise.ai', { ...progress })}</span>}
         </div>
         <div className="mt-4 rounded-lg border bg-background">
           <table className="w-full table-fixed text-sm">
@@ -51,7 +56,11 @@ export function ReviewList({ targets, onOpen }: { targets: ReviewTarget[]; onOpe
                   </tr>
                   {rows.map(({ x, i }) => {
                     return (
-                      <tr key={x.version.key} onClick={() => onOpen(i)} className="cursor-pointer border-t align-top hover:bg-muted/60">
+                      <tr
+                        key={x.version.key}
+                        onClick={ready(i) ? () => onOpen(i) : undefined}
+                        className={cn('border-t align-top', ready(i) ? 'cursor-pointer hover:bg-muted/60' : 'text-muted-foreground')}
+                      >
                         <td className="py-2.5 pr-3 pl-4">
                           <span className="block font-mono text-xs whitespace-nowrap">
                             {displayCode(x.version)} → {x.newVersion}
@@ -73,6 +82,8 @@ export function ReviewList({ targets, onOpen }: { targets: ReviewTarget[]; onOpe
                             {x.summary.length > 0 ? x.summary.map((s) => s.text).join(t('common.pointSep')) : t('review.list.noSummary')}
                           </span>
                         </td>
+                        {ready(i) ? (
+                          <>
                         <td className="px-3 py-2.5 whitespace-nowrap">
                           {x.review.reviewedOn ? (
                             <Tag tone="strong">{t('review.list.reviewedOn', { date: shortDate(x.review.reviewedOn) })}</Tag>
@@ -92,6 +103,14 @@ export function ReviewList({ targets, onOpen }: { targets: ReviewTarget[]; onOpe
                             {t(!x.review.reviewedOn ? 'review.list.open' : 'review.list.view')}
                           </button>
                         </td>
+                          </>
+                        ) : (
+                          <td colSpan={2} className="py-2.5 pr-4 pl-3 text-right">
+                            <span className="inline-flex">
+                              <AiItemState index={i} progress={progress!} />
+                            </span>
+                          </td>
+                        )}
                       </tr>
                     )
                   })}

@@ -304,6 +304,7 @@ export function DocxEditor({
   user,
   editable,
   final,
+  fill,
   toolbar,
   formats,
   title,
@@ -322,6 +323,11 @@ export function DocxEditor({
    * screen only. The kept copy keeps its marks, so 撤回 brings them back.
    */
   final: boolean
+  /**
+   * In 定稿 only: a value a later step settles, written in as it now reads —
+   * 生效日期 「待定」 becomes the date registered at 登记批准 (R1-04).
+   */
+  fill?: { find: string; replace: string } | null
   /** Where the toolbar goes — across both columns; none when the draft is only to look at. */
   toolbar: HTMLElement | null
   /** 本文件格式 levels on offer, from the document's numbered clauses. */
@@ -411,6 +417,10 @@ export function DocxEditor({
           if (final) {
             draft.settled = await draft.list()
             await doc.trackChanges.decide({ decision: 'accept', target: { kind: 'all', story: 'all' } })
+            if (fill) {
+              const found = await doc.query.match({ select: { type: 'text', pattern: fill.find, caseSensitive: true } })
+              for (const m of [...found.items].reverse()) await doc.replace({ target: m.target, text: fill.replace }, { changeMode: 'direct' })
+            }
             sd.setDocumentMode('viewing')
           }
           if (cancelled) return
@@ -445,7 +455,7 @@ export function DocxEditor({
     }
     // One editor per draft and mode; ops and the loader belong to the draft.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [draftKey, editable, final, user.name, toolbar])
+  }, [draftKey, editable, final, user.name, toolbar, fill?.replace])
 
   return (
     <div className="flex min-h-0 min-w-0 flex-1 flex-col">

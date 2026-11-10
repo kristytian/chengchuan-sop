@@ -4,6 +4,7 @@ import { libraryModel } from '@/data/model'
 import { rolloutOpen, summaryOf } from '@/features/change/rollout/model'
 import { trainingOpen, trainingSummary } from '@/features/change/training/model'
 import { type ChangeView, changeView, closable } from '@/features/change/view'
+import { useAiClock } from '@/features/change/ai-progress'
 import { emptyAssessment, useDemo } from '@/store/demo'
 
 export type Task =
@@ -21,9 +22,10 @@ export function useChangeViews(): ChangeView[] {
   const rollouts = useDemo((s) => s.rollouts)
   const date = useDemo((s) => s.date)
   const trainings = useDemo((s) => s.trainings)
+  const clock = useAiClock()
   return useMemo(
-    () => changes.map((r) => changeView(r, assessments[r.id] ?? emptyAssessment(), reviews[r.id] ?? {}, rollouts[r.id], date, trainings[r.id])).filter((v) => v !== null),
-    [changes, assessments, reviews, rollouts, date, trainings],
+    () => changes.map((r) => changeView(r, assessments[r.id] ?? emptyAssessment(), reviews[r.id] ?? {}, rollouts[r.id], date, trainings[r.id], clock)).filter((v) => v !== null),
+    [changes, assessments, reviews, rollouts, date, trainings, clock],
   )
 }
 
@@ -32,11 +34,11 @@ export function useMyTasks(): Task[] {
   return useMemo(() => {
     // A closed change asks nothing more.
     const views = all.filter((v) => !v.record.closedOn)
-    // AI's 影响评估报告 waits for QA to look at the flagged entries and confirm it (UX-50).
-    const tasks: Task[] = views.filter((v) => v.stage === 'draft').map((view) => ({ kind: 'confirmReport', view }))
+    // AI's 影响评估报告 waits for QA to look at the flagged entries and confirm it (UX-50) — once AI has finished writing it (R1-02).
+    const tasks: Task[] = views.filter((v) => v.stage === 'draft' && !v.ai.assess).map((view) => ({ kind: 'confirmReport', view }))
     // Then AI's revision drafts wait for QA's 审阅 (UX-51: QA reviews them all).
     for (const view of views) {
-      if (view.stage !== 'exported') continue
+      if (view.stage !== 'exported' || view.ai.revise) continue
       const pending = view.report.entries.filter((e) => e.group === 'mustChange' && !view.reviews[e.version]?.reviewedOn)
       if (pending.length > 0) tasks.push({ kind: 'review', view, count: pending.length })
     }
@@ -50,7 +52,7 @@ export function useMyTasks(): Task[] {
     }
     // 培训: packs to confirm, then training records to scan in.
     for (const view of views) {
-      if (!trainingOpen(view)) continue
+      if (!trainingOpen(view) || view.ai.training) continue
       const s = trainingSummary(view)
       if (s.confirmed < s.packs) tasks.push({ kind: 'training', view, what: 'confirm', count: s.packs - s.confirmed })
       else if (s.trained < s.packs) tasks.push({ kind: 'training', view, what: 'record', count: s.packs - s.trained })

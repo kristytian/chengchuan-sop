@@ -4,15 +4,14 @@ import { Link, useSearchParams } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
 import { shortDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
-import { type AnswerRow, USER_DEPARTMENT, useDemo } from '@/store/demo'
+import { USER_DEPARTMENT, useDemo } from '@/store/demo'
 import { loadDraft } from '@/store/drafts'
 import { citation } from '../citations'
 import { type DraftApi, DocxEditor } from '../review/DocxEditor'
 import type { ChangeView } from '../view'
-import { aiAnswers, answerKeyHtml, download, finished, materialHtml, type PackDoc, packDocKey, questionsHtml, writeDocx } from './docs'
+import { aiAnswers, type AnswerRow, answerKeyHtml, download, finished, materialHtml, type PackDoc, packDocKey, questionsHtml, writeDocx } from './docs'
 import { deadlineText } from './labels'
 import { PACK_DOCS, type Pack, TRAINING_RULE } from './model'
 import { PackStatus, RecordList } from './parts'
@@ -43,7 +42,7 @@ export function PackPage({ view, pack }: { view: ChangeView; pack: Pack }) {
   const confirmedOn = pack.record.confirmed[doc]
   const editable = !confirmedOn
   const trained = pack.record.records.length > 0
-  const answers = pack.record.answerKey ?? aiAnswers(t, pack)
+  const answers = aiAnswers(t, pack)
   const open = (d: PackDoc) =>
     setParams((p) => {
       const next = new URLSearchParams(p)
@@ -145,7 +144,7 @@ export function PackPage({ view, pack }: { view: ChangeView; pack: Pack }) {
             onChange={noop}
           />
         )}
-        {doc === 'questions' && showAnswers && <AnswerKey view={view} pack={pack} rows={answers} editable={editable} />}
+        {doc === 'questions' && showAnswers && <AnswerKey pack={pack} rows={answers} />}
       </div>
       {exporting && <ExportDialog view={view} pack={pack} doc={doc} onPrint={setPrinting} onClose={() => setExporting(false)} />}
       {printing && (
@@ -159,21 +158,14 @@ export function PackPage({ view, pack }: { view: ChangeView; pack: Pack }) {
   )
 }
 
-/**
- * 「显示答案」: the answer key beside the 考核题 — 题号 · 答案 · 对应条款, AI's
- * to start with; QA edits a cell, adds or drops a row. Printed after the
- * questions in the 答案版 only.
- */
-function AnswerKey({ view, pack, rows, editable }: { view: ChangeView; pack: Pack; rows: AnswerRow[]; editable: boolean }) {
+/** 「显示答案」: AI's answer key beside the 考核题 — 题号 · 答案 · 对应条款, shown only; printed after the questions in the 答案版. */
+function AnswerKey({ pack, rows }: { pack: Pack; rows: AnswerRow[] }) {
   const { t } = useTranslation()
-  const setAnswerKey = useDemo((s) => s.setAnswerKey)
-  const save = (next: AnswerRow[]) => setAnswerKey(view.record.id, pack.audience.role, next)
-  const edit = (i: number, field: keyof AnswerRow, value: string) => save(rows.map((r, j) => (j === i ? { ...r, [field]: value } : r)))
   return (
     <aside className="flex w-72 shrink-0 flex-col overflow-auto border-l bg-background text-sm">
       <div className="flex items-baseline gap-2 border-b px-4 py-2.5">
         <h2 className="font-semibold">{t('training.answerKey.title')}</h2>
-        <span className="text-xs text-muted-foreground">{pack.record.answerKey ? t('training.answerKey.edited') : t(pack.example ? 'training.answerKey.aiExample' : 'training.answerKey.ai')}</span>
+        <span className="text-xs text-muted-foreground">{t(pack.example ? 'training.answerKey.aiExample' : 'training.answerKey.ai')}</span>
       </div>
       <table className="w-full text-sm">
         <thead className="text-left text-xs text-muted-foreground">
@@ -181,57 +173,22 @@ function AnswerKey({ view, pack, rows, editable }: { view: ChangeView; pack: Pac
             <th className="w-12 py-1.5 pl-4 font-normal">{t('training.answerKey.n')}</th>
             <th className="px-2 py-1.5 font-normal">{t('training.answerKey.answer')}</th>
             <th className="py-1.5 pr-2 font-normal">{t('training.answerKey.clause')}</th>
-            {editable && <th className="w-8" />}
           </tr>
         </thead>
         <tbody>
-          {rows.map((r, i) => (
-            <tr key={i} className="border-b last:border-0">
-              {editable ? (
-                <>
-                  <td className="py-1 pl-4">
-                    <Input value={r.n} onChange={(e) => edit(i, 'n', e.target.value)} className="h-7 px-1.5 text-center" aria-label={t('training.answerKey.n')} />
-                  </td>
-                  <td className="px-2 py-1">
-                    <Input value={r.answer} onChange={(e) => edit(i, 'answer', e.target.value)} className="h-7 px-1.5" aria-label={t('training.answerKey.answer')} />
-                  </td>
-                  <td className="py-1 pr-1">
-                    <Input value={r.clause} onChange={(e) => edit(i, 'clause', e.target.value)} className="h-7 px-1.5" aria-label={t('training.answerKey.clause')} />
-                  </td>
-                  <td className="py-1 pr-2 text-center">
-                    <button type="button" aria-label={t('training.answerKey.drop')} onClick={() => save(rows.filter((_, j) => j !== i))} className="text-muted-foreground hover:text-foreground">
-                      {t('training.answerKey.dropMark')}
-                    </button>
-                  </td>
-                </>
-              ) : (
-                <>
-                  <td className="py-1.5 pl-4">{r.n}</td>
-                  <td className="px-2 py-1.5 font-medium">{r.answer}</td>
-                  <td className="py-1.5 pr-2 text-muted-foreground">{r.clause && t('training.answerKey.clauseValue', { clause: r.clause })}</td>
-                </>
-              )}
+          {rows.map((r) => (
+            <tr key={r.n} className="border-b last:border-0">
+              <td className="py-1.5 pl-4">{r.n}</td>
+              <td className="px-2 py-1.5 font-medium">{r.answer}</td>
+              <td className="py-1.5 pr-2 text-muted-foreground">{r.clause && t('training.answerKey.clauseValue', { clause: r.clause })}</td>
             </tr>
           ))}
         </tbody>
       </table>
-      {editable && (
-        <div className="flex items-center gap-3 px-4 py-2.5 text-xs">
-          <button type="button" onClick={() => save([...rows, { n: String(rows.length + 1), answer: '', clause: '' }])} className="font-medium hover:underline">
-            {t('training.answerKey.add')}
-          </button>
-          {pack.record.answerKey && pack.ai && (
-            <button type="button" onClick={() => setAnswerKey(view.record.id, pack.audience.role, null)} className="ml-auto text-muted-foreground hover:text-foreground hover:underline">
-              {t('training.answerKey.restore')}
-            </button>
-          )}
-        </div>
-      )}
     </aside>
   )
 }
 
-/** What a confirmed 考核题 is handed out as: the questions alone, or with the answer key after them. */
 const EXAM_PARTS = ['student', 'marking'] as const
 type Part = 'material' | (typeof EXAM_PARTS)[number]
 
@@ -259,7 +216,7 @@ function ExportDialog({ view, pack, doc, onPrint, onClose }: { view: ChangeView;
       if (!source) throw new Error('missing working copy')
       const chosen = doc === 'material' ? (['material'] as Part[]) : EXAM_PARTS.filter((p) => parts.has(p))
       const results = []
-      for (const part of chosen) results.push({ part, ...(await finished(source, part === 'marking' ? answerKeyHtml(t, pack.record.answerKey ?? aiAnswers(t, pack)) : null)) })
+      for (const part of chosen) results.push({ part, ...(await finished(source, part === 'marking' ? answerKeyHtml(t, aiAnswers(t, pack)) : null)) })
       if (format === 'word') for (const r of results) download(r.docx, t('training.exportDialog.fileName', { no: view.record.controlNo, role, part: t(`training.exportDialog.part.${r.part}`) }))
       else onPrint(results.map((r) => r.html))
       onClose()

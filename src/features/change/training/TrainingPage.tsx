@@ -5,6 +5,7 @@ import { citation } from '../citations'
 import type { ChangeView } from '../view'
 import { deadlineText, packLink, questionOrigin } from './labels'
 import { packsOf, TRAINING_RULE, trainingOpen, type Pack } from './model'
+import { AiItemState } from '../AiWorking'
 import { PackPage } from './PackPage'
 import { PackStatus, RecordList } from './parts'
 
@@ -25,19 +26,23 @@ export function TrainingPage() {
       </div>
     )
   const packs = packsOf(view)
-  const pack = packs.find((p) => p.audience.role === params.get('pack'))
-  if (pack) return <PackPage view={view} pack={pack} />
+  const at = packs.findIndex((p) => p.audience.role === params.get('pack'))
+  // A pack AI has not finished yet (R1-02) cannot be opened: the list shows where AI is.
+  if (at >= 0 && (!view.ai.training || at < view.ai.training.done)) return <PackPage view={view} pack={packs[at]} />
   return <TrainingList view={view} packs={packs} />
 }
 
 /** 03 画面 19: who is trained, the questions, where each pack stands, by when, and its training records. */
 function TrainingList({ view, packs }: { view: ChangeView; packs: Pack[] }) {
   const { t } = useTranslation()
+  const progress = view.ai.training
+  const ready = (i: number) => !progress || i < progress.done
   return (
     <div className="h-full overflow-auto">
       <div className="mx-auto max-w-6xl p-6">
         <div className="flex items-baseline gap-3">
           <h1 className="text-lg font-semibold">{t('training.title')}</h1>
+          {progress && <span className="text-sm text-ai">{t('station.training.ai', { ...progress })}</span>}
           <span className="text-sm" title={TRAINING_RULE ? t('training.rule', { rule: citation(TRAINING_RULE), text: TRAINING_RULE.text }) : undefined}>
             {t('training.listDeadline', { deadline: deadlineText(t, view) })}
           </span>
@@ -55,18 +60,16 @@ function TrainingList({ view, packs }: { view: ChangeView; packs: Pack[] }) {
               </tr>
             </thead>
             <tbody>
-              {packs.map((p) => (
-                <tr key={p.audience.role} className="border-t align-top">
+              {packs.map((p, i) => (
+                <tr key={p.audience.role} className={cn('border-t align-top', !ready(i) && 'text-muted-foreground')}>
                   <td className="py-2.5 pr-3 pl-4">
                     <span className="block font-medium" title={t('training.duty', { clause: p.audience.clause, duty: p.audience.duty })}>
                       {p.audience.role}
                     </span>
                     <span className="block text-xs text-muted-foreground">{p.audience.departments.join(t('common.listSep'))}</span>
                   </td>
-                  <td className="px-3 py-2.5">{questionOrigin(t, p)}</td>
-                  <td className="px-3 py-2.5">
-                    <PackStatus pack={p} />
-                  </td>
+                  <td className="px-3 py-2.5">{ready(i) ? questionOrigin(t, p) : <AiItemState index={i} progress={progress!} />}</td>
+                  <td className="px-3 py-2.5">{ready(i) && <PackStatus pack={p} />}</td>
                   <td className="px-3 py-2.5">{deadlineText(t, view)}</td>
                   <td className="px-3 py-2.5 text-xs">
                     <div className="flex flex-col items-start gap-1">
@@ -74,9 +77,11 @@ function TrainingList({ view, packs }: { view: ChangeView; packs: Pack[] }) {
                     </div>
                   </td>
                   <td className="py-2.5 pr-4 pl-3 text-right">
-                    <Link to={packLink(p.audience.role)} className={cn('whitespace-nowrap hover:underline', !p.confirmed && 'font-medium')}>
-                      {t('training.open')}
-                    </Link>
+                    {ready(i) && (
+                      <Link to={packLink(p.audience.role)} className={cn('whitespace-nowrap hover:underline', !p.confirmed && 'font-medium')}>
+                        {t('training.open')}
+                      </Link>
+                    )}
                   </td>
                 </tr>
               ))}

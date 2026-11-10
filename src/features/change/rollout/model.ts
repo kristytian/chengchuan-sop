@@ -56,6 +56,13 @@ export function effectiveDate(view: ChangeView): string | null {
   return registered ?? printed
 }
 
+/** The effective date registered for the group a document is reissued in (登记批准), else null. */
+export function approvedEffective(view: ChangeView, versionKey: string): string | null {
+  if (view.stage !== 'exported') return null
+  const group = planOf(view).groups.find((g) => g.members.some((m) => m.old.key === versionKey))
+  return (group && view.rollout.approvals[group.id]?.effectiveOn) || null
+}
+
 /** 审阅 is done: every draft confirmed, so the documents can go to OA and be tracked here. */
 export const rolloutOpen = (view: ChangeView) => view.stage === 'exported' && view.toRevise > 0 && view.reviewed === view.toRevise
 

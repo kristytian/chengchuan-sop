@@ -49,7 +49,7 @@ export function HomePage() {
                 <div className="flex items-center gap-3">
                   <span>{t('home.tasks.issues', { count: task.count })}</span>
                   {/* The issues page is out of this round; until then this opens the library filtered to files with issues. */}
-                  <Link to="/library?issues=1" className="ml-auto shrink-0 font-medium hover:underline">
+                  <Link to="/library?view=issues" className="ml-auto shrink-0 font-medium hover:underline">
                     {t('home.tasks.handle')}
                   </Link>
                 </div>

@@ -43,6 +43,13 @@ export const DEMO = {
   lastReturnDate: '2026-12-26',
   /** Every station done: the change can be closed. */
   closableDate: '2026-12-28',
+  /**
+   * How long AI takes per document when it works in front of the user
+   * (R1-02): the 影响评估 report after 发起, the revision drafts after the
+   * report goes out, the training packs once every draft is confirmed.
+   * Paced for a demo, not measured.
+   */
+  aiItemMs: { assess: 700, revise: 900, training: 2500 },
   /** 变更控制单号 prefilled on the initiate form; the user can change it. */
   controlNo: 'BG-2026-018',
 } as const

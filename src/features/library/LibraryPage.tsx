@@ -1,5 +1,5 @@
 import type { TFunction } from 'i18next'
-import { ChevronDown, ChevronRight, X } from 'lucide-react'
+import { ChevronDown, ChevronRight } from 'lucide-react'
 import { type ReactNode, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { shortDate } from '@/lib/format'
@@ -17,6 +17,9 @@ import { cn } from '@/lib/utils'
 import { DEFAULT_STATUSES, type LibraryRow, libraryRows, STATUS_OPTIONS, type StatusOption } from './rows'
 
 const EXTERNAL_KINDS = ['pharmacopoeia', 'regulation', 'guideline', 'other'] as const
+/** The ways of looking at the library (R1-01): every file, those in an open change, those with 问题, reviews coming due. */
+const LIBRARY_VIEWS = ['all', 'change', 'issues', 'due'] as const
+type LibraryView = (typeof LIBRARY_VIEWS)[number]
 
 /** 文件库 · 本厂文件: catalogue on the left, filters above the table (02 画面 1、2). */
 const COLUMNS = ['code', 'name', 'status', 'version', 'effective', 'department', 'citedBy', 'marks'] as const
@@ -33,8 +36,11 @@ export function LibraryPage() {
 
   const category = (LIBRARY_CATEGORIES as readonly string[]).includes(params.get('cat') ?? '') ? (params.get('cat') as LibraryCategory) : null
   const statuses = (params.get('status')?.split(',').filter((s): s is StatusOption => (STATUS_OPTIONS as readonly string[]).includes(s)) ?? DEFAULT_STATUSES) as StatusOption[]
-  const changeId = params.get('change')
-  const onlyIssues = isQA && params.get('issues') === '1'
+  // 视图 (R1-01): one way of looking at the library at a time; 状态 filters inside every one. Old links (?issues=1, ?change=) still land right.
+  const openChanges = views.filter((v) => !v.record.closedOn)
+  const requested = params.get('view') ?? (params.get('issues') === '1' ? 'issues' : params.get('change') ? 'change' : 'all')
+  const view: LibraryView = (LIBRARY_VIEWS as readonly string[]).includes(requested) && (requested !== 'issues' || isQA) ? (requested as LibraryView) : 'all'
+  const changeId = view === 'change' ? (openChanges.find((v) => v.record.id === params.get('change'))?.record.id ?? openChanges[0]?.record.id ?? null) : null
   const update = (key: string, value: string | null) => {
     const next = new URLSearchParams(params)
     if (value === null) next.delete(key)
@@ -43,12 +49,20 @@ export function LibraryPage() {
   }
 
   const byStatus = rows.filter((r) => statuses.includes(r.status))
-  const filtered = byStatus.filter(
-    (r) =>
-      (!category || r.category === category) &&
-      (!changeId || r.inChanges.some((c) => c.view.record.id === changeId)) &&
-      (!onlyIssues || r.issues.length > 0),
-  )
+  const base = byStatus.filter((r) => !category || r.category === category)
+  const inView: Record<LibraryView, (r: LibraryRow) => boolean> = {
+    all: () => true,
+    change: (r) => r.inChanges.some((c) => !c.view.record.closedOn),
+    issues: (r) => r.issues.length > 0,
+    due: (r) => !!r.dueSoon,
+  }
+  const filtered = base.filter((r) => inView[view](r) && (!changeId || r.inChanges.some((c) => c.view.record.id === changeId)))
+  const openView = (v: LibraryView) => {
+    const next = new URLSearchParams(params)
+    for (const k of ['view', 'change', 'issues']) next.delete(k)
+    if (v !== 'all') next.set('view', v)
+    setParams(next, { replace: true })
+  }
   const noOriginal = rows.filter((r) => r.status === 'obsolete' && r.version.origin === 'ledgerOnly' && (!category || r.category === category)).length
   const countIn = (c: LibraryCategory) => byStatus.filter((r) => r.category === c).length
 
@@ -74,59 +88,62 @@ export function LibraryPage() {
           <h1 className="text-lg font-semibold">{t('library.title')}</h1>
           <NotThisRound className="ml-auto rounded-md border px-2.5 py-1 text-sm">{t('library.newFile')}</NotThisRound>
         </div>
-        <div className="flex items-center gap-2 px-5 py-2.5 text-sm">
-          <span className="font-medium">{category ? t(`category.${category}`) : t('library.allOwn')}</span>
-          <span className="text-muted-foreground">{t('library.count', { count: filtered.length })}</span>
-          {changeId && (
-            <span className="flex items-center gap-1 rounded-md border border-foreground px-2 py-0.5 font-medium">
-              {t('library.filter.inChangeOne', { no: changeLabel(t, views, changeId) })}
-              <button type="button" aria-label={t('library.filter.clear')} title={t('library.filter.clear')} onClick={() => update('change', null)} className="rounded p-0.5 hover:bg-muted">
-                <X className="size-3.5" />
-              </button>
-            </span>
-          )}
-          <Filter label={statusLabel(t, statuses)} active={!sameStatuses(statuses, DEFAULT_STATUSES)}>
-            {STATUS_OPTIONS.map((s) => (
-              <label key={s} className="flex items-center gap-2 py-1">
-                <Checkbox
-                  checked={statuses.includes(s)}
-                  onCheckedChange={(on) => update('status', STATUS_OPTIONS.filter((x) => (x === s ? on === true : statuses.includes(x))).join(','))}
-                />
-                {t(`status.${s}`)}
-                <span className="ml-auto text-muted-foreground">
-                  {rows.filter((r) => r.status === s && (!category || r.category === category)).length}
-                  {s === 'obsolete' && noOriginal > 0 && ` · ${t('library.filter.obsoleteNoOriginal', { count: noOriginal })}`}
-                </span>
-              </label>
-            ))}
-            <p className="mt-1 text-xs text-muted-foreground">{t('library.filter.statusDefault')}</p>
-          </Filter>
-          {!changeId && (
-            <Filter label={t('library.filter.inChange')}>
-              {views.length === 0 && <p className="text-muted-foreground">{t('library.filter.noChanges')}</p>}
-              {views.map((v) => (
-                <label key={v.record.id} className="flex items-center gap-2 py-1">
-                  <Checkbox checked={false} onCheckedChange={(on) => on === true && update('change', v.record.id)} />
-                  <span className="font-mono text-xs">{changeNumber(t, v.record)}</span>
-                  <span className="truncate">{v.record.title}</span>
+        <div className="flex items-end gap-1 border-b px-5 pt-2 text-sm" role="tablist" aria-label={t('library.views')}>
+          {LIBRARY_VIEWS.filter((v) => v !== 'issues' || isQA).map((v) => (
+            <button
+              key={v}
+              type="button"
+              role="tab"
+              aria-selected={view === v}
+              onClick={() => openView(v)}
+              className={cn('-mb-px flex items-baseline gap-1.5 border-b-2 px-3 py-1.5', view === v ? 'border-foreground font-medium' : 'border-transparent text-muted-foreground hover:text-foreground')}
+            >
+              {t(`library.view.${v}`)}
+              <span className="text-xs tabular-nums text-muted-foreground">{base.filter(inView[v]).length}</span>
+            </button>
+          ))}
+          <div className="ml-auto flex items-center gap-3 self-center pb-1">
+            <Filter label={statusLabel(t, statuses)} active={!sameStatuses(statuses, DEFAULT_STATUSES)}>
+              {STATUS_OPTIONS.map((s) => (
+                <label key={s} className="flex items-center gap-2 py-1">
+                  <Checkbox
+                    checked={statuses.includes(s)}
+                    onCheckedChange={(on) => update('status', STATUS_OPTIONS.filter((x) => (x === s ? on === true : statuses.includes(x))).join(','))}
+                  />
+                  {t(`status.${s}`)}
+                  <span className="ml-auto text-muted-foreground">
+                    {rows.filter((r) => r.status === s && (!category || r.category === category)).length}
+                    {s === 'obsolete' && noOriginal > 0 && ` · ${t('library.filter.obsoleteNoOriginal', { count: noOriginal })}`}
+                  </span>
                 </label>
               ))}
+              <p className="mt-1 text-xs text-muted-foreground">{t('library.filter.statusDefault')}</p>
             </Filter>
-          )}
-          {isQA && (
-            <Filter label={t(onlyIssues ? 'library.filter.issuesOn' : 'library.filter.issues')} active={onlyIssues}>
-              <label className="flex items-center gap-2 py-1">
-                <Checkbox checked={onlyIssues} onCheckedChange={(on) => update('issues', on === true ? '1' : null)} />
-                {t('library.filter.onlyIssues')}
-              </label>
-            </Filter>
-          )}
-          <NotThisRound className="ml-auto">
-            {t('library.groupBy')} <span className="rounded-md border px-2 py-0.5">{t('library.groupByCategory')}</span>
-          </NotThisRound>
+            <NotThisRound>
+              {t('library.groupBy')} <span className="rounded-md border px-2 py-0.5">{t('library.groupByCategory')}</span>
+            </NotThisRound>
+          </div>
         </div>
+        {view === 'change' && openChanges.length > 1 && (
+          <div className="flex flex-wrap gap-2 border-b px-5 py-2 text-sm">
+            {openChanges.map((v) => (
+              <button
+                key={v.record.id}
+                type="button"
+                aria-pressed={changeId === v.record.id}
+                onClick={() => update('change', v.record.id)}
+                className={cn('rounded-md border px-2 py-0.5', changeId === v.record.id ? 'border-foreground font-medium' : 'text-muted-foreground hover:text-foreground')}
+              >
+                <span className="font-mono text-xs">{changeNumber(t, v.record)}</span> {v.record.title}
+              </button>
+            ))}
+          </div>
+        )}
+        {filtered.length === 0 && <p className="px-5 py-6 text-sm text-muted-foreground">{t(view === 'change' && !changeId ? 'library.emptyNoChange' : 'library.empty')}</p>}
         {/* Arriving from the home page issues task (only issues), every group starts open. */}
-        <RowsTable key={String(onlyIssues)} rows={changeId ? byRoleInChange(filtered, changeId) : filtered} grouped={!category && !changeId} expanded={onlyIssues} isQA={isQA} changeId={changeId} />
+        {filtered.length > 0 && (
+          <RowsTable key={view} rows={changeId ? byRoleInChange(filtered, changeId) : filtered} grouped={!category && !changeId} expanded={view === 'issues' || view === 'due'} isQA={isQA} changeId={changeId} />
+        )}
       </div>
     </div>
   )
@@ -152,11 +169,6 @@ function byRoleInChange(rows: LibraryRow[], changeId: string): LibraryRow[] {
     return 2 + (group ? REPORT_GROUPS.indexOf(group) : 6)
   }
   return [...rows].sort((a, b) => rank(a) - rank(b))
-}
-
-function changeLabel(t: TFunction, views: ReturnType<typeof useChangeViews>, id: string) {
-  const v = views.find((x) => x.record.id === id)
-  return v ? changeNumber(t, v.record) : id
 }
 
 function CatalogItem({ label, count, active, onClick, strong }: { label: string; count: number; active: boolean; onClick: () => void; strong?: boolean }) {

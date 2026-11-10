@@ -5,10 +5,12 @@ import type { TFunction } from 'i18next'
 import { changeAnalysis, displayCode, domainChange, versionByKey } from '@/data/model'
 import { needsLook, type Report, type ReportEntry, type ReportGroup, unevaluated } from '@/domain/assessment'
 import type { Change, DocumentVersion, ImpactItem } from '@/domain/model'
-import { type Assessment, type ChangeRecord, type DocReview, emptyRollout, type PackRecord, type Rollout } from '@/store/demo'
+import { shortDate } from '@/lib/format'
+import { type AiStage, type Assessment, type ChangeRecord, type DocReview, emptyRollout, type PackRecord, type Rollout } from '@/store/demo'
 import { reportOf } from './assess/model'
 import { rolloutOpen, summaryOf } from './rollout/model'
-import { trainingDone, trainingOpen, trainingSummary } from './training/model'
+import { audiencesOf, trainingDone, trainingOpen, trainingSummary } from './training/model'
+import { type AiClock, type AiProgress, aiProgress } from './ai-progress'
 
 /** The five tabs of a change (UX-47); the third is 审阅 since UX-50, route still `revise`. */
 export const STATIONS = ['overview', 'assess', 'revise', 'rollout', 'training'] as const
@@ -51,6 +53,8 @@ export interface ChangeView {
   training: Readonly<Record<string, PackRecord>>
   /** The demo date, for deadlines. */
   today: string
+  /** Where AI is still working in front of the user (R1-02), and how far it is. */
+  ai: Record<AiStage, AiProgress | null>
 }
 
 export function changeView(
@@ -60,6 +64,7 @@ export function changeView(
   rollout: Rollout = emptyRollout(),
   today = record.initiatedOn,
   training: Readonly<Record<string, PackRecord>> = {},
+  clock?: AiClock,
 ): ChangeView | null {
   const change = domainChange(record.changeId)
   if (change?.source.kind !== 'revision') return null
@@ -91,6 +96,12 @@ export function changeView(
     rollout,
     training,
     today,
+    ai: { assess: null, revise: null, training: null },
+  }
+  view.ai = {
+    assess: aiProgress(clock, record.id, 'assess', report.entries.filter((e) => e.origin === 'generated').length),
+    revise: stage === 'exported' ? aiProgress(clock, record.id, 'revise', toRevise.length) : null,
+    training: allReviewed ? aiProgress(clock, record.id, 'training', audiencesOf(view).length) : null,
   }
   // Every old copy back: the change moves on to 培训.
   if (view.current === 'rollout' && rolloutDone(view)) view.current = 'training'
@@ -158,9 +169,11 @@ export function stationLine(t: TFunction, view: ChangeView, station: StationId):
       if (view.record.closedOn) return t('station.overview.closed', { date: view.record.closedOn.slice(5) })
       return closable(view) ? t('station.overview.closable') : t('station.overview.initiated', { date: view.record.initiatedOn.slice(5) })
     case 'assess':
-      return view.stage === 'exported' ? t('station.assess.exported') : t('station.assess.draft', { count: view.report.entries.length })
+      if (view.ai.assess) return t('station.assess.ai', { ...view.ai.assess })
+      return view.stage === 'exported' ? t('station.assess.exported', { date: shortDate(view.assessment.exportedOn ?? '') }) : t('station.assess.draft', { count: view.report.entries.length })
     case 'revise':
       if (view.stage !== 'exported') return t('station.revise.waiting')
+      if (view.ai.revise) return t('station.revise.ai', { ...view.ai.revise })
       return view.reviewed === view.toRevise ? t('station.revise.done', { total: view.toRevise }) : t('station.revise.inProgress', { done: view.reviewed, total: view.toRevise })
     case 'rollout': {
       if (!rolloutOpen(view)) return t('station.rollout.waiting')
@@ -172,6 +185,7 @@ export function stationLine(t: TFunction, view: ChangeView, station: StationId):
     }
     case 'training': {
       if (!trainingOpen(view)) return t('station.training.waiting')
+      if (view.ai.training) return t('station.training.ai', { ...view.ai.training })
       const s = trainingSummary(view)
       if (s.confirmed < s.packs) return t('station.training.confirming', { confirmed: s.confirmed, packs: s.packs })
       if (s.trained < s.packs) return t('station.training.recording', { trained: s.trained, packs: s.packs })

@@ -5,7 +5,7 @@
 // answers are a key beside it (题号 · 答案 · 对应条款), appended for the 答案版.
 import type { TFunction } from 'i18next'
 import { displayCode } from '@/data/model'
-import type { AnswerRow, PackDocId } from '@/store/demo'
+import type { PackDocId } from '@/store/demo'
 import { draftKey } from '@/store/drafts'
 import { offscreen } from '../review/superdoc'
 import type { ChangeView } from '../view'
@@ -66,6 +66,13 @@ export function questionsHtml(t: TFunction, view: ChangeView, pack: Pack): strin
         ])
       : [p(t('training.doc.emptyExam'))]),
   ].join('')
+}
+
+/** One row of a pack's answer key: 题号, the answer, the clause it rests on. */
+export interface AnswerRow {
+  n: string
+  answer: string
+  clause: string
 }
 
 /** AI's answer key: one row per question — the right option, or 对 / 错 — and the clause it rests on. */

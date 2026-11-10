@@ -9,6 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { displayCode } from '@/data/model'
 import { shortDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
+import { TERMS } from '@/domain/source-terms'
 import { USER_DEPARTMENT, useDemo } from '@/store/demo'
 import { draftKey } from '@/store/drafts'
 import type { ChangeView } from '../view'
@@ -16,6 +17,7 @@ import { DocxEditor, DocxOriginal, type DraftApi } from './DocxEditor'
 import { originalDocx } from './docx'
 import { docFormats } from './formats'
 import { whyLine } from './labels'
+import { approvedEffective } from '../rollout/model'
 import { ReviewList } from './ReviewList'
 import { type ReviewTarget, reviewTargets } from './model'
 import { AI_AUTHOR, type ChangeReason, reasonOf, type TrackedChange } from './reasons'
@@ -37,7 +39,9 @@ export function ReviewPage() {
   if (targets.length === 0) return <p className="mx-auto max-w-xl p-10 text-center text-sm text-muted-foreground">{t('review.waiting')}</p>
   // The station opens on the list; a draft is ?doc=…, so the browser's back returns to the list.
   const at = targets.findIndex((x) => x.version.identity === params.get('doc'))
-  if (at < 0) return <ReviewList targets={targets} onOpen={(i) => setParams({ doc: targets[i].version.identity })} />
+  // A draft AI has not finished yet (R1-02) cannot be opened: the list shows where AI is.
+  const progress = view.ai.revise
+  if (at < 0 || (progress && at >= progress.done)) return <ReviewList targets={targets} progress={progress} onOpen={(i) => setParams({ doc: targets[i].version.identity })} />
   const go = (i: number) => setParams({ doc: targets[i].version.identity }, { replace: true })
   return (
     <Review
@@ -72,11 +76,13 @@ function Review({
 }) {
   const { t } = useTranslation()
   const setReviewed = useDemo((s) => s.setReviewed)
+  const startGeneration = useDemo((s) => s.startGeneration)
   const target = targets[at]
   // QA reviews every draft (UX-51); a confirmed one is read-only until withdrawn.
   const editable = !target.review.reviewedOn
   // Once reviewed, the draft reads as it will be: changes accepted on screen, the marks kept for 撤回.
   const final = !!target.review.reviewedOn
+  const effective = final ? approvedEffective(view, target.version.key) : null
   const id = view.record.id
   const api = useRef<DraftApi | null>(null)
   const sync = useScrollSync()
@@ -103,6 +109,8 @@ function Review({
   const confirm = async () => {
     await api.current?.flush()
     setReviewed(id, target.version.key, true)
+    // The last draft confirmed opens 培训: AI starts on the training packs (R1-02).
+    if (view.reviewed + 1 === view.toRevise && !useDemo.getState().generating[`${id}:training`]) startGeneration(id, 'training')
   }
   const current = changes.find((c) => c.id === active)
 
@@ -178,6 +186,7 @@ function Review({
           {(!editable || toolbar) && (
           <DocxEditor
             final={final}
+            fill={effective ? { find: TERMS.pendingDate, replace: effective } : null}
             toolbar={editable ? toolbar : null}
             formats={formats}
             draftKey={draftKey(id, target.version.key)}

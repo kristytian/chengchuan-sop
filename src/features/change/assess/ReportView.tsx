@@ -1,11 +1,12 @@
 import type { TFunction } from 'i18next'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import { NotThisRound, Tag } from '@/components/common'
+import { Tag } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { changeAnalysis, displayCode, versionByKey } from '@/data/model'
 import type { ReportEntry, ReportGroup, ReportLine } from '@/domain/assessment'
 import { TERMS } from '@/domain/source-terms'
+import { shortDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { type ChangeView, changeNumber } from '../view'
 import { entryAnchor } from './model'
@@ -20,9 +21,8 @@ export function ReportDocument({ view, selected, onSelect }: { view: ChangeView;
   const diff = changeAnalysis(view.change.id).diff
   const { record, assessment, report } = view
   const exported = view.stage === 'exported'
-  const edition = exported ? t('assess.report.version') : t('assess.report.draft')
   const sourceCode = view.change.source.kind === 'revision' ? view.change.source.identity : ''
-  const field = (key: 'controlNo' | 'edition' | 'source' | 'content' | 'generated' | 'confirmed' | 'state') => t(`assess.report.field.${key}`)
+  const field = (key: 'controlNo' | 'source' | 'content' | 'generated' | 'confirmed' | 'state') => t(`assess.report.field.${key}`)
   const inGroup = (g: ReportGroup) => report.entries.filter((e) => e.group === g)
   const added = report.entries.filter((e) => e.origin === 'added')
   const concluded = report.entries.filter((e) => e.conclusion)
@@ -31,7 +31,7 @@ export function ReportDocument({ view, selected, onSelect }: { view: ChangeView;
     <>
       <div className="mx-auto mb-3 flex w-[760px] items-center gap-3 text-sm print:hidden">
         <span className="font-semibold">{t('assess.report.title')}</span>
-        {exported ? <NotThisRound>{edition} ▾</NotThisRound> : <Tag>{edition}</Tag>}
+        <Tag>{exported ? t('assess.stateExported', { date: shortDate(assessment.exportedOn ?? '') }) : t('assess.report.draft')}</Tag>
         {/* The draft can go out too, for discussion; only confirming locks it. */}
         <Button
           size="sm"
@@ -48,7 +48,7 @@ export function ReportDocument({ view, selected, onSelect }: { view: ChangeView;
         <h1 className="mt-4 text-center font-hei text-[17px]">{t('assess.report.title')}</h1>
         <table className="mt-4 w-full table-fixed border-collapse text-[11.5px] leading-snug">
           <tbody>
-            <HeadRow cells={[[field('controlNo'), changeNumber(t, record)], [field('edition'), edition]]} />
+            <HeadRow cells={[[field('controlNo'), changeNumber(t, record)], [field('state'), t(exported ? 'assess.report.stateLocked' : 'assess.report.stateDraft')]]} />
             <HeadRow cells={[[field('source'), t('assess.report.sourceValue', { code: sourceCode, name: view.newVersion.name, from: view.oldVersion.version, to: view.newVersion.version })]]} />
             <HeadRow cells={[[field('content'), t('assess.report.content', { summary: record.title, header: diff?.header.length ?? 0, clauses: diff?.clauses.length ?? 0 })]]} />
             <HeadRow
@@ -57,7 +57,6 @@ export function ReportDocument({ view, selected, onSelect }: { view: ChangeView;
                 [field('confirmed'), exported ? t('assess.report.confirmedBy', { department: TERMS.departments.qa, date: assessment.exportedOn }) : t('assess.report.pending')],
               ]}
             />
-            <HeadRow cells={[[field('state'), t(exported ? 'assess.report.stateLocked' : 'assess.report.stateDraft')]]} />
           </tbody>
         </table>
 
@@ -117,7 +116,7 @@ export function ReportDocument({ view, selected, onSelect }: { view: ChangeView;
         </Section>
 
         <p className="mt-6 text-[11.5px]">{t('assess.report.footer')}</p>
-        <p className="mt-6 border-t border-foreground/40 pt-1.5 text-[10.5px] text-muted-foreground">{t('assess.report.pageFooter', { no: record.controlNo, edition })}</p>
+        <p className="mt-6 border-t border-foreground/40 pt-1.5 text-[10.5px] text-muted-foreground">{t(exported ? 'assess.report.pageFooter' : 'assess.report.pageFooterDraft', { no: record.controlNo })}</p>
       </article>
     </>
   )
