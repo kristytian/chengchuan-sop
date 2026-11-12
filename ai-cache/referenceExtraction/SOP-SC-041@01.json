@@ -1,0 +1,79 @@
+{
+  "task": "referenceExtraction",
+  "subject": "SOP-SC-041@01",
+  "inputVersions": [
+    "samples/02 操作规程/SOP-SC-041-01 乳化均质机清洁标准操作规程.docx"
+  ],
+  "inputHash": "359933b1735c92d0",
+  "promptVersion": "extraction-v2",
+  "model": "claude-opus-5-5",
+  "servedBy": "claude-opus-5-5",
+  "mode": "cache",
+  "runAt": "2026-11-12T01:01:42.805Z",
+  "output": {
+    "references": [
+      {
+        "clause": "4.6",
+        "excerpt": "清洁程序的有效性以 VP-QJ-003 清洁验证结果为依据。",
+        "type": "explicit",
+        "target": "VP-QJ-003@01",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "正文写明编号 VP-QJ-003，对应目录中的乳化均质机（RH-300）清洁验证方案。",
+        "note": "未写版本号，对应现行版 01。"
+      },
+      {
+        "clause": "4.7",
+        "excerpt": "填写 SOR-SC-041-R01《乳化均质机清洁记录》。",
+        "type": "explicit",
+        "target": "SOR-SC-041-R01@01",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "正文写明编号 SOR-SC-041-R01 及名称，与目录一致。",
+        "note": ""
+      },
+      {
+        "clause": "5",
+        "excerpt": "SOP-SB-021 乳化均质机使用、维护保养标准操作规程",
+        "type": "explicit",
+        "target": "SOP-SB-021@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "相关文件列出编号 SOP-SB-021，对应乳化均质机（RH-300）使用、维护保养标准操作规程。",
+        "note": "未写版本号，对应现行版 02；原文名称未写“（RH-300）”。"
+      },
+      {
+        "clause": "5",
+        "excerpt": "VP-QJ-003 乳化均质机清洁验证方案",
+        "type": "explicit",
+        "target": "VP-QJ-003@01",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "相关文件列出编号 VP-QJ-003，对应乳化均质机（RH-300）清洁验证方案。",
+        "note": "未写版本号，对应现行版 01；原文名称未写“（RH-300）”。"
+      },
+      {
+        "clause": "6",
+        "excerpt": "SOR-SC-041-R01 乳化均质机清洁记录",
+        "type": "explicit",
+        "target": "SOR-SC-041-R01@01",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "相关记录列出编号 SOR-SC-041-R01 及名称，与目录一致。",
+        "note": ""
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 1221,
+    "outputTokens": 1094,
+    "cacheReadTokens": 6433,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": "end_turn"
+}

@@ -1,0 +1,68 @@
+{
+  "task": "referenceExtraction",
+  "subject": "SOR-QC-511-R01@03",
+  "inputVersions": [
+    "samples/04 记录模板/SOR-QC-511-R01 克霉唑乳膏检验记录.docx"
+  ],
+  "inputHash": "d88f0979972e37f2",
+  "promptVersion": "extraction-v2",
+  "model": "claude-opus-5-5",
+  "servedBy": "claude-opus-5-5",
+  "mode": "cache",
+  "runAt": "2026-11-12T01:02:07.290Z",
+  "output": {
+    "references": [
+      {
+        "clause": "header",
+        "excerpt": "SOP-QC-511-03",
+        "type": "explicit",
+        "target": "SOP-QC-511@03",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "The correspondingDoc and basis header fields both give the code and version SOP-QC-511-03, which matches this version in the catalogue.",
+        "note": "Cited in both correspondingDoc and basis, so it is listed once."
+      },
+      {
+        "clause": "header",
+        "excerpt": "STP-BZ-511、SOP-QC-511-03",
+        "type": "explicit",
+        "target": "STP-BZ-511@03",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "The basis field gives code STP-BZ-511 with no version, so it maps to the current version 03 (克霉唑乳膏质量标准).",
+        "note": ""
+      },
+      {
+        "clause": "body",
+        "excerpt": "微生物限度 | 见微生物限度检查记录",
+        "type": "implicit",
+        "target": "SOR-QC-011-R01@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "The name 微生物限度检查记录 matches the catalogue file SOR-QC-011-R01 exactly.",
+        "note": ""
+      },
+      {
+        "clause": "body",
+        "excerpt": "二、含量测定（HPLC，照 SOP-QC-021）",
+        "type": "explicit",
+        "target": "SOP-QC-021@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "Code SOP-QC-021 is cited with no version, so it maps to the current version 02 (高效液相色谱仪标准操作规程).",
+        "note": ""
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 548,
+    "outputTokens": 825,
+    "cacheReadTokens": 6433,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": "end_turn"
+}

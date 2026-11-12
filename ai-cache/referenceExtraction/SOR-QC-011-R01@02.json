@@ -1,0 +1,79 @@
+{
+  "task": "referenceExtraction",
+  "subject": "SOR-QC-011-R01@02",
+  "inputVersions": [
+    "samples/04 记录模板/SOR-QC-011-R01 微生物限度检查记录.docx"
+  ],
+  "inputHash": "2778196103e3ddbc",
+  "promptVersion": "extraction-v2",
+  "model": "claude-opus-5-5",
+  "servedBy": "claude-opus-5-5",
+  "mode": "cache",
+  "runAt": "2026-11-12T01:01:59.892Z",
+  "output": {
+    "references": [
+      {
+        "clause": "header",
+        "excerpt": "SOP-QC-011-02",
+        "type": "explicit",
+        "target": "SOP-QC-011@03",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "对应文件字段写明编号 SOP-QC-011，对应微生物限度检查标准操作规程。",
+        "note": "原文写的是 02 版，目录中只有现行 03 版（SOP-QC-011-03），无 02 版，已对应到现行版，版本号与目录不一致。"
+      },
+      {
+        "clause": "header",
+        "excerpt": "《中国药典》2020 年版四部通则 1105、1106",
+        "type": "external",
+        "target": null,
+        "candidates": [],
+        "standard": "中国药典 2020 年版 通则 1105",
+        "confidence": "high",
+        "reason": "依据字段写明药典版次和通则号 1105。",
+        "note": ""
+      },
+      {
+        "clause": "header",
+        "excerpt": "《中国药典》2020 年版四部通则 1105、1106",
+        "type": "external",
+        "target": null,
+        "candidates": [],
+        "standard": "中国药典 2020 年版 通则 1106",
+        "confidence": "high",
+        "reason": "依据字段写明药典版次和通则号 1106。",
+        "note": ""
+      },
+      {
+        "clause": "body",
+        "excerpt": "微生物计数（平皿法，按 2020 年版通则 1105）",
+        "type": "external",
+        "target": null,
+        "candidates": [],
+        "standard": "中国药典 2020 年版 通则 1105",
+        "confidence": "high",
+        "reason": "正文写明按 2020 年版通则 1105 进行微生物计数。",
+        "note": ""
+      },
+      {
+        "clause": "body",
+        "excerpt": "控制菌（按 2020 年版通则 1106）",
+        "type": "external",
+        "target": null,
+        "candidates": [],
+        "standard": "中国药典 2020 年版 通则 1106",
+        "confidence": "high",
+        "reason": "正文写明按 2020 年版通则 1106 进行控制菌检查。",
+        "note": ""
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 519,
+    "outputTokens": 876,
+    "cacheReadTokens": 6433,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": "end_turn"
+}

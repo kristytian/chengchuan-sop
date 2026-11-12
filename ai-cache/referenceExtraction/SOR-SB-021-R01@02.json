@@ -1,0 +1,35 @@
+{
+  "task": "referenceExtraction",
+  "subject": "SOR-SB-021-R01@02",
+  "inputVersions": [
+    "samples/04 记录模板/SOR-SB-021-R01 乳化均质机使用日志.docx"
+  ],
+  "inputHash": "e1d08aa7ff00dc3c",
+  "promptVersion": "extraction-v2",
+  "model": "claude-opus-5-5",
+  "servedBy": "claude-opus-5-5",
+  "mode": "cache",
+  "runAt": "2026-11-12T01:02:05.856Z",
+  "output": {
+    "references": [
+      {
+        "clause": "header",
+        "excerpt": "SOP-SB-021-02",
+        "type": "explicit",
+        "target": "SOP-SB-021@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "文头的对应文件字段写明了编号 SOP-SB-021-02，与目录中现行版乳化均质机（RH-300）使用、维护保养标准操作规程的编号一致。",
+        "note": ""
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 538,
+    "outputTokens": 398,
+    "cacheReadTokens": 6433,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": "end_turn"
+}

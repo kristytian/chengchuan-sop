@@ -1,0 +1,145 @@
+{
+  "task": "referenceExtraction",
+  "subject": "SOP-QC-510@02",
+  "inputVersions": [
+    "samples/02 操作规程/SOP-QC-510-02 尿素乳膏检验标准操作规程.docx"
+  ],
+  "inputHash": "454eedf7ef60929c",
+  "promptVersion": "extraction-v2",
+  "model": "claude-opus-5-5",
+  "servedBy": "claude-opus-5-5",
+  "mode": "cache",
+  "runAt": "2026-11-12T01:01:18.201Z",
+  "output": {
+    "references": [
+      {
+        "clause": "4.1",
+        "excerpt": "检验依据：STP-BZ-510 尿素乳膏质量标准。",
+        "type": "explicit",
+        "target": "STP-BZ-510@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "写明编号 STP-BZ-510，与目录中尿素乳膏质量标准的编号和名称一致。",
+        "note": "未写版本号，对应现行版 02。"
+      },
+      {
+        "clause": "4.3",
+        "excerpt": "目视观察，应符合质量标准规定。",
+        "type": "implicit",
+        "target": "STP-BZ-510@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "medium",
+        "reason": "本规程是尿素乳膏检验规程，“质量标准”在上下文中指尿素乳膏质量标准。",
+        "note": ""
+      },
+      {
+        "clause": "4.4",
+        "excerpt": "照《中国药典》2025 年版四部通则 0631 测定",
+        "type": "external",
+        "target": null,
+        "candidates": [],
+        "standard": "中国药典 2025 年版 通则 0631",
+        "confidence": "high",
+        "reason": "写明药典版次和通则编号。",
+        "note": ""
+      },
+      {
+        "clause": "4.5",
+        "excerpt": "照通则 0942 最低装量检查法检查",
+        "type": "external",
+        "target": null,
+        "candidates": [],
+        "standard": "中国药典 2025 年版 通则 0942",
+        "confidence": "high",
+        "reason": "写明通则编号 0942 最低装量检查法。",
+        "note": "本条未写药典版次，按本文件 4.4 写明的 2025 年版。"
+      },
+      {
+        "clause": "4.6",
+        "excerpt": "含量测定：照 SOP-QC-021 操作。",
+        "type": "explicit",
+        "target": "SOP-QC-021@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "写明编号 SOP-QC-021，对应高效液相色谱仪标准操作规程。",
+        "note": "未写版本号，对应现行版 02。"
+      },
+      {
+        "clause": "4.7",
+        "excerpt": "照 SOP-QC-011 微生物限度检查标准操作规程检查",
+        "type": "explicit",
+        "target": "SOP-QC-011@03",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "写明编号 SOP-QC-011，名称与目录一致。",
+        "note": "未写版本号，对应现行版 03。"
+      },
+      {
+        "clause": "4.8",
+        "excerpt": "记录在 SOR-QC-510-R01《尿素乳膏检验记录》上",
+        "type": "explicit",
+        "target": "SOR-QC-510-R01@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "写明编号 SOR-QC-510-R01，名称与目录一致。",
+        "note": "未写版本号，对应现行版 02。"
+      },
+      {
+        "clause": "5",
+        "excerpt": "STP-BZ-510 尿素乳膏质量标准",
+        "type": "explicit",
+        "target": "STP-BZ-510@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "相关文件中写明编号 STP-BZ-510，名称与目录一致。",
+        "note": "未写版本号，对应现行版 02。"
+      },
+      {
+        "clause": "5",
+        "excerpt": "SOP-QC-011 微生物限度检查标准操作规程",
+        "type": "explicit",
+        "target": "SOP-QC-011@03",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "相关文件中写明编号 SOP-QC-011，名称与目录一致。",
+        "note": "未写版本号，对应现行版 03。"
+      },
+      {
+        "clause": "5",
+        "excerpt": "SOP-QC-021 高效液相色谱仪标准操作规程",
+        "type": "explicit",
+        "target": "SOP-QC-021@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "相关文件中写明编号 SOP-QC-021，名称与目录一致。",
+        "note": "未写版本号，对应现行版 02。"
+      },
+      {
+        "clause": "6",
+        "excerpt": "SOR-QC-510-R01 尿素乳膏检验记录",
+        "type": "explicit",
+        "target": "SOR-QC-510-R01@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "相关记录中写明编号 SOR-QC-510-R01，名称与目录一致。",
+        "note": "未写版本号，对应现行版 02。"
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 972,
+    "outputTokens": 1820,
+    "cacheReadTokens": 6433,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": "end_turn"
+}

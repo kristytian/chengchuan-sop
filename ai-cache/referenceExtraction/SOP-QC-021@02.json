@@ -1,0 +1,68 @@
+{
+  "task": "referenceExtraction",
+  "subject": "SOP-QC-021@02",
+  "inputVersions": [
+    "samples/02 操作规程/SOP-QC-021-02 高效液相色谱仪标准操作规程.docx"
+  ],
+  "inputHash": "b8cbc5807ab1d197",
+  "promptVersion": "extraction-v2",
+  "model": "claude-opus-5-5",
+  "servedBy": "claude-opus-5-5",
+  "mode": "cache",
+  "runAt": "2026-11-12T01:01:05.079Z",
+  "output": {
+    "references": [
+      {
+        "clause": "4.1",
+        "excerpt": "《中国药典》现行版四部通则 0512 高效液相色谱法",
+        "type": "external",
+        "target": null,
+        "candidates": [],
+        "standard": "中国药典 现行版 通则 0512",
+        "confidence": "high",
+        "reason": "正文写明药典版次和通则编号，属外部标准。",
+        "note": ""
+      },
+      {
+        "clause": "4.5",
+        "excerpt": "原始数据保存与备份按 SMP-WJ-004《电子数据管理规程》执行",
+        "type": "explicit",
+        "target": "SMP-WJ-004@01",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "编号 SMP-WJ-004 与名称《电子数据管理规程》共同指向目录中的 SMP-WJ-004-01。",
+        "note": "编号 SMP-WJ-004 在目录中对应多份文件（SMP-WJ-004-00 外来文件管理规程、SMP-WJ-004-01 电子数据管理规程），按原文名称确定为电子数据管理规程；原文未写版本号，对应现行版。"
+      },
+      {
+        "clause": "5",
+        "excerpt": "《中国药典》现行版四部通则 0512",
+        "type": "external",
+        "target": null,
+        "candidates": [],
+        "standard": "中国药典 现行版 通则 0512",
+        "confidence": "high",
+        "reason": "相关文件列出药典版次和通则编号，属外部标准。",
+        "note": ""
+      },
+      {
+        "clause": "5",
+        "excerpt": "SMP-WJ-004 电子数据管理规程",
+        "type": "explicit",
+        "target": "SMP-WJ-004@01",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "编号 SMP-WJ-004 与名称电子数据管理规程共同指向目录中的 SMP-WJ-004-01。",
+        "note": "编号 SMP-WJ-004 在目录中对应多份文件（SMP-WJ-004-00 外来文件管理规程、SMP-WJ-004-01 电子数据管理规程），按原文名称确定为电子数据管理规程；原文未写版本号，对应现行版。"
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 925,
+    "outputTokens": 1055,
+    "cacheReadTokens": 6433,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": "end_turn"
+}

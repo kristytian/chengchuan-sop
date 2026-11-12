@@ -1,0 +1,157 @@
+{
+  "task": "referenceExtraction",
+  "subject": "SOP-SC-031@01",
+  "inputVersions": [
+    "samples/02 操作规程/SOP-SC-031-01 乳化岗位标准操作规程.docx"
+  ],
+  "inputHash": "21c414445e253bd1",
+  "promptVersion": "extraction-v2",
+  "model": "claude-opus-5-5",
+  "servedBy": "claude-opus-5-5",
+  "mode": "cache",
+  "runAt": "2026-11-12T01:01:36.742Z",
+  "output": {
+    "references": [
+      {
+        "clause": "4.1",
+        "excerpt": "配料按 SOP-SC-028 执行",
+        "type": "explicit",
+        "target": "SOP-SC-028@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "原文写出编号 SOP-SC-028，对应目录中 SOP-SC-028-02 配制岗位标准操作规程。",
+        "note": "所引文件已作废，且只在台账里、没有文件；目录中另有现行的 SOP-SC-035-00，名称同为配制岗位标准操作规程，请 QA 确认。"
+      },
+      {
+        "clause": "4.2",
+        "excerpt": "乳化均质机按 SOP-SB-021 进行操作前检查",
+        "type": "explicit",
+        "target": "SOP-SB-021@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "原文写出编号 SOP-SB-021，对应现行版乳化均质机（RH-300）使用、维护保养标准操作规程。",
+        "note": ""
+      },
+      {
+        "clause": "4.7",
+        "excerpt": "按相关清洁规程执行设备清洁和清场",
+        "type": "implicit",
+        "target": null,
+        "candidates": [
+          "SOP-SC-041@01"
+        ],
+        "standard": null,
+        "confidence": "medium",
+        "reason": "“相关清洁规程”泛指清洁类规程，目录中属于这一类的是乳化均质机清洁标准操作规程。",
+        "note": "泛指"
+      },
+      {
+        "clause": "4.8",
+        "excerpt": "填写批生产记录乳化工序页",
+        "type": "implicit",
+        "target": null,
+        "candidates": [
+          "SOR-SC-010-R01@03",
+          "SOR-SC-011-R01@02",
+          "SOR-SC-012-R01@02"
+        ],
+        "standard": null,
+        "confidence": "medium",
+        "reason": "本规程适用于三个乳膏品种，“批生产记录”泛指这几个品种的批生产记录。",
+        "note": "泛指"
+      },
+      {
+        "clause": "4.8",
+        "excerpt": "在 SOR-SB-021-R01 上登记设备使用情况",
+        "type": "explicit",
+        "target": "SOR-SB-021-R01@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "原文写出编号 SOR-SB-021-R01，对应乳化均质机使用日志现行版。",
+        "note": ""
+      },
+      {
+        "clause": "5",
+        "excerpt": "SOP-SB-021 乳化均质机使用、维护保养标准操作规程",
+        "type": "explicit",
+        "target": "SOP-SB-021@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "原文写出编号 SOP-SB-021，对应现行版。",
+        "note": ""
+      },
+      {
+        "clause": "5",
+        "excerpt": "SOP-SC-028 配制岗位标准操作规程",
+        "type": "explicit",
+        "target": "SOP-SC-028@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "原文写出编号 SOP-SC-028，名称与目录一致。",
+        "note": "所引文件已作废，且只在台账里、没有文件；目录中另有现行的 SOP-SC-035-00，名称同为配制岗位标准操作规程，请 QA 确认。"
+      },
+      {
+        "clause": "5",
+        "excerpt": "SOP-SC-041 乳化均质机清洁标准操作规程",
+        "type": "explicit",
+        "target": "SOP-SC-041@01",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "原文写出编号 SOP-SC-041，名称与目录一致。",
+        "note": ""
+      },
+      {
+        "clause": "5",
+        "excerpt": "各品种工艺规程",
+        "type": "implicit",
+        "target": null,
+        "candidates": [
+          "STP-GY-010@03"
+        ],
+        "standard": null,
+        "confidence": "medium",
+        "reason": "“各品种工艺规程”泛指工艺规程这一类，目录中只有尿素乳膏工艺规程。",
+        "note": "泛指"
+      },
+      {
+        "clause": "6",
+        "excerpt": "各品种批生产记录",
+        "type": "implicit",
+        "target": null,
+        "candidates": [
+          "SOR-SC-010-R01@03",
+          "SOR-SC-011-R01@02",
+          "SOR-SC-012-R01@02"
+        ],
+        "standard": null,
+        "confidence": "medium",
+        "reason": "“各品种批生产记录”泛指适用品种的批生产记录。",
+        "note": "泛指"
+      },
+      {
+        "clause": "6",
+        "excerpt": "SOR-SB-021-R01 乳化均质机使用日志",
+        "type": "explicit",
+        "target": "SOR-SB-021-R01@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "原文写出编号 SOR-SB-021-R01，名称与目录一致。",
+        "note": ""
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 1112,
+    "outputTokens": 2324,
+    "cacheReadTokens": 6433,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": "end_turn"
+}

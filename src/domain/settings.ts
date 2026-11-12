@@ -1,6 +1,6 @@
 // Demo settings for 澄川制药; sources noted per value.
 export interface Settings {
-  /** 样本截止日: every "overdue" / "not returned" is judged on this day (docs/sample-library-list.md · 澄川制药设定). */
+  /** 样本截止日: every "overdue" / "not returned" is judged on this day (样本库清单 · 澄川制药设定). */
   asOf: string
   /** 现行药典: 2025 年版《中国药典》, in force from 2025-10-01 (same section). */
   currentPharmacopoeia: { edition: string; effectiveDate: string }

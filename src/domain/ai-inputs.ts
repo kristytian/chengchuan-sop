@@ -3,6 +3,7 @@
 // app (to tell a cached result from a stale one by its input hash).
 import type { Clause } from '../data/schema.ts'
 import type { Catalog } from './catalog.ts'
+import { identityOf } from './codes.ts'
 import { clauseText } from './diff.ts'
 import type { AITask, Change, DocumentDiff, DocumentVersion, ImpactItem, Reference } from './model.ts'
 import { contentClauses } from './texts.ts'
@@ -11,6 +12,7 @@ import { contentClauses } from './texts.ts'
 export const PROMPT_VERSIONS: Record<AITask, string> = {
   impactAnalysis: 'impact-v1',
   referenceSuggestion: 'reference-v1',
+  referenceExtraction: 'extraction-v2',
   // No prompt in scripts/ai-prerun yet for these three; only hand-written examples use them so far.
   changePoints: 'points-v1',
   revisionDraft: 'revision-v2',
@@ -124,6 +126,53 @@ export function referenceSuggestionInput(ref: Reference, catalog: Catalog): Refe
     citing: { code: citing.printedCode ?? citing.identity, name: citing.name, clause: clauseRef(clause), clauseText: clauseText(clause), text: ref.text },
     candidates,
   }
+}
+
+/** One entry of the 文件目录 for 整篇抽引用: a version in the library or only in the ledger. */
+export interface DirectoryEntry {
+  /** `identity@version`: what the model answers with. */
+  id: string
+  /** Number as printed on the file; for ledger-only versions, the ledger's. */
+  code: string
+  /** The ledger's number, when it registers the file under another one. */
+  ledgerCode: string | null
+  name: string
+  category: string | null
+  version: string
+  status: 'current' | 'obsolete' | 'unregistered'
+  /** In the ledger only: there is no file. */
+  ledgerOnly: boolean
+}
+
+export interface ReferenceExtractionInput {
+  /** The same for every document (sent first, so it can be cached). */
+  directory: DirectoryEntry[]
+  document: DocumentForAI & { id: string }
+}
+
+export const extractionSubject = (v: DocumentVersion): string => `${v.identity}@${v.version}`
+
+/** Every version but drafts, sorted by id. */
+export function referenceDirectory(catalog: Catalog): DirectoryEntry[] {
+  return catalog.versions
+    .filter((v) => v.origin !== 'draft')
+    .map((v) => ({
+      id: extractionSubject(v),
+      code: v.printedCode ?? (v.category === 'SOR' ? v.identity : `${v.identity}-${v.version}`),
+      ledgerCode: v.ledger && v.printedCode && identityOf(v.ledger.code) !== identityOf(v.printedCode) ? v.ledger.code : null,
+      name: v.name,
+      category: v.category,
+      version: v.version,
+      status: v.status === 'draft' ? 'unregistered' : v.status,
+      ledgerOnly: v.origin === 'ledgerOnly',
+    }))
+    .sort((a, b) => a.id.localeCompare(b.id))
+}
+
+/** Input for listing everything one library file cites; its 文件变更历史 chapter is left out, as in every AI input. */
+export function referenceExtractionInput(v: DocumentVersion, directory: DirectoryEntry[]): ReferenceExtractionInput {
+  if (!v.document) throw new Error(`${v.key} has no file`)
+  return { directory, document: { id: extractionSubject(v), ...documentForAI(v) } }
 }
 
 export interface RevisionDraftInput {

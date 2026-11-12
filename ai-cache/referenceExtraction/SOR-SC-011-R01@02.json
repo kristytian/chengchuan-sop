@@ -1,0 +1,57 @@
+{
+  "task": "referenceExtraction",
+  "subject": "SOR-SC-011-R01@02",
+  "inputVersions": [
+    "samples/04 记录模板/SOR-SC-011-R01 克霉唑乳膏批生产记录.docx"
+  ],
+  "inputHash": "5d8437180bbb0e75",
+  "promptVersion": "extraction-v2",
+  "model": "claude-opus-5-5",
+  "servedBy": "claude-opus-5-5",
+  "mode": "cache",
+  "runAt": "2026-11-12T01:02:17.034Z",
+  "output": {
+    "references": [
+      {
+        "clause": "header",
+        "excerpt": "STP-GY-011-02",
+        "type": "notFound",
+        "target": null,
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "文头的对应文件和依据都写了 STP-GY-011-02，目录的 code 和 ledgerCode 中都没有此编号。",
+        "note": "目录中只有 STP-GY-010-03（尿素乳膏工艺规程），没有克霉唑乳膏工艺规程，请 QA 核实编号或补登目录。"
+      },
+      {
+        "clause": "body",
+        "excerpt": "工艺规程 | STP-GY-011-02",
+        "type": "notFound",
+        "target": null,
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "正文写出编号 STP-GY-011-02，目录的 code 和 ledgerCode 中都没有此编号。",
+        "note": "目录中没有克霉唑乳膏工艺规程，请 QA 核实。"
+      },
+      {
+        "clause": "body",
+        "excerpt": "四、乳化均质（操作按 SOP-SC-031 执行）",
+        "type": "explicit",
+        "target": "SOP-SC-031@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "正文写出编号 SOP-SC-031，未写版本号，因此对应现行版乳化岗位标准操作规程。",
+        "note": "未写版本号，按现行版 02 对应；目录中还有作废版 SOP-SC-031@01。"
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 806,
+    "outputTokens": 1261,
+    "cacheReadTokens": 6433,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": "end_turn"
+}

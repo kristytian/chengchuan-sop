@@ -1,0 +1,134 @@
+{
+  "task": "referenceExtraction",
+  "subject": "SMP-WJ-001@04",
+  "inputVersions": [
+    "samples/01 管理规程/SMP-WJ-001-04 文件管理规程.docx"
+  ],
+  "inputHash": "39ee5aec2c94e0dd",
+  "promptVersion": "extraction-v2",
+  "model": "claude-opus-5-5",
+  "servedBy": "claude-opus-5-5",
+  "mode": "cache",
+  "runAt": "2026-11-12T01:00:54.226Z",
+  "output": {
+    "references": [
+      {
+        "clause": "4.1",
+        "excerpt": "文件编号按 SMP-WJ-002 执行",
+        "type": "explicit",
+        "target": "SMP-WJ-002@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "正文写明编号 SMP-WJ-002，对应现行版文件编码管理规程。",
+        "note": "未写版本号，对应现行版 02。"
+      },
+      {
+        "clause": "4.1",
+        "excerpt": "记录的设计与管理按 SMP-WJ-003 执行",
+        "type": "explicit",
+        "target": "SMP-WJ-003@03",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "正文写明编号 SMP-WJ-003，对应现行版记录管理规程。",
+        "note": "未写版本号，对应现行版 03。"
+      },
+      {
+        "clause": "4.3",
+        "excerpt": "文件的变更须先按 SMP-ZL-005 发起变更控制",
+        "type": "explicit",
+        "target": "SMP-ZL-005@03",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "正文写明编号 SMP-ZL-005，对应现行版变更控制管理规程。",
+        "note": "未写版本号，对应现行版 03。"
+      },
+      {
+        "clause": "4.7",
+        "excerpt": "外来文件（药典、法规、标准等）的管理按 SMP-WJ-004 执行",
+        "type": "explicit",
+        "target": "SMP-WJ-004@00",
+        "candidates": [],
+        "standard": null,
+        "confidence": "medium",
+        "reason": "正文写明编号 SMP-WJ-004，并说明用于外来文件的管理，可确定为外来文件管理规程。",
+        "note": "编号 SMP-WJ-004 在目录中对应两份名称不同的现行文件（SMP-WJ-004@00 外来文件管理规程、SMP-WJ-004@01 电子数据管理规程），依据原文“外来文件…的管理”确定为外来文件管理规程，请 QA 确认编号重复问题。"
+      },
+      {
+        "clause": "4.8",
+        "excerpt": "新版生效后的培训按 SMP-RY-004 执行",
+        "type": "explicit",
+        "target": "SMP-RY-004@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "正文写明编号 SMP-RY-004，对应现行版培训管理规程。",
+        "note": "未写版本号，对应现行版 02。"
+      },
+      {
+        "clause": "5",
+        "excerpt": "SMP-WJ-002 文件编码管理规程",
+        "type": "explicit",
+        "target": "SMP-WJ-002@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "相关文件列出编号及名称，与目录一致。",
+        "note": "未写版本号，对应现行版 02。"
+      },
+      {
+        "clause": "5",
+        "excerpt": "SMP-WJ-003 记录管理规程",
+        "type": "explicit",
+        "target": "SMP-WJ-003@03",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "相关文件列出编号及名称，与目录一致。",
+        "note": "未写版本号，对应现行版 03。"
+      },
+      {
+        "clause": "5",
+        "excerpt": "SMP-WJ-004 外来文件管理规程",
+        "type": "explicit",
+        "target": "SMP-WJ-004@00",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "相关文件列出编号及名称，名称确定为外来文件管理规程。",
+        "note": "编号 SMP-WJ-004 在目录中对应两份名称不同的现行文件（SMP-WJ-004@00 外来文件管理规程、SMP-WJ-004@01 电子数据管理规程），依据原文名称确定为 SMP-WJ-004@00。"
+      },
+      {
+        "clause": "5",
+        "excerpt": "SMP-ZL-005 变更控制管理规程",
+        "type": "explicit",
+        "target": "SMP-ZL-005@03",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "相关文件列出编号及名称，与目录一致。",
+        "note": "未写版本号，对应现行版 03。"
+      },
+      {
+        "clause": "5",
+        "excerpt": "SMP-RY-004 培训管理规程",
+        "type": "explicit",
+        "target": "SMP-RY-004@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "相关文件列出编号及名称，与目录一致。",
+        "note": "未写版本号，对应现行版 02。"
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 1595,
+    "outputTokens": 2234,
+    "cacheReadTokens": 6433,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": "end_turn"
+}

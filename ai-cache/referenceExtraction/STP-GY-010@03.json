@@ -1,0 +1,104 @@
+{
+  "task": "referenceExtraction",
+  "subject": "STP-GY-010@03",
+  "inputVersions": [
+    "samples/03 质量标准与工艺规程/STP-GY-010-03 尿素乳膏工艺规程.docx"
+  ],
+  "inputHash": "83e93460082e3d65",
+  "promptVersion": "extraction-v2",
+  "model": "claude-opus-5-5",
+  "servedBy": "claude-opus-5-5",
+  "mode": "cache",
+  "runAt": "2026-11-12T01:02:01.544Z",
+  "output": {
+    "references": [
+      {
+        "clause": "4.7",
+        "excerpt": "各工序操作按对应岗位操作规程执行",
+        "type": "implicit",
+        "target": null,
+        "candidates": [
+          "SOP-SC-031@02",
+          "SOP-SC-035@00"
+        ],
+        "standard": null,
+        "confidence": "medium",
+        "reason": "未写编号，泛指各工序的岗位标准操作规程，目录中现行的岗位操作规程有乳化岗位和配制岗位两份。",
+        "note": "泛指；乳化岗位操作规程在同条款另有显式引用。"
+      },
+      {
+        "clause": "4.7",
+        "excerpt": "乳化工序按 SOP-SC-031 执行",
+        "type": "explicit",
+        "target": "SOP-SC-031@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "写明编号 SOP-SC-031，对应乳化岗位标准操作规程。",
+        "note": "未写版本号，对应现行版 02。"
+      },
+      {
+        "clause": "4.8",
+        "excerpt": "批生产记录使用 SOR-SC-010-R01《尿素乳膏批生产记录》",
+        "type": "explicit",
+        "target": "SOR-SC-010-R01@03",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "编号和名称与目录一致。",
+        "note": ""
+      },
+      {
+        "clause": "5",
+        "excerpt": "SOP-SC-031 乳化岗位标准操作规程",
+        "type": "explicit",
+        "target": "SOP-SC-031@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "编号和名称与目录一致。",
+        "note": "未写版本号，对应现行版 02。"
+      },
+      {
+        "clause": "5",
+        "excerpt": "SOP-SB-021 乳化均质机使用、维护保养标准操作规程",
+        "type": "explicit",
+        "target": "SOP-SB-021@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "写明编号 SOP-SB-021，对应乳化均质机（RH-300）使用、维护保养标准操作规程。",
+        "note": "未写版本号，对应现行版 02；原文名称未写“（RH-300）”。"
+      },
+      {
+        "clause": "5",
+        "excerpt": "STP-BZ-510 尿素乳膏质量标准",
+        "type": "explicit",
+        "target": "STP-BZ-510@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "编号和名称与目录一致。",
+        "note": "未写版本号，对应现行版 02。"
+      },
+      {
+        "clause": "6",
+        "excerpt": "SOR-SC-010-R01 尿素乳膏批生产记录",
+        "type": "explicit",
+        "target": "SOR-SC-010-R01@03",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "编号和名称与目录一致。",
+        "note": ""
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 1402,
+    "outputTokens": 2097,
+    "cacheReadTokens": 6433,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": "end_turn"
+}

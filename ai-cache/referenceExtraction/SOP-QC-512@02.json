@@ -1,0 +1,134 @@
+{
+  "task": "referenceExtraction",
+  "subject": "SOP-QC-512@02",
+  "inputVersions": [
+    "samples/02 操作规程/SOP-QC-512-02 酮康唑乳膏检验标准操作规程.docx"
+  ],
+  "inputHash": "4f7e73f29a978b17",
+  "promptVersion": "extraction-v2",
+  "model": "claude-opus-5-5",
+  "servedBy": "claude-opus-5-5",
+  "mode": "cache",
+  "runAt": "2026-11-12T01:01:27.358Z",
+  "output": {
+    "references": [
+      {
+        "clause": "4.1",
+        "excerpt": "检验依据：STP-BZ-512 酮康唑乳膏质量标准。",
+        "type": "explicit",
+        "target": "STP-BZ-512@03",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "正文写明编号 STP-BZ-512，名称与目录一致，未写版本号，对应现行版。",
+        "note": ""
+      },
+      {
+        "clause": "4.3",
+        "excerpt": "性状：取本品适量，目视观察，应符合质量标准规定。",
+        "type": "implicit",
+        "target": "STP-BZ-512@03",
+        "candidates": [],
+        "standard": null,
+        "confidence": "medium",
+        "reason": "“质量标准”在本文件语境下指酮康唑乳膏质量标准。",
+        "note": ""
+      },
+      {
+        "clause": "4.5",
+        "excerpt": "照《中国药典》2025 年版四部通则 0942 最低装量检查法检查",
+        "type": "external",
+        "target": null,
+        "candidates": [],
+        "standard": "中国药典 2025 年版 通则 0942",
+        "confidence": "high",
+        "reason": "写明药典版次和通则号，为外部标准。",
+        "note": ""
+      },
+      {
+        "clause": "4.6",
+        "excerpt": "含量测定：照 SOP-QC-021 操作。",
+        "type": "explicit",
+        "target": "SOP-QC-021@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "正文写明编号 SOP-QC-021，对应高效液相色谱仪标准操作规程现行版。",
+        "note": ""
+      },
+      {
+        "clause": "4.7",
+        "excerpt": "照 SOP-QC-011 微生物限度检查标准操作规程检查",
+        "type": "explicit",
+        "target": "SOP-QC-011@03",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "正文写明编号 SOP-QC-011，名称与目录一致，对应现行版。",
+        "note": ""
+      },
+      {
+        "clause": "4.8",
+        "excerpt": "检验结果记录在 SOR-QC-512-R01《酮康唑乳膏检验记录》上。",
+        "type": "explicit",
+        "target": "SOR-QC-512-R01@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "编号 SOR-QC-512-R01 与目录台账编号（ledgerCode）一致，名称一致。",
+        "note": "该文件台账编号为 SOR-QC-512-R01，但文件上印的编号为 SOR-QC-511-R01（与克霉唑乳膏检验记录的编号相同），台账与文件编号不一致。"
+      },
+      {
+        "clause": "5",
+        "excerpt": "STP-BZ-512 酮康唑乳膏质量标准",
+        "type": "explicit",
+        "target": "STP-BZ-512@03",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "相关文件中写明编号和名称，与目录一致，对应现行版。",
+        "note": ""
+      },
+      {
+        "clause": "5",
+        "excerpt": "SOP-QC-011 微生物限度检查标准操作规程",
+        "type": "explicit",
+        "target": "SOP-QC-011@03",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "相关文件中写明编号和名称，与目录一致，对应现行版。",
+        "note": ""
+      },
+      {
+        "clause": "5",
+        "excerpt": "SOP-QC-021 高效液相色谱仪标准操作规程",
+        "type": "explicit",
+        "target": "SOP-QC-021@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "相关文件中写明编号和名称，与目录一致，对应现行版。",
+        "note": ""
+      },
+      {
+        "clause": "6",
+        "excerpt": "SOR-QC-512-R01 酮康唑乳膏检验记录",
+        "type": "explicit",
+        "target": "SOR-QC-512-R01@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "编号 SOR-QC-512-R01 与目录台账编号（ledgerCode）一致，名称一致。",
+        "note": "该文件台账编号为 SOR-QC-512-R01，但文件上印的编号为 SOR-QC-511-R01（与克霉唑乳膏检验记录的编号相同），台账与文件编号不一致。"
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 997,
+    "outputTokens": 1876,
+    "cacheReadTokens": 6433,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": "end_turn"
+}

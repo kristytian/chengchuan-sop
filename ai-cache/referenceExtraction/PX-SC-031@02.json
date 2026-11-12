@@ -1,0 +1,79 @@
+{
+  "task": "referenceExtraction",
+  "subject": "PX-SC-031@02",
+  "inputVersions": [
+    "samples/05 验证与培训/PX-SC-031-02 乳化岗位培训教材.docx"
+  ],
+  "inputHash": "0b0aa7d4ac5780b1",
+  "promptVersion": "extraction-v2",
+  "model": "claude-opus-5-5",
+  "servedBy": "claude-opus-5-5",
+  "mode": "cache",
+  "runAt": "2026-11-12T01:02:34.132Z",
+  "output": {
+    "references": [
+      {
+        "clause": "1",
+        "excerpt": "使乳化岗位人员掌握 SOP-SC-031-02 的操作要求",
+        "type": "explicit",
+        "target": "SOP-SC-031@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "正文写明编号及版本 SOP-SC-031-02，与目录中乳化岗位标准操作规程 02 版（现行）一致。",
+        "note": ""
+      },
+      {
+        "clause": "3.1",
+        "excerpt": "SOP-SC-031 由 01 版升为 02 版，2025-05-01 生效。",
+        "type": "explicit",
+        "target": "SOP-SC-031@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "正文写明编号 SOP-SC-031，并说明升为 02 版，对应目录中现行 02 版。",
+        "note": "原文同时提到 01 版（SOP-SC-031@01，已作废），这里是说明该规程的版本变化，对应到 02 版。"
+      },
+      {
+        "clause": "3.2",
+        "excerpt": "4.4 乳化：由“均质至膏体细腻均匀”改为“均质转速 2800 rpm，均质 10 分钟”。",
+        "type": "implicit",
+        "target": "SOP-SC-031@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "low",
+        "reason": "本条在“本次改动摘要”下，说明的是乳化岗位标准操作规程第 4.4 条的修改，不是本教材内部条款；对应文件是从上下文推断的。",
+        "note": "本条未写文件编号。本教材自身的 4.4 条是冷却脱泡，与“4.4 乳化”内容不符，所以判断为引用 SOP 的条款。"
+      },
+      {
+        "clause": "4.1",
+        "excerpt": "开机前确认乳化均质机“已清洁”标识在有效期内（SOP-SB-021）。",
+        "type": "explicit",
+        "target": "SOP-SB-021@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "正文写明编号 SOP-SB-021，未写版本号，对应目录中乳化均质机（RH-300）使用、维护保养标准操作规程的现行 02 版。",
+        "note": ""
+      },
+      {
+        "clause": "5",
+        "excerpt": "2800 rpm | SOP-SC-031-02 第 4.4 条",
+        "type": "explicit",
+        "target": "SOP-SC-031@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "考核题表的“对应条款”列写明 SOP-SC-031-02，与目录中现行 02 版一致。",
+        "note": "表中其余各行只写了“第 4.x 条”，也指向该 SOP，按同一条款同一文件只列一条处理。另外，第 3、5 题所对应的条款号（4.3、4.2）与第 4 章所列步骤顺序不一致，建议 QA 核对。"
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 967,
+    "outputTokens": 2047,
+    "cacheReadTokens": 6433,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": "end_turn"
+}

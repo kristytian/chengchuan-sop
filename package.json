@@ -16,7 +16,7 @@
     "check:offline": "node scripts/check-offline.ts",
     "check": "npm run lint && npm run check:i18n && npm run check:boundaries && npm test && npm run build && npm run check:offline",
     "ui:add": "node scripts/ui-add.ts",
-    "ai:prerun": "node scripts/ai-prerun/run.ts"
+    "ai:prerun": "node --env-file-if-exists=.env scripts/ai-prerun/run.ts"
   },
   "dependencies": {
     "@dagrejs/dagre": "3.1.3",

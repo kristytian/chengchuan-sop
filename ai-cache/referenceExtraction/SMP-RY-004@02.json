@@ -1,0 +1,57 @@
+{
+  "task": "referenceExtraction",
+  "subject": "SMP-RY-004@02",
+  "inputVersions": [
+    "samples/01 管理规程/SMP-RY-004-02 培训管理规程.docx"
+  ],
+  "inputHash": "1f61f4b73f038854",
+  "promptVersion": "extraction-v2",
+  "model": "claude-opus-5-5",
+  "servedBy": "claude-opus-5-5",
+  "mode": "cache",
+  "runAt": "2026-11-12T01:00:41.634Z",
+  "output": {
+    "references": [
+      {
+        "clause": "4.5",
+        "excerpt": "员工上岗资格按 SMP-RY-003 确认，未经确认不得独立上岗。",
+        "type": "explicit",
+        "target": "SMP-RY-003@01",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "正文写明编号 SMP-RY-003，与目录中的员工上岗资格确认管理规程编号一致。",
+        "note": "未写版本号。目录中该编号只有 01 版，已作废，且只在台账里、没有文件，无现行版。"
+      },
+      {
+        "clause": "5",
+        "excerpt": "SMP-WJ-001 文件管理规程",
+        "type": "explicit",
+        "target": "SMP-WJ-001@04",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "正文写明编号 SMP-WJ-001 和名称“文件管理规程”，与目录一致；未写版本号，对应现行 04 版。",
+        "note": "未写版本号，按现行版对应；03 版已作废。"
+      },
+      {
+        "clause": "5",
+        "excerpt": "SMP-RY-003 员工上岗资格确认管理规程",
+        "type": "explicit",
+        "target": "SMP-RY-003@01",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "正文写明编号 SMP-RY-003 和名称“员工上岗资格确认管理规程”，与目录一致。",
+        "note": "未写版本号。目录中该编号只有 01 版，已作废，且只在台账里、没有文件，无现行版。"
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 806,
+    "outputTokens": 1003,
+    "cacheReadTokens": 0,
+    "cacheWriteTokens": 6433
+  },
+  "stopReason": "end_turn"
+}

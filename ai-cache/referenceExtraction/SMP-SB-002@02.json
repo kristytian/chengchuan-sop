@@ -1,0 +1,50 @@
+{
+  "task": "referenceExtraction",
+  "subject": "SMP-SB-002@02",
+  "inputVersions": [
+    "samples/01 管理规程/SMP-SB-002-02 设备管理规程.docx"
+  ],
+  "inputHash": "e206d501b1becb3e",
+  "promptVersion": "extraction-v2",
+  "model": "claude-opus-5-5",
+  "servedBy": "claude-opus-5-5",
+  "mode": "cache",
+  "runAt": "2026-11-12T01:00:40.517Z",
+  "output": {
+    "references": [
+      {
+        "clause": "4.3",
+        "excerpt": "设备的使用、清洁和维护保养按各设备操作规程执行。",
+        "type": "implicit",
+        "target": null,
+        "candidates": [
+          "SOP-SB-021@02",
+          "SOP-SC-041@01",
+          "SOP-QC-021@02"
+        ],
+        "standard": null,
+        "confidence": "medium",
+        "reason": "“各设备操作规程”泛指各设备的使用、清洁、维护保养操作规程，目录中的设备及仪器操作规程均属于这一类。",
+        "note": "泛指"
+      },
+      {
+        "clause": "5",
+        "excerpt": "SMP-WJ-001 文件管理规程",
+        "type": "explicit",
+        "target": "SMP-WJ-001@04",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "写明了编号 SMP-WJ-001，名称与目录一致，未写版本号，因此对应现行版。",
+        "note": ""
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 753,
+    "outputTokens": 688,
+    "cacheReadTokens": 0,
+    "cacheWriteTokens": 6433
+  },
+  "stopReason": "end_turn"
+}

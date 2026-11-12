@@ -1,0 +1,68 @@
+{
+  "task": "referenceExtraction",
+  "subject": "SOR-QC-510-R01@02",
+  "inputVersions": [
+    "samples/04 记录模板/SOR-QC-510-R01 尿素乳膏检验记录.docx"
+  ],
+  "inputHash": "5399a8aab8185a81",
+  "promptVersion": "extraction-v2",
+  "model": "claude-opus-5-5",
+  "servedBy": "claude-opus-5-5",
+  "mode": "cache",
+  "runAt": "2026-11-12T01:02:03.254Z",
+  "output": {
+    "references": [
+      {
+        "clause": "header",
+        "excerpt": "SOP-QC-510-02",
+        "type": "explicit",
+        "target": "SOP-QC-510@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "文头对应文件和依据字段均写明编号 SOP-QC-510-02，与目录中尿素乳膏检验标准操作规程 02 版一致。",
+        "note": "该编号在 correspondingDoc 和 basis 中各出现一次，同一条款只列一条。"
+      },
+      {
+        "clause": "header",
+        "excerpt": "STP-BZ-510、SOP-QC-510-02",
+        "type": "explicit",
+        "target": "STP-BZ-510@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "依据字段写明编号 STP-BZ-510，对应尿素乳膏质量标准。",
+        "note": "未写版本号，对应现行版 02。"
+      },
+      {
+        "clause": "body",
+        "excerpt": "微生物限度 | 见微生物限度检查记录",
+        "type": "implicit",
+        "target": "SOR-QC-011-R01@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "原文名称“微生物限度检查记录”与目录中的文件名称完全一致。",
+        "note": ""
+      },
+      {
+        "clause": "body",
+        "excerpt": "含量测定（HPLC，照 SOP-QC-021）",
+        "type": "explicit",
+        "target": "SOP-QC-021@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "正文写明编号 SOP-QC-021，对应高效液相色谱仪标准操作规程。",
+        "note": "未写版本号，对应现行版 02。"
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 527,
+    "outputTokens": 896,
+    "cacheReadTokens": 6433,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": "end_turn"
+}

@@ -1,0 +1,35 @@
+{
+  "task": "referenceExtraction",
+  "subject": "SMP-WJ-002@02",
+  "inputVersions": [
+    "samples/01 管理规程/SMP-WJ-002-02 文件编码管理规程.docx"
+  ],
+  "inputHash": "b7c41337f8644d7e",
+  "promptVersion": "extraction-v2",
+  "model": "claude-opus-5-5",
+  "servedBy": "claude-opus-5-5",
+  "mode": "cache",
+  "runAt": "2026-11-12T01:00:44.701Z",
+  "output": {
+    "references": [
+      {
+        "clause": "5",
+        "excerpt": "SMP-WJ-001 文件管理规程",
+        "type": "explicit",
+        "target": "SMP-WJ-001@04",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "正文写明编号 SMP-WJ-001 且名称与目录一致；未写版本号，对应现行版 04。",
+        "note": ""
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 1127,
+    "outputTokens": 356,
+    "cacheReadTokens": 6433,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": "end_turn"
+}

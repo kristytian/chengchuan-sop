@@ -1,0 +1,35 @@
+{
+  "task": "referenceExtraction",
+  "subject": "SOR-SC-041-R01@01",
+  "inputVersions": [
+    "samples/04 记录模板/SOR-SC-041-R01 乳化均质机清洁记录.docx"
+  ],
+  "inputHash": "389698aa786dc73f",
+  "promptVersion": "extraction-v2",
+  "model": "claude-opus-5-5",
+  "servedBy": "claude-opus-5-5",
+  "mode": "cache",
+  "runAt": "2026-11-12T01:02:15.115Z",
+  "output": {
+    "references": [
+      {
+        "clause": "header",
+        "excerpt": "SOP-SC-041-01",
+        "type": "explicit",
+        "target": "SOP-SC-041@01",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "文头对应文件字段写明编号 SOP-SC-041-01，与目录中现行的乳化均质机清洁标准操作规程 01 版一致。",
+        "note": ""
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 535,
+    "outputTokens": 228,
+    "cacheReadTokens": 6433,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": "end_turn"
+}

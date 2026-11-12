@@ -1,6 +1,7 @@
 // Answer keys are for evaluation scripts only (CLAUDE.md):
 // - answers/ must never be referenced by app code, the sample loader or AI pre-run scripts;
-// - docs/sample-library-list.md lists the seeded answers too, so AI pre-run scripts must not read it.
+// - docs/sample-library-list.md lists the seeded answers too, so none of them may reference it either;
+// - scripts/eval/ builds and checks the answer keys, so none of them may import it.
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
@@ -13,8 +14,13 @@ const RULES = [
   },
   {
     what: 'docs/sample-library-list.md',
-    dirs: ['scripts/ai-prerun'],
+    dirs: ['src', 'vite-plugins', 'scripts/ai-prerun'],
     pattern: /sample-library-list/,
+  },
+  {
+    what: 'scripts/eval/',
+    dirs: ['src', 'vite-plugins', 'scripts/ai-prerun'],
+    pattern: /scripts\/eval\b|['"`]\.\.\/eval\//,
   },
 ]
 

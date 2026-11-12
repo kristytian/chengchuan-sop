@@ -50,17 +50,28 @@ export function OverviewPage() {
           <section className="rounded-lg border bg-background">
             <h2 className="border-b px-4 py-2.5 text-sm font-semibold">{t('overview.stations')}</h2>
             <ul className="divide-y text-sm">
-              <StationRow name={t('overview.row.assess')} summary={assessSummary(t, view)} state={t(view.stage === 'exported' ? 'overview.state.done' : 'overview.state.toConfirm')} to={`${base}/assess`} />
+              <StationRow
+                name={t('overview.row.assess')}
+                summary={view.ai.assess ? t('station.assess.ai', { ...view.ai.assess }) : assessSummary(t, view)}
+                state={t(view.ai.assess ? 'overview.state.inProgress' : view.stage === 'exported' ? 'overview.state.done' : 'overview.state.toConfirm')}
+                to={`${base}/assess`}
+              />
               <StationRow
                 name={t('overview.row.revise')}
-                summary={view.stage === 'exported' ? t('overview.row.reviseReady', { total: view.toRevise, done: view.reviewed }) : t('overview.row.reviseSummary')}
-                state={t(view.stage !== 'exported' ? 'overview.state.notStarted' : stationDone(view, 'revise') ? 'overview.state.done' : 'overview.state.inProgress')}
+                summary={
+                  view.ai.revise
+                    ? t('station.revise.ai', { ...view.ai.revise })
+                    : view.stage === 'exported'
+                      ? t('overview.row.reviseReady', { total: view.toRevise, done: view.reviewed })
+                      : t('overview.row.reviseSummary')
+                }
+                state={t(view.stage !== 'exported' ? 'overview.state.notStarted' : !view.ai.revise && stationDone(view, 'revise') ? 'overview.state.done' : 'overview.state.inProgress')}
                 to={`${base}/revise`}
               />
               <StationRow name={t('overview.row.rollout')} summary={rolloutSummaryText(t, view)} state={t(!rolloutOpen(view) ? 'overview.state.notStarted' : stationDone(view, 'rollout') ? 'overview.state.done' : 'overview.state.inProgress')} to={`${base}/rollout`} />
               <StationRow
                 name={t('overview.row.training')}
-                summary={trainingSummaryText(t, view)}
+                summary={view.ai.training ? t('station.training.ai', { ...view.ai.training }) : trainingSummaryText(t, view)}
                 state={t(!trainingOpen(view) ? 'overview.state.notStarted' : stationDone(view, 'training') ? 'overview.state.done' : 'overview.state.inProgress')}
                 to={`${base}/training`}
               />

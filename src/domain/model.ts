@@ -180,7 +180,7 @@ export interface ImpactItem {
 
 export type AIStatus = 'missing' | 'current' | 'stale'
 
-export type AITask = 'impactAnalysis' | 'referenceSuggestion' | 'changePoints' | 'revisionDraft' | 'trainingPack'
+export type AITask = 'impactAnalysis' | 'referenceSuggestion' | 'referenceExtraction' | 'changePoints' | 'revisionDraft' | 'trainingPack'
 
 /**
  * AIRun: one cached AI result (ai-cache/<task>/…json), or a hand-written
@@ -203,8 +203,11 @@ export interface AIRun<Output = unknown> {
   mode: 'cache' | 'example'
   runAt: string
   output: Output
+  /** Both calls when the first answer failed the checks. */
   usage: { inputTokens: number; outputTokens: number; cacheReadTokens: number; cacheWriteTokens: number }
   stopReason: string | null
+  /** The first answer failed the checks with these errors and was sent back once to be corrected; output is the corrected answer. */
+  correction?: { errors: string[] }
 }
 
 export interface ImpactSuggestion {
@@ -221,6 +224,28 @@ export interface ReferenceSuggestion {
   notFound: boolean
   confidence: number
   reason: string
+}
+
+/**
+ * AI's list of everything one document cites (整篇抽引用), for comparing with
+ * the rule-based references. Entries name directory ids (`identity@version`,
+ * see referenceDirectory); clause is a clause number, "header" or "body".
+ */
+export interface ReferenceExtraction {
+  references: {
+    clause: string
+    /** Text as written, at most 50 characters. */
+    excerpt: string
+    type: 'explicit' | 'implicit' | 'external' | 'notFound'
+    /** The one file it points to; null for external, notFound, and implicit references to a class or to one of several files. */
+    target: string | null
+    candidates: string[]
+    /** External standards only, e.g. 中国药典 <版次> 通则 <编号>. */
+    standard: string | null
+    confidence: 'high' | 'medium' | 'low'
+    reason: string
+    note: string
+  }[]
 }
 
 /** A person's (or AI's) conclusion on one 批注: 要改 / 不用改 / 待评估. */

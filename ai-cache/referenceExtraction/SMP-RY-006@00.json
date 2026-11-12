@@ -1,0 +1,46 @@
+{
+  "task": "referenceExtraction",
+  "subject": "SMP-RY-006@00",
+  "inputVersions": [
+    "samples/01 管理规程/SMP-RY-006-00 岗位资质确认管理规程.docx"
+  ],
+  "inputHash": "612e56dc8f3f9ab3",
+  "promptVersion": "extraction-v2",
+  "model": "claude-opus-5-5",
+  "servedBy": "claude-opus-5-5",
+  "mode": "cache",
+  "runAt": "2026-11-12T01:00:36.716Z",
+  "output": {
+    "references": [
+      {
+        "clause": "4.1",
+        "excerpt": "上岗前须完成岗位培训，并按 SMP-RY-004 考核合格。",
+        "type": "explicit",
+        "target": "SMP-RY-004@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "正文写明编号 SMP-RY-004，未写版本号，对应现行版培训管理规程。",
+        "note": ""
+      },
+      {
+        "clause": "5",
+        "excerpt": "SMP-RY-004 培训管理规程",
+        "type": "explicit",
+        "target": "SMP-RY-004@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "相关文件列出编号 SMP-RY-004 及名称培训管理规程，未写版本号，对应现行版。",
+        "note": ""
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 668,
+    "outputTokens": 444,
+    "cacheReadTokens": 0,
+    "cacheWriteTokens": 6433
+  },
+  "stopReason": "end_turn"
+}

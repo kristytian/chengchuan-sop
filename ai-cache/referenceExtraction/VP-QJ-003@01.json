@@ -1,0 +1,79 @@
+{
+  "task": "referenceExtraction",
+  "subject": "VP-QJ-003@01",
+  "inputVersions": [
+    "samples/05 验证与培训/VP-QJ-003-01 乳化均质机（RH-300）清洁验证方案.docx"
+  ],
+  "inputHash": "b3ee207ade7fb4ad",
+  "promptVersion": "extraction-v2",
+  "model": "claude-opus-5-5",
+  "servedBy": "claude-opus-5-5",
+  "mode": "cache",
+  "runAt": "2026-11-12T01:02:26.627Z",
+  "output": {
+    "references": [
+      {
+        "clause": "1",
+        "excerpt": "RH-300 型乳化均质机按现行清洁程序清洁后",
+        "type": "implicit",
+        "target": "SOP-SC-041@01",
+        "candidates": [],
+        "standard": null,
+        "confidence": "medium",
+        "reason": "“现行清洁程序”指乳化均质机的清洁规程，目录中对应乳化均质机清洁标准操作规程。",
+        "note": ""
+      },
+      {
+        "clause": "2",
+        "excerpt": "RH-300 型乳化均质机（SB-RH-01）及其清洁程序 SOP-SC-041",
+        "type": "explicit",
+        "target": "SOP-SC-041@01",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "正文写明编号 SOP-SC-041，未写版本号，对应现行版。",
+        "note": ""
+      },
+      {
+        "clause": "4.6",
+        "excerpt": "任一结果不符合接受标准，按偏差处理并评估清洁程序",
+        "type": "implicit",
+        "target": "SOP-SC-041@01",
+        "candidates": [],
+        "standard": null,
+        "confidence": "medium",
+        "reason": "“清洁程序”指本方案适用的乳化均质机清洁标准操作规程。",
+        "note": ""
+      },
+      {
+        "clause": "5",
+        "excerpt": "SOP-SC-041 乳化均质机清洁标准操作规程",
+        "type": "explicit",
+        "target": "SOP-SC-041@01",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "编号和名称与目录一致，未写版本号，对应现行版。",
+        "note": ""
+      },
+      {
+        "clause": "5",
+        "excerpt": "SMP-SB-002 设备管理规程",
+        "type": "explicit",
+        "target": "SMP-SB-002@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "编号和名称与目录一致，未写版本号，对应现行版。",
+        "note": ""
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 1099,
+    "outputTokens": 1196,
+    "cacheReadTokens": 6433,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": "end_turn"
+}

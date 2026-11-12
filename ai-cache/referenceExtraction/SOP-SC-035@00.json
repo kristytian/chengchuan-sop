@@ -1,0 +1,72 @@
+{
+  "task": "referenceExtraction",
+  "subject": "SOP-SC-035@00",
+  "inputVersions": [
+    "samples/02 操作规程/SOP-SC-035-00 配制岗位标准操作规程.docx"
+  ],
+  "inputHash": "8fd4dbf76c40922e",
+  "promptVersion": "extraction-v2",
+  "model": "claude-opus-5-5",
+  "servedBy": "claude-opus-5-5",
+  "mode": "cache",
+  "runAt": "2026-11-12T01:01:34.672Z",
+  "output": {
+    "references": [
+      {
+        "clause": "4.4",
+        "excerpt": "转入乳化间，按 SOP-SC-031 进行乳化",
+        "type": "explicit",
+        "target": "SOP-SC-031@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "原文写明编号 SOP-SC-031，未写版本号，因此对应现行版 02 版。",
+        "note": ""
+      },
+      {
+        "clause": "5",
+        "excerpt": "SOP-SC-031 乳化岗位标准操作规程",
+        "type": "explicit",
+        "target": "SOP-SC-031@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "相关文件中写明了编号和名称，与目录一致，未写版本号，因此对应现行版。",
+        "note": ""
+      },
+      {
+        "clause": "5",
+        "excerpt": "SMP-WJ-003 记录管理规程",
+        "type": "explicit",
+        "target": "SMP-WJ-003@03",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "相关文件中写明了编号和名称，与目录一致，未写版本号，因此对应现行版。",
+        "note": ""
+      },
+      {
+        "clause": "6",
+        "excerpt": "各品种批生产记录（配制工序页）",
+        "type": "implicit",
+        "target": null,
+        "candidates": [
+          "SOR-SC-010-R01@03",
+          "SOR-SC-011-R01@02",
+          "SOR-SC-012-R01@02"
+        ],
+        "standard": null,
+        "confidence": "medium",
+        "reason": "原文泛指各品种的批生产记录，目录中有尿素、克霉唑、酮康唑三个品种的乳膏批生产记录。",
+        "note": "泛指"
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 799,
+    "outputTokens": 904,
+    "cacheReadTokens": 6433,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": "end_turn"
+}

@@ -1,0 +1,82 @@
+{
+  "task": "referenceExtraction",
+  "subject": "SMP-WJ-003@03",
+  "inputVersions": [
+    "samples/01 管理规程/SMP-WJ-003-03 记录管理规程.docx"
+  ],
+  "inputHash": "71dae748ae0dcaf9",
+  "promptVersion": "extraction-v2",
+  "model": "claude-opus-5-5",
+  "servedBy": "claude-opus-5-5",
+  "mode": "cache",
+  "runAt": "2026-11-12T01:00:54.231Z",
+  "output": {
+    "references": [
+      {
+        "clause": "4.1",
+        "excerpt": "记录模板的编号按 SMP-WJ-002 执行",
+        "type": "explicit",
+        "target": "SMP-WJ-002@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "正文写明编号 SMP-WJ-002，未写版本号，对应现行版文件编码管理规程。",
+        "note": ""
+      },
+      {
+        "clause": "4.5",
+        "excerpt": "电子记录和电子数据的管理按 SMP-WJ-004 执行。",
+        "type": "explicit",
+        "target": "SMP-WJ-004@01",
+        "candidates": [],
+        "standard": null,
+        "confidence": "medium",
+        "reason": "编号 SMP-WJ-004 在目录中对应两份文件，正文所述“电子记录和电子数据的管理”与电子数据管理规程一致。",
+        "note": "编号 SMP-WJ-004 在目录中对应多份名称不同的文件（SMP-WJ-004-00 外来文件管理规程、SMP-WJ-004-01 电子数据管理规程），依据原文描述确定为电子数据管理规程；原文未写文件名称，而是描述内容，请 QA 确认。"
+      },
+      {
+        "clause": "5",
+        "excerpt": "SMP-WJ-001 文件管理规程",
+        "type": "explicit",
+        "target": "SMP-WJ-001@04",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "写明编号和名称，未写版本号，对应现行版 04。",
+        "note": ""
+      },
+      {
+        "clause": "5",
+        "excerpt": "SMP-WJ-002 文件编码管理规程",
+        "type": "explicit",
+        "target": "SMP-WJ-002@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "写明编号和名称，未写版本号，对应现行版 02。",
+        "note": ""
+      },
+      {
+        "clause": "5",
+        "excerpt": "SMP-WJ-004",
+        "type": "explicit",
+        "target": null,
+        "candidates": [
+          "SMP-WJ-004@00",
+          "SMP-WJ-004@01"
+        ],
+        "standard": null,
+        "confidence": "medium",
+        "reason": "写明编号 SMP-WJ-004 但未写名称，目录中该编号对应两份名称不同的现行文件，无法确定。",
+        "note": "编号 SMP-WJ-004 在目录中对应多份名称不同的文件（外来文件管理规程、电子数据管理规程），本处原文未写名称，无法确定，对应留空。"
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 845,
+    "outputTokens": 1425,
+    "cacheReadTokens": 6433,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": "end_turn"
+}

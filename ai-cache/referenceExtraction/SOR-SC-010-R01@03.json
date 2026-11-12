@@ -1,0 +1,57 @@
+{
+  "task": "referenceExtraction",
+  "subject": "SOR-SC-010-R01@03",
+  "inputVersions": [
+    "samples/04 记录模板/SOR-SC-010-R01 尿素乳膏批生产记录.docx"
+  ],
+  "inputHash": "42b93ac02519cb8b",
+  "promptVersion": "extraction-v2",
+  "model": "claude-opus-5-5",
+  "servedBy": "claude-opus-5-5",
+  "mode": "cache",
+  "runAt": "2026-11-12T01:02:16.654Z",
+  "output": {
+    "references": [
+      {
+        "clause": "header",
+        "excerpt": "STP-GY-010-03",
+        "type": "explicit",
+        "target": "STP-GY-010@03",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "文头的对应文件和依据都写明了编号 STP-GY-010-03，与目录中尿素乳膏工艺规程 03 版一致。",
+        "note": "correspondingDoc 与 basis 为同一文件，合并列为一条。"
+      },
+      {
+        "clause": "body",
+        "excerpt": "批量 | 300 kg | 工艺规程 | STP-GY-010-03",
+        "type": "explicit",
+        "target": "STP-GY-010@03",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "产品信息栏写明工艺规程编号 STP-GY-010-03，与目录中尿素乳膏工艺规程 03 版一致。",
+        "note": ""
+      },
+      {
+        "clause": "body",
+        "excerpt": "四、乳化均质（操作按 SOP-SC-031 执行）",
+        "type": "explicit",
+        "target": "SOP-SC-031@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "正文写明编号 SOP-SC-031，对应乳化岗位标准操作规程。",
+        "note": "未写版本号，按规则对应现行版 02；01 版已作废。"
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 802,
+    "outputTokens": 1393,
+    "cacheReadTokens": 6433,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": "end_turn"
+}

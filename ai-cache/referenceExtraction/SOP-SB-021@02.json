@@ -1,0 +1,127 @@
+{
+  "task": "referenceExtraction",
+  "subject": "SOP-SB-021@02",
+  "inputVersions": [
+    "samples/02 操作规程/SOP-SB-021-02 乳化均质机（RH-300）使用、维护保养标准操作规程.docx"
+  ],
+  "inputHash": "215c36dfd1c92412",
+  "promptVersion": "extraction-v2",
+  "model": "claude-opus-5-5",
+  "servedBy": "claude-opus-5-5",
+  "mode": "cache",
+  "runAt": "2026-11-12T01:01:33.693Z",
+  "output": {
+    "references": [
+      {
+        "clause": "3.1",
+        "excerpt": "乳化岗位操作人员按本规程操作设备并填写使用日志。",
+        "type": "implicit",
+        "target": "SOR-SB-021-R01@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "medium",
+        "reason": "“使用日志”指本设备的使用日志，与目录中“乳化均质机使用日志”基本对应。",
+        "note": "原文未写编号和全称，按本文件 4.7 和第 6 章写明的记录推断。"
+      },
+      {
+        "clause": "4.2.1",
+        "excerpt": "清洁按 SOP-SC-041 执行",
+        "type": "explicit",
+        "target": "SOP-SC-041@01",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "编号 SOP-SC-041 对应目录中的乳化均质机清洁标准操作规程。",
+        "note": "未写版本号，对应现行版 01。"
+      },
+      {
+        "clause": "4.3.3",
+        "excerpt": "至工艺规定转速（2500–3000 rpm）",
+        "type": "implicit",
+        "target": null,
+        "candidates": [
+          "STP-GY-010@03"
+        ],
+        "standard": null,
+        "confidence": "low",
+        "reason": "“工艺规定转速”指向各品种工艺规程中规定的均质转速，属于一类文件。",
+        "note": "泛指；目录中工艺规程仅有尿素乳膏工艺规程一份。"
+      },
+      {
+        "clause": "4.3.4",
+        "excerpt": "均质时间按品种工艺规程和岗位操作规程执行",
+        "type": "implicit",
+        "target": null,
+        "candidates": [
+          "STP-GY-010@03"
+        ],
+        "standard": null,
+        "confidence": "medium",
+        "reason": "“品种工艺规程”泛指各品种的工艺规程。",
+        "note": "泛指；目录中工艺规程仅有尿素乳膏工艺规程一份。"
+      },
+      {
+        "clause": "4.3.4",
+        "excerpt": "均质时间按品种工艺规程和岗位操作规程执行",
+        "type": "implicit",
+        "target": "SOP-SC-031@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "low",
+        "reason": "本设备由乳化岗位使用（见 3.1），“岗位操作规程”从上下文推断为乳化岗位标准操作规程。",
+        "note": "原文未写岗位名称，仅凭上下文推断；也可能指配制岗位标准操作规程（SOP-SC-035@00），请 QA 确认。"
+      },
+      {
+        "clause": "4.7",
+        "excerpt": "每次使用后填写 SOR-SB-021-R01《乳化均质机使用日志》。",
+        "type": "explicit",
+        "target": "SOR-SB-021-R01@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "编号和名称与目录完全一致。",
+        "note": ""
+      },
+      {
+        "clause": "5",
+        "excerpt": "SMP-SB-002 设备管理规程",
+        "type": "explicit",
+        "target": "SMP-SB-002@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "编号和名称与目录一致。",
+        "note": "未写版本号，对应现行版 02。"
+      },
+      {
+        "clause": "5",
+        "excerpt": "SOP-SC-041 乳化均质机清洁标准操作规程",
+        "type": "explicit",
+        "target": "SOP-SC-041@01",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "编号和名称与目录一致。",
+        "note": "未写版本号，对应现行版 01。"
+      },
+      {
+        "clause": "6",
+        "excerpt": "SOR-SB-021-R01 乳化均质机使用日志",
+        "type": "explicit",
+        "target": "SOR-SB-021-R01@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "编号和名称与目录完全一致。",
+        "note": ""
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 1582,
+    "outputTokens": 2373,
+    "cacheReadTokens": 6433,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": "end_turn"
+}

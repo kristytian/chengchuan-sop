@@ -1,0 +1,219 @@
+{
+  "task": "referenceExtraction",
+  "subject": "SOP-QC-011@03",
+  "inputVersions": [
+    "samples/02 操作规程/SOP-QC-011-03 微生物限度检查标准操作规程.docx"
+  ],
+  "inputHash": "0e519e57a8ba93ce",
+  "promptVersion": "extraction-v2",
+  "model": "claude-opus-5-5",
+  "servedBy": "claude-opus-5-5",
+  "mode": "cache",
+  "runAt": "2026-11-12T01:01:13.048Z",
+  "output": {
+    "references": [
+      {
+        "clause": "4.1",
+        "excerpt": "《中国药典》2025 年版四部通则 1105（微生物计数法）",
+        "type": "external",
+        "target": null,
+        "candidates": [],
+        "standard": "中国药典 2025 年版 通则 1105",
+        "confidence": "high",
+        "reason": "明确写出药典版次和通则编号 1105。",
+        "note": ""
+      },
+      {
+        "clause": "4.1",
+        "excerpt": "…通则 1106（控制菌检查法）…",
+        "type": "external",
+        "target": null,
+        "candidates": [],
+        "standard": "中国药典 2025 年版 通则 1106",
+        "confidence": "high",
+        "reason": "同一处列出通则 1106，版次为 2025 年版。",
+        "note": ""
+      },
+      {
+        "clause": "4.1",
+        "excerpt": "…通则 1107（非无菌药品微生物限度标准）。",
+        "type": "external",
+        "target": null,
+        "candidates": [],
+        "standard": "中国药典 2025 年版 通则 1107",
+        "confidence": "high",
+        "reason": "同一处列出通则 1107，版次为 2025 年版。",
+        "note": ""
+      },
+      {
+        "clause": "4.2",
+        "excerpt": "环境要求按药典相关指导原则执行",
+        "type": "external",
+        "target": null,
+        "candidates": [],
+        "standard": "药典相关指导原则（未写编号）",
+        "confidence": "low",
+        "reason": "引用药典指导原则，但未写具体名称和编号。",
+        "note": "未写编号及具体指导原则名称"
+      },
+      {
+        "clause": "4.3",
+        "excerpt": "按通则 1105 规定的方法制成 1:10 供试液",
+        "type": "external",
+        "target": null,
+        "candidates": [],
+        "standard": "中国药典 2025 年版 通则 1105",
+        "confidence": "high",
+        "reason": "写明通则编号 1105。",
+        "note": "本条未写版次，采用本文件 4.1 写明的 2025 年版"
+      },
+      {
+        "clause": "4.4",
+        "excerpt": "按通则 1105 和通则 1106 进行方法适用性试验",
+        "type": "external",
+        "target": null,
+        "candidates": [],
+        "standard": "中国药典 2025 年版 通则 1105",
+        "confidence": "high",
+        "reason": "写明通则编号 1105。",
+        "note": "本条未写版次，采用本文件 4.1 写明的 2025 年版"
+      },
+      {
+        "clause": "4.4",
+        "excerpt": "按通则 1105 和通则 1106 进行方法适用性试验",
+        "type": "external",
+        "target": null,
+        "candidates": [],
+        "standard": "中国药典 2025 年版 通则 1106",
+        "confidence": "high",
+        "reason": "写明通则编号 1106。",
+        "note": "本条未写版次，采用本文件 4.1 写明的 2025 年版"
+      },
+      {
+        "clause": "4.5",
+        "excerpt": "培养温度和时间按通则 1105 执行",
+        "type": "external",
+        "target": null,
+        "candidates": [],
+        "standard": "中国药典 2025 年版 通则 1105",
+        "confidence": "high",
+        "reason": "写明通则编号 1105。",
+        "note": "本条未写版次，采用本文件 4.1 写明的 2025 年版"
+      },
+      {
+        "clause": "4.6",
+        "excerpt": "检查金黄色葡萄球菌和铜绿假单胞菌，按通则 1106 执行",
+        "type": "external",
+        "target": null,
+        "candidates": [],
+        "standard": "中国药典 2025 年版 通则 1106",
+        "confidence": "high",
+        "reason": "写明通则编号 1106。",
+        "note": "本条未写版次，采用本文件 4.1 写明的 2025 年版"
+      },
+      {
+        "clause": "4.7",
+        "excerpt": "按通则 1107 及各品种质量标准判定",
+        "type": "external",
+        "target": null,
+        "candidates": [],
+        "standard": "中国药典 2025 年版 通则 1107",
+        "confidence": "high",
+        "reason": "写明通则编号 1107。",
+        "note": "本条未写版次，采用本文件 4.1 写明的 2025 年版"
+      },
+      {
+        "clause": "4.7",
+        "excerpt": "按通则 1107 及各品种质量标准判定",
+        "type": "implicit",
+        "target": null,
+        "candidates": [
+          "STP-BZ-510@02",
+          "STP-BZ-511@03",
+          "STP-BZ-512@03"
+        ],
+        "standard": null,
+        "confidence": "medium",
+        "reason": "“各品种质量标准”泛指目录中各产品的质量标准。",
+        "note": "泛指"
+      },
+      {
+        "clause": "4.8",
+        "excerpt": "检验结果记录在 SOR-QC-011-R01《微生物限度检查记录》上",
+        "type": "explicit",
+        "target": "SOR-QC-011-R01@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "编号和名称与目录现行版一致。",
+        "note": ""
+      },
+      {
+        "clause": "5",
+        "excerpt": "《中国药典》2025 年版四部通则 1105、1106、1107",
+        "type": "external",
+        "target": null,
+        "candidates": [],
+        "standard": "中国药典 2025 年版 通则 1105",
+        "confidence": "high",
+        "reason": "相关文件中列出通则 1105。",
+        "note": ""
+      },
+      {
+        "clause": "5",
+        "excerpt": "《中国药典》2025 年版四部通则 1105、1106、1107",
+        "type": "external",
+        "target": null,
+        "candidates": [],
+        "standard": "中国药典 2025 年版 通则 1106",
+        "confidence": "high",
+        "reason": "相关文件中列出通则 1106。",
+        "note": ""
+      },
+      {
+        "clause": "5",
+        "excerpt": "《中国药典》2025 年版四部通则 1105、1106、1107",
+        "type": "external",
+        "target": null,
+        "candidates": [],
+        "standard": "中国药典 2025 年版 通则 1107",
+        "confidence": "high",
+        "reason": "相关文件中列出通则 1107。",
+        "note": ""
+      },
+      {
+        "clause": "5",
+        "excerpt": "各品种质量标准",
+        "type": "implicit",
+        "target": null,
+        "candidates": [
+          "STP-BZ-510@02",
+          "STP-BZ-511@03",
+          "STP-BZ-512@03"
+        ],
+        "standard": null,
+        "confidence": "medium",
+        "reason": "“各品种质量标准”泛指目录中各产品的质量标准。",
+        "note": "泛指"
+      },
+      {
+        "clause": "6",
+        "excerpt": "SOR-QC-011-R01 微生物限度检查记录",
+        "type": "explicit",
+        "target": "SOR-QC-011-R01@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "编号和名称与目录现行版一致。",
+        "note": ""
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 1007,
+    "outputTokens": 2514,
+    "cacheReadTokens": 6433,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": "end_turn"
+}

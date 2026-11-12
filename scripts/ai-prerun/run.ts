@@ -1,9 +1,15 @@
 // AI pre-run: computes inputs from the library model, calls Claude for the
 // entries that are missing or stale, checks each answer, and writes one
-// record per entry to ai-cache/<task>/. Reads only samples/ and
+// record per entry to ai-cache/<task>/. An answer that fails the checks is
+// sent back once with the errors; the record keeps them (AIRun.correction). Reads only samples/ and
 // scenario-inputs/ through the library loader.
 //
-//   npm run ai:prerun -- <impact|references|all> [--dry-run] [--force] [--only <text>]
+//   npm run ai:prerun -- <impact|references|extract|all> [--dry-run] [--force] [--only <text>]
+//
+// The npm script loads ANTHROPIC_API_KEY from .env when the file exists.
+//
+// impact = 影响分析 per impact item; references = one implicit reference against
+// candidates; extract = every reference of one library file (整篇抽引用).
 //
 // --dry-run prints the first pending prompt of each task and the input size,
 // without credentials and without calling the API.
@@ -12,18 +18,21 @@ import { jsonSchemaOutputFormat } from '@anthropic-ai/sdk/helpers/json-schema'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import {
+  extractionSubject,
   impactAnalysisInput,
   impactChangeForAI,
   impactSubject,
   inputHash,
   PROMPT_VERSIONS,
+  referenceDirectory,
+  referenceExtractionInput,
   referenceSuggestionInput,
 } from '../../src/domain/ai-inputs.ts'
 import { analyzeChange, deriveLibraryModel } from '../../src/domain/library-model.ts'
 import type { AIRun, AITask } from '../../src/domain/model.ts'
 import { loadSampleLibrary } from '../../vite-plugins/import/library.ts'
-import { asUserData, IMPACT_SCHEMA, IMPACT_SYSTEM, REFERENCE_SCHEMA, REFERENCE_SYSTEM } from './prompts.ts'
-import { type Checked, checkImpact, checkReference } from './validate.ts'
+import { asUserData, correctionRequest, EXTRACTION_SCHEMA, EXTRACTION_SYSTEM, IMPACT_SCHEMA, IMPACT_SYSTEM, REFERENCE_SCHEMA, REFERENCE_SYSTEM } from './prompts.ts'
+import { type Checked, checkExtraction, checkImpact, checkReference } from './validate.ts'
 
 const MODEL = 'claude-opus-5-5'
 const EFFORT = 'high'
@@ -43,24 +52,32 @@ interface Job {
   /** Shared, cacheable context first; the per-entry data last. */
   system: { type: 'text'; text: string; cache_control?: { type: 'ephemeral' } }[]
   user: string
-  call: (client: Anthropic, job: Job) => Promise<{ checked: Checked<unknown>; response: ParsedResponse }>
+  /** With `retry`, the model sees its own first answer and the check errors, and answers again. */
+  call: (client: Anthropic, job: Job, retry?: Retry) => Promise<{ checked: Checked<unknown>; response: ParsedResponse }>
 }
 
 type ParsedResponse = Awaited<ReturnType<Anthropic['beta']['messages']['parse']>>
+
+interface Retry {
+  previous: ParsedResponse
+  errors: string[]
+}
 
 const args = process.argv.slice(2)
 const task = args.find((a) => !a.startsWith('--')) ?? 'all'
 const flag = (name: string) => args.includes(`--${name}`)
 const only = args.includes('--only') ? args[args.indexOf('--only') + 1] : undefined
-if (!['impact', 'references', 'all'].includes(task)) {
-  console.error('usage: npm run ai:prerun -- <impact|references|all> [--dry-run] [--force] [--only <text>]')
+const TASKS: Record<string, () => Job[]> = { impact: impactJobs, references: referenceJobs, extract: extractionJobs }
+if (task !== 'all' && !(task in TASKS)) {
+  console.error('usage: npm run ai:prerun -- <impact|references|extract|all> [--dry-run] [--force] [--only <text>]')
   process.exit(1)
 }
 
 const model = deriveLibraryModel(loadSampleLibrary(root).library)
-const jobs = [...(task !== 'references' ? impactJobs() : []), ...(task !== 'impact' ? referenceJobs() : [])].filter(
-  (j) => !only || j.subject.includes(only),
-)
+const jobs = Object.entries(TASKS)
+  .filter(([name]) => task === 'all' || task === name)
+  .flatMap(([, build]) => build())
+  .filter((j) => !only || j.subject.includes(only))
 const pending = jobs.filter((j) => flag('force') || !isCurrent(j))
 console.log(`[ai-prerun] ${jobs.length} entries, ${pending.length} to run (${jobs.length - pending.length} current in ai-cache/)`)
 
@@ -74,14 +91,37 @@ if (flag('dry-run')) {
   process.exit(0)
 }
 
+if (!process.env.ANTHROPIC_API_KEY?.trim()) {
+  console.error('[ai-prerun] ANTHROPIC_API_KEY is missing or empty (npm run ai:prerun reads it from .env); nothing was called.')
+  process.exit(1)
+}
 const client = new Anthropic()
 const totals = { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }
 const failures: string[] = []
 await pool(pending, CONCURRENCY, async (job) => {
   try {
-    const { checked, response } = await job.call(client, job)
-    if (!checked.ok) throw new Error(`answer failed checks: ${checked.errors.join('; ')}`)
-    const u = response.usage
+    const usage = { inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0 }
+    // Counted before the checks: a rejected answer was still paid for.
+    const count = (u: ParsedResponse['usage']) => {
+      usage.inputTokens += u.input_tokens
+      usage.outputTokens += u.output_tokens
+      usage.cacheReadTokens += u.cache_read_input_tokens ?? 0
+      usage.cacheWriteTokens += u.cache_creation_input_tokens ?? 0
+      totals.input += u.input_tokens
+      totals.output += u.output_tokens
+      totals.cacheRead += u.cache_read_input_tokens ?? 0
+      totals.cacheWrite += u.cache_creation_input_tokens ?? 0
+    }
+    let { checked, response } = await job.call(client, job)
+    count(response.usage)
+    let correction: AIRun['correction']
+    if (!checked.ok) {
+      correction = { errors: checked.errors }
+      console.log(`[ai-prerun] retry ${job.subject}: sending ${checked.errors.length} check error(s) back once`)
+      ;({ checked, response } = await job.call(client, job, { previous: response, errors: checked.errors }))
+      count(response.usage)
+    }
+    if (!checked.ok) throw new Error(`answer failed checks${correction ? ' after one correction' : ''}: ${checked.errors.join('; ')}`)
     const record: AIRun = {
       task: job.task,
       subject: job.subject,
@@ -93,21 +133,13 @@ await pool(pending, CONCURRENCY, async (job) => {
       mode: 'cache',
       runAt: new Date().toISOString(),
       output: checked.value,
-      usage: {
-        inputTokens: u.input_tokens,
-        outputTokens: u.output_tokens,
-        cacheReadTokens: u.cache_read_input_tokens ?? 0,
-        cacheWriteTokens: u.cache_creation_input_tokens ?? 0,
-      },
+      usage,
       stopReason: response.stop_reason,
+      ...(correction ? { correction } : {}),
     }
     mkdirSync(join(cacheDir, job.task), { recursive: true })
     writeFileSync(job.file, `${JSON.stringify(record, null, 2)}\n`)
-    totals.input += record.usage.inputTokens
-    totals.output += record.usage.outputTokens
-    totals.cacheRead += record.usage.cacheReadTokens
-    totals.cacheWrite += record.usage.cacheWriteTokens
-    console.log(`[ai-prerun] ok    ${job.subject}${response.model !== MODEL ? `  (served by ${response.model})` : ''}`)
+    console.log(`[ai-prerun] ok    ${job.subject}${correction ? '  (corrected once)' : ''}${response.model !== MODEL ? `  (served by ${response.model})` : ''}`)
   } catch (error) {
     if (error instanceof Anthropic.AuthenticationError) {
       console.error('[ai-prerun] authentication failed — set ANTHROPIC_API_KEY or run `ant auth login`, then retry')
@@ -145,8 +177,8 @@ function impactJobs(): Job[] {
         hash: inputHash(input),
         system: [{ type: 'text', text: IMPACT_SYSTEM }, { type: 'text', text: sharedText, cache_control: { type: 'ephemeral' } }],
         user: asUserData('受影响文件', input.target),
-        call: async (c, job) => {
-          const response = await parse(c, job, IMPACT_SCHEMA)
+        call: async (c, job, retry) => {
+          const response = await parse(c, job, IMPACT_SCHEMA, retry)
           return { response, checked: checkImpact(response.parsed_output, input) }
         },
       }
@@ -167,15 +199,51 @@ function referenceJobs(): Job[] {
         hash: inputHash(input),
         system: [{ type: 'text', text: REFERENCE_SYSTEM }],
         user: asUserData('引用', input),
-        call: async (c, job) => {
-          const response = await parse(c, job, REFERENCE_SCHEMA)
+        call: async (c, job, retry) => {
+          const response = await parse(c, job, REFERENCE_SCHEMA, retry)
           return { response, checked: checkReference(response.parsed_output, input) }
         },
       }
     })
 }
 
-async function parse(c: Anthropic, job: Job, schema: typeof IMPACT_SCHEMA | typeof REFERENCE_SCHEMA): Promise<ParsedResponse> {
+function extractionJobs(): Job[] {
+  const directory = referenceDirectory(model.catalog)
+  const sharedText = asUserData('文件目录', directory)
+  return model.catalog.versions
+    .filter((v) => v.origin === 'library' && v.document)
+    .map((v): Job => {
+      const input = referenceExtractionInput(v, directory)
+      const subject = extractionSubject(v)
+      return {
+        task: 'referenceExtraction',
+        subject,
+        file: join(cacheDir, 'referenceExtraction', `${safeName(subject)}.json`),
+        inputVersions: [v.key],
+        hash: inputHash(input),
+        system: [{ type: 'text', text: EXTRACTION_SYSTEM }, { type: 'text', text: sharedText, cache_control: { type: 'ephemeral' } }],
+        user: asUserData('待分析文件', input.document),
+        call: async (c, job, retry) => {
+          const response = await parse(c, job, EXTRACTION_SCHEMA, retry)
+          return { response, checked: checkExtraction(response.parsed_output, input) }
+        },
+      }
+    })
+}
+
+async function parse(
+  c: Anthropic,
+  job: Job,
+  schema: typeof IMPACT_SCHEMA | typeof REFERENCE_SCHEMA | typeof EXTRACTION_SCHEMA,
+  retry?: Retry,
+): Promise<ParsedResponse> {
+  const messages: Anthropic.Beta.BetaMessageParam[] = [{ role: 'user', content: job.user }]
+  if (retry) {
+    // The first answer goes back as it came (thinking blocks unchanged), minus the SDK's own parsed copy.
+    const blocks: Anthropic.Beta.BetaContentBlock[] = retry.previous.content
+    const previous = blocks.map((b) => (b.type === 'text' ? { type: 'text' as const, text: b.text } : b))
+    messages.push({ role: 'assistant', content: previous }, { role: 'user', content: correctionRequest(retry.errors) })
+  }
   const response = await c.beta.messages.parse({
     model: MODEL,
     max_tokens: 16000,
@@ -183,7 +251,7 @@ async function parse(c: Anthropic, job: Job, schema: typeof IMPACT_SCHEMA | type
     fallbacks: 'default',
     output_config: { effort: EFFORT, format: jsonSchemaOutputFormat(schema) },
     system: job.system,
-    messages: [{ role: 'user', content: job.user }],
+    messages,
   })
   if (response.stop_reason === 'refusal') throw new Error(`refused (${response.stop_details?.category ?? 'no category'})`)
   if (response.stop_reason === 'max_tokens') throw new Error('hit max_tokens before finishing')

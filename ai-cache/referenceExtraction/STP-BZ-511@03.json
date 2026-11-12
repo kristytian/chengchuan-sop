@@ -1,0 +1,134 @@
+{
+  "task": "referenceExtraction",
+  "subject": "STP-BZ-511@03",
+  "inputVersions": [
+    "samples/03 质量标准与工艺规程/STP-BZ-511-03 克霉唑乳膏质量标准.docx"
+  ],
+  "inputHash": "225351a4dff1044b",
+  "promptVersion": "extraction-v2",
+  "model": "claude-opus-5-5",
+  "servedBy": "claude-opus-5-5",
+  "mode": "cache",
+  "runAt": "2026-11-12T01:01:54.296Z",
+  "output": {
+    "references": [
+      {
+        "clause": "4.2",
+        "excerpt": "《中国药典》2025 年版四部制剂通则 0109（软膏剂 乳膏剂）",
+        "type": "external",
+        "target": null,
+        "candidates": [],
+        "standard": "中国药典 2025 年版 通则 0109",
+        "confidence": "high",
+        "reason": "制定依据写明了药典版次和通则号 0109。",
+        "note": ""
+      },
+      {
+        "clause": "4.3",
+        "excerpt": "鉴别 | 供试品主峰保留时间应与对照品一致 | HPLC，通则 0512",
+        "type": "external",
+        "target": null,
+        "candidates": [],
+        "standard": "中国药典 2025 年版 通则 0512",
+        "confidence": "high",
+        "reason": "鉴别、有关物质、含量的检验方法均写明了通则 0512。",
+        "note": "本条款未写版次，按本文件 4.2 写明的 2025 年版。"
+      },
+      {
+        "clause": "4.3",
+        "excerpt": "装量 | 应符合规定 | 通则 0942",
+        "type": "external",
+        "target": null,
+        "candidates": [],
+        "standard": "中国药典 2025 年版 通则 0942",
+        "confidence": "high",
+        "reason": "装量的检验方法写明了通则 0942。",
+        "note": "本条款未写版次，按本文件 4.2 写明的 2025 年版。"
+      },
+      {
+        "clause": "4.3",
+        "excerpt": "应符合通则 1107 中局部给药制剂的规定",
+        "type": "external",
+        "target": null,
+        "candidates": [],
+        "standard": "中国药典 2025 年版 通则 1107",
+        "confidence": "high",
+        "reason": "微生物限度的标准规定写明了通则 1107。",
+        "note": "本条款未写版次，按本文件 4.2 写明的 2025 年版。"
+      },
+      {
+        "clause": "4.3",
+        "excerpt": "通则 1105、1106",
+        "type": "external",
+        "target": null,
+        "candidates": [],
+        "standard": "中国药典 2025 年版 通则 1105",
+        "confidence": "high",
+        "reason": "微生物限度的检验方法写明了通则 1105。",
+        "note": "本条款未写版次，按本文件 4.2 写明的 2025 年版。"
+      },
+      {
+        "clause": "4.3",
+        "excerpt": "通则 1105、1106",
+        "type": "external",
+        "target": null,
+        "candidates": [],
+        "standard": "中国药典 2025 年版 通则 1106",
+        "confidence": "high",
+        "reason": "微生物限度的检验方法写明了通则 1106。",
+        "note": "本条款未写版次，按本文件 4.2 写明的 2025 年版。"
+      },
+      {
+        "clause": "4.5",
+        "excerpt": "检验操作按 SOP-QC-511 克霉唑乳膏检验标准操作规程执行。",
+        "type": "explicit",
+        "target": "SOP-QC-511@03",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "正文写明了编号 SOP-QC-511 和文件名称，与目录现行版一致。",
+        "note": "原文未写版本号，对应现行版 03。"
+      },
+      {
+        "clause": "5",
+        "excerpt": "SOP-QC-511 克霉唑乳膏检验标准操作规程",
+        "type": "explicit",
+        "target": "SOP-QC-511@03",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "相关文件中写明了编号和名称，与目录现行版一致。",
+        "note": "原文未写版本号，对应现行版 03。"
+      },
+      {
+        "clause": "5",
+        "excerpt": "《中国药典》2025 年版",
+        "type": "external",
+        "target": null,
+        "candidates": [],
+        "standard": "中国药典 2025 年版",
+        "confidence": "high",
+        "reason": "相关文件中列出了药典版次，未写通则号。",
+        "note": ""
+      },
+      {
+        "clause": "6",
+        "excerpt": "SOR-QC-511-R01 克霉唑乳膏检验记录",
+        "type": "explicit",
+        "target": "SOR-QC-511-R01@03",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "相关记录中写明了编号和名称，名称确定为克霉唑乳膏检验记录。",
+        "note": "编号 SOR-QC-511-R01 在目录中对应多份文件：SOR-QC-511-R01@03（克霉唑乳膏检验记录）和 SOR-QC-512-R01@02（酮康唑乳膏检验记录，文件上印的编号为 SOR-QC-511-R01，台账编号为 SOR-QC-512-R01）。按原文名称对应克霉唑乳膏检验记录。"
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 1032,
+    "outputTokens": 2224,
+    "cacheReadTokens": 6433,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": "end_turn"
+}

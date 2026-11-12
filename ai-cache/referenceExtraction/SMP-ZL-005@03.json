@@ -1,0 +1,68 @@
+{
+  "task": "referenceExtraction",
+  "subject": "SMP-ZL-005@03",
+  "inputVersions": [
+    "samples/01 管理规程/SMP-ZL-005-03 变更控制管理规程.docx"
+  ],
+  "inputHash": "c8e8f94ab02d5bbb",
+  "promptVersion": "extraction-v2",
+  "model": "claude-opus-5-5",
+  "servedBy": "claude-opus-5-5",
+  "mode": "cache",
+  "runAt": "2026-11-12T01:01:04.686Z",
+  "output": {
+    "references": [
+      {
+        "clause": "4.4",
+        "excerpt": "受影响文件按 SMP-WJ-001 修订和发放。",
+        "type": "explicit",
+        "target": "SMP-WJ-001@04",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "正文写明编号 SMP-WJ-001，未写版本号，对应现行版文件管理规程。",
+        "note": ""
+      },
+      {
+        "clause": "4.5",
+        "excerpt": "相关人员的培训按 SMP-RY-004 执行。",
+        "type": "explicit",
+        "target": "SMP-RY-004@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "正文写明编号 SMP-RY-004，未写版本号，对应现行版培训管理规程。",
+        "note": ""
+      },
+      {
+        "clause": "5",
+        "excerpt": "SMP-WJ-001 文件管理规程",
+        "type": "explicit",
+        "target": "SMP-WJ-001@04",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "相关文件列出编号和名称，与目录一致，未写版本号，对应现行版。",
+        "note": ""
+      },
+      {
+        "clause": "5",
+        "excerpt": "SMP-RY-004 培训管理规程",
+        "type": "explicit",
+        "target": "SMP-RY-004@02",
+        "candidates": [],
+        "standard": null,
+        "confidence": "high",
+        "reason": "相关文件列出编号和名称，与目录一致，未写版本号，对应现行版。",
+        "note": ""
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 854,
+    "outputTokens": 678,
+    "cacheReadTokens": 6433,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": "end_turn"
+}

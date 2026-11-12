@@ -1,10 +1,22 @@
 import { describe, expect, it } from 'vitest'
 import type { SourceDocument } from '../data/schema.ts'
 import { lookupRun, referenceSuggestions } from './ai.ts'
-import { impactAnalysisInput, impactChangeForAI, impactSubject, inputHash, PROMPT_VERSIONS, referenceSuggestionInput, stableJson } from './ai-inputs.ts'
+import {
+  impactAnalysisInput,
+  impactChangeForAI,
+  impactSubject,
+  inputHash,
+  PROMPT_VERSIONS,
+  referenceDirectory,
+  referenceExtractionInput,
+  referenceSuggestionInput,
+  stableJson,
+} from './ai-inputs.ts'
+import { buildCatalog } from './catalog.ts'
 import { analyzeChange, deriveLibraryModel } from './library-model.ts'
 import type { AIRun, ChangePointsSuggestion, ImpactSuggestion } from './model.ts'
-import { clause, library, para, sourceDoc } from './test-fixtures.ts'
+import { TERMS } from './source-terms.ts'
+import { clause, ledgerRow, library, para, sourceDoc } from './test-fixtures.ts'
 
 const equipmentSop = sourceDoc('SOP-SB-021-02', {
   name: '乳化均质机（RH-300）规程',
@@ -123,5 +135,31 @@ describe('reference suggestion input', () => {
     const input = referenceSuggestionInput(model.references[0], model.catalog)
 
     expect(input.citing).toMatchObject({ code: 'SOP-SC-031-02', clause: '4.7', clauseText: '清场\n按相关清洁规程执行。', text: '相关清洁规程' })
+  })
+})
+
+describe('referenceDirectory', () => {
+  it('lists every version but drafts, ledger-only ones too, with the ledger number where it differs', () => {
+    const record = sourceDoc('SOR-QC-511-R01', { name: 'K record', version: '02' })
+    const catalog = buildCatalog(
+      library(
+        [sourceDoc('SOP-SC-031-02'), record],
+        [
+          ledgerRow('SOP-SC-031', '02', { name: 'name of SOP-SC-031-02' }),
+          ledgerRow('SOR-QC-512-R01', '02', { name: 'K record' }),
+          ledgerRow('SOP-SC-028', '02', { status: TERMS.statusObsolete }),
+        ],
+        [sourceDoc('SOP-SC-031-03', { source: 'scenario-inputs/draft.docx' })],
+      ),
+    )
+    const directory = referenceDirectory(catalog)
+
+    expect(directory.map((d) => [d.id, d.code, d.ledgerCode, d.status, d.ledgerOnly])).toEqual([
+      ['SOP-SC-028@02', 'SOP-SC-028-02', null, 'obsolete', true],
+      ['SOP-SC-031@02', 'SOP-SC-031-02', null, 'current', false],
+      ['SOR-QC-512-R01@02', 'SOR-QC-511-R01', 'SOR-QC-512-R01', 'current', false],
+    ])
+    const sop = catalog.versions.find((v) => v.identity === 'SOP-SC-031' && v.origin === 'library')!
+    expect(referenceExtractionInput(sop, directory).document).toMatchObject({ id: 'SOP-SC-031@02', code: 'SOP-SC-031-02' })
   })
 })
