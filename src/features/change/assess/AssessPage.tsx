@@ -104,6 +104,7 @@ export function AssessPage() {
           <div className="border-t px-4 py-2.5">
             {/* Every evaluate entry needs its conclusion before the report can go out. */}
             {view.unevaluated > 0 && <p className="mb-2 text-xs text-muted-foreground">{t('assess.confirm.blocked', { count: view.unevaluated })}</p>}
+            {view.withoutPoints > 0 && <p className="mb-2 text-xs text-muted-foreground">{t('assess.confirm.blockedPoints', { count: view.withoutPoints })}</p>}
             <div className="flex items-center gap-2">
               <Button size="sm" variant="outline" onClick={() => setAdding(true)}>
                 {t('assess.add.button')}
@@ -111,8 +112,8 @@ export function AssessPage() {
               <Button
                 size="sm"
                 className="ml-auto"
-                disabled={view.unevaluated > 0}
-                title={t(view.unevaluated > 0 ? 'assess.confirm.blocked' : 'assess.confirm.hint', { count: view.unevaluated })}
+                disabled={view.unevaluated > 0 || view.withoutPoints > 0}
+                title={view.unevaluated > 0 ? t('assess.confirm.blocked', { count: view.unevaluated }) : view.withoutPoints > 0 ? t('assess.confirm.blockedPoints', { count: view.withoutPoints }) : t('assess.confirm.hint')}
                 onClick={() => exportReport(view.record.id)}
               >
                 {t('assess.confirm.button')}
@@ -190,7 +191,8 @@ function RowActions({ view, entry, identity, removal, editable }: { view: Change
       {conclusion && <DecisionNote title={t('assess.conclude.moved', { tier: t(`report.group.${conclusion.tier}`) })} decision={conclusion} />}
       {mode === 'idle' && (
         <div className="flex flex-wrap gap-x-3 gap-y-1">
-          {entry.origin === 'generated' && (
+          {/* A document put on by hand has the page too: its change points are written there (UX-57). */}
+          {(entry.origin === 'generated' || !removed) && (
             <Link to={`doc/${identity}`} className={link}>
               {t('assess.action.open')}
             </Link>

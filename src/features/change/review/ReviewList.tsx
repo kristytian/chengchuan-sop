@@ -7,6 +7,7 @@ import type { AiProgress } from '../ai-progress'
 import { AiItemState } from '../AiWorking'
 import { concludedText, reportPlaces } from './labels'
 import type { ReviewTarget } from './model'
+import { plannedStatuses } from './points'
 
 const COLS = ['file', 'places', 'summary', 'status', 'action'] as const
 const WIDTH: Record<(typeof COLS)[number], string> = { file: 'w-[30%]', places: 'w-[22%]', summary: '', status: 'w-32', action: 'w-24' }
@@ -76,6 +77,7 @@ export function ReviewList({ targets, onOpen, progress }: { targets: ReviewTarge
                                 ? t('review.whyAdded', { reason: x.entry.reason })
                                 : reportPlaces(t, x)}
                           </span>
+                          <PointCounts target={x} />
                         </td>
                         <td className="px-3 py-2.5 text-ai">
                           <span className="line-clamp-2" title={x.summary.map((s) => s.text).join('\n')}>
@@ -121,5 +123,19 @@ export function ReviewList({ targets, onOpen, progress }: { targets: ReviewTarge
         </div>
       </div>
     </div>
+  )
+}
+
+/** 「未改到 1 · 不按要点改 1」 under the places: the report's 修改要点 the draft does not carry out (UX-57). */
+function PointCounts({ target }: { target: ReviewTarget }) {
+  const { t } = useTranslation()
+  const states = plannedStatuses(target.points, target.ops, target.review.closures)
+  const open = states.filter((s) => s.status === 'open').length
+  const declined = states.filter((s) => s.status === 'declined').length
+  if (open + declined === 0) return null
+  return (
+    <span className="mt-0.5 block text-xs">
+      {[open > 0 && t('review.list.pointsOpen', { count: open }), declined > 0 && t('review.list.pointsDeclined', { count: declined })].filter(Boolean).join(t('common.pointSep'))}
+    </span>
   )
 }

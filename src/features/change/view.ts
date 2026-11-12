@@ -3,7 +3,7 @@
 // state; later segments add the review, rollout and training states.
 import type { TFunction } from 'i18next'
 import { changeAnalysis, displayCode, domainChange, versionByKey } from '@/data/model'
-import { needsLook, type Report, type ReportEntry, type ReportGroup, unevaluated } from '@/domain/assessment'
+import { needsLook, type Report, type ReportEntry, type ReportGroup, unevaluated, withoutPoints } from '@/domain/assessment'
 import type { Change, DocumentVersion, ImpactItem } from '@/domain/model'
 import { shortDate } from '@/lib/format'
 import { type AiStage, type Assessment, type ChangeRecord, type DocReview, emptyRollout, type PackRecord, type Rollout } from '@/store/demo'
@@ -35,6 +35,8 @@ export interface ChangeView {
   report: Report
   /** 需评估 entries still without a 评估结论; the report cannot go out while there are any. */
   unevaluated: number
+  /** Documents put on as 必须改 with no 修改要点 yet (UX-57): they hold the export too. */
+  withoutPoints: number
   /** Clause and header changes between the two versions. */
   changeCount: number
   /** The station work is at now. */
@@ -86,6 +88,7 @@ export function changeView(
     assessment,
     report,
     unevaluated: unevaluated(report).length,
+    withoutPoints: withoutPoints(report).length,
     changeCount: (diff?.header.length ?? 0) + (diff?.clauses.length ?? 0),
     current: stage !== 'exported' ? 'assess' : allReviewed ? 'rollout' : 'revise',
     stage,

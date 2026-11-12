@@ -6,8 +6,8 @@
     "scenario-inputs/SOP-SB-021-03 乳化均质机（RH-500）使用、维护保养标准操作规程.docx",
     "samples/04 记录模板/SOR-SC-041-R01 乳化均质机清洁记录.docx"
   ],
-  "inputHash": "8ab8478f6cd803f4",
-  "promptVersion": "revision-v2",
+  "inputHash": "bc97067fd5ff62e0",
+  "promptVersion": "revision-v3",
   "model": "none · hand-written example",
   "servedBy": "none · hand-written example",
   "mode": "example",
@@ -35,14 +35,20 @@
         "block": 1,
         "row": 1,
         "cell": 1,
-        "text": "拆下底部出料阀阀芯、取样阀；底置均质头不拆卸"
+        "text": "拆下底部出料阀阀芯、取样阀；底置均质头不拆卸",
+        "points": [
+          "拆卸一栏改为拆底部出料阀阀芯、取样阀，底置均质头不拆"
+        ]
       },
       {
         "clause": "body",
         "block": 1,
         "row": 3,
         "cell": 1,
-        "text": "0.5% 清洁剂约 80 L 经 CIP 喷淋球喷淋，均质 1500 rpm 循环 10 分钟"
+        "text": "0.5% 清洁剂约 80 L 经 CIP 喷淋球喷淋，均质 1500 rpm 循环 10 分钟",
+        "points": [
+          "清洁剂清洗一栏加上经 CIP 喷淋球喷淋"
+        ]
       }
     ],
     "history": null

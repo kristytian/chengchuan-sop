@@ -25,6 +25,29 @@ export interface Rewrite {
   row?: number
   cell?: number
   text: string
+  /** The 修改要点 (by label) this rewrite carries out (UX-57). */
+  points?: readonly string[]
+}
+
+/** How the reviewer closed a 修改要点 the draft did not carry out (UX-57): done by hand, or 不按这条改 with why. */
+export interface PointClosure {
+  state: 'done' | 'declined'
+  note: string
+  by: string
+  on: string
+}
+
+/** How a 修改要点 reads, and how it is known from one stage to the next: its words, or 原文 → 改成. */
+export const pointLabel = (p: { text: string; from: string | null; to: string | null }) => p.text || `${p.from} → ${p.to}`
+
+/**
+ * The rewrites that still stand on the report (UX-57): one is kept while every
+ * point it carries out is on the report, unchanged, at its clause. A rewrite
+ * that names no points is kept.
+ */
+export function applicableRewrites(rewrites: readonly Rewrite[], points: readonly { clause: string; text: string; from: string | null; to: string | null }[]): Rewrite[] {
+  const on = new Set(points.map((p) => `${p.clause}|${pointLabel(p)}`))
+  return rewrites.filter((r) => (r.points ?? []).every((label) => on.has(`${r.clause}|${label}`)))
 }
 
 export interface RevisionPlan {
@@ -73,7 +96,8 @@ export function draftOperations(doc: SourceDocument, plan: RevisionPlan): DraftO
   const clauses = contentClauses(doc)
   for (const r of plan.rewrites) {
     const original = rewriteSource(clauses, r)
-    if (original) replacements.push({ find: original, replace: r.text, first: true, exact: false, margins: false, why: { kind: 'rewrite', basis: plan.points.filter((p) => p.clause === r.clause && !p.from).map((p) => p.text) } })
+    const basis = r.points ?? plan.points.filter((p) => p.clause === r.clause && !p.from).map((p) => p.text)
+    if (original) replacements.push({ find: original, replace: r.text, first: true, exact: false, margins: false, why: { kind: 'rewrite', basis } })
   }
 
   // The header table: label, value, label, value… — the draft is unsigned and not yet in force.
@@ -106,7 +130,7 @@ export function draftOperations(doc: SourceDocument, plan: RevisionPlan): DraftO
   for (const p of plan.points) {
     if (!p.from || !p.to || seen.has(p.from) || !has(p.from)) continue
     seen.add(p.from)
-    replacements.push({ find: p.from, replace: p.to, first: false, exact: false, margins: true, why: { kind: 'point', text: p.text || `${p.from} → ${p.to}`, source: p.source } })
+    replacements.push({ find: p.from, replace: p.to, first: false, exact: false, margins: true, why: { kind: 'point', text: pointLabel(p), source: p.source } })
   }
 
   const hasHistory = doc.clauses.some((c) => c.number && !c.number.includes('.') && c.heading === TERMS.historyChapter)

@@ -16,7 +16,8 @@ import type { ChangeView } from '../view'
 import { DocxEditor, DocxOriginal, type DraftApi } from './DocxEditor'
 import { originalDocx } from './docx'
 import { docFormats } from './formats'
-import { whyLine } from './labels'
+import { allSettled, plannedStatuses, pointStatuses } from './points'
+import { ReportPoints } from './ReportPoints'
 import { approvedEffective } from '../rollout/model'
 import { ReviewList } from './ReviewList'
 import { type ReviewTarget, reviewTargets } from './model'
@@ -113,6 +114,10 @@ function Review({
     if (view.reviewed + 1 === view.toRevise && !useDemo.getState().generating[`${id}:training`]) startGeneration(id, 'training')
   }
   const current = changes.find((c) => c.id === active)
+  // 确认审阅 waits until every 修改要点 is carried out or closed by hand (UX-57).
+  // A confirmed draft shows its changes accepted, so its points are read from what AI planned.
+  const points = final ? plannedStatuses(target.points, target.ops, target.review.closures) : pointStatuses(target.points, target.ops, changes, target.review.closures)
+  const openPoints = points.filter((p) => p.status === 'open').length
 
   return (
     <div className="flex h-full flex-col">
@@ -144,15 +149,13 @@ function Review({
               {t('review.undo')}
             </Button>
           ) : (
-            <Button size="sm" disabled={!ready} onClick={() => void confirm()}>
+            <Button size="sm" disabled={!ready || !allSettled(points)} title={openPoints > 0 ? t('review.points.blocked', { count: openPoints }) : undefined} onClick={() => void confirm()}>
               {t('review.confirm')}
             </Button>
           )}
         </span>
       </div>
-      <div className="flex shrink-0 items-center gap-4 border-b bg-muted/30 px-5 py-1.5 text-xs">
-        <span className="min-w-0 truncate">{whyLine(t, target)}</span>
-      </div>
+      <ReportPoints key={target.version.key} view={view} target={target} states={points} editable={editable} onGo={goTo} />
 
       {/* Word's toolbar, for the draft, across both columns */}
       {editable && <div ref={setToolbar} className="draft-toolbar h-10 shrink-0 border-b bg-background" />}

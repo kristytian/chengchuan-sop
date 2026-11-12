@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { SourceDocument } from '../data/schema.ts'
-import { aiPointsAt, annotationsOf, applyEdits, equipmentSwap, generatedEntry, impactGroupOf, needsLook, unevaluated, unresolvedOn } from './assessment.ts'
+import { aiPointsAt, annotationsOf, applyEdits, emptyPointEdits, equipmentSwap, generatedEntry, impactGroupOf, needsLook, pointAdjustments, unevaluated, unresolvedOn, withoutPoints } from './assessment.ts'
 import { analyzeChange, deriveLibraryModel } from './library-model.ts'
 import type { ChangePointsSuggestion, ImpactItem } from './model.ts'
 import { clause, library, para, sourceDoc } from './test-fixtures.ts'
@@ -126,9 +126,10 @@ describe('the report', () => {
     const generated = [entryFor('STP-GY-010', { suggestedTier: 'mustChange', suggestionConfidence: 0.9 }, ai), entryFor('SOP-SC-031', { suggestedTier: 'inform', suggestionConfidence: 0.9 }, null)]
     const report = applyEdits(generated, {
       removed: { [generated[1].version]: { by: '质量管理部', on: '2026-11-04', note: '只引用编号' } },
-      added: [{ version: 'samples/x.docx', tier: 'mustChange', note: '清洗步骤跟着改', reason: '新设备加了在线清洗' }],
+      added: [{ version: 'samples/x.docx', tier: 'mustChange', reason: '新设备加了在线清洗' }],
       comments: { [generated[0].version]: '生产技术部 11-20 前改完' },
       conclusions: {},
+      points: {},
     })
     expect(report.entries[0].comment).toBe('生产技术部 11-20 前改完')
     expect(report.entries.map((e) => [e.origin, e.group])).toEqual([
@@ -141,7 +142,7 @@ describe('the report', () => {
   it('moves a 需评估 entry by its 评估结论; the ones without are what holds the export', () => {
     const evaluate = entryFor('STP-GY-010', { suggestedTier: 'evaluate', suggestionConfidence: 0.9 }, null)
     const conclusion = { tier: 'mustChange' as const, by: '质量管理部', on: '2026-11-18', note: '' }
-    const edits = { removed: {}, added: [], comments: {}, conclusions: { [evaluate.version]: conclusion } }
+    const edits = { removed: {}, added: [], comments: {}, conclusions: { [evaluate.version]: conclusion }, points: {} }
     expect(unevaluated(applyEdits([evaluate], { ...edits, conclusions: {} }))).toHaveLength(1)
     const report = applyEdits([evaluate], edits)
     expect(report.entries[0]).toMatchObject({ group: 'mustChange', conclusion })
@@ -149,5 +150,48 @@ describe('the report', () => {
     // A conclusion only moves 需评估 entries.
     const must = entryFor('STP-GY-010', { suggestedTier: 'mustChange', suggestionConfidence: 0.9 }, null)
     expect(applyEdits([must], { ...edits, conclusions: { [must.version]: { ...conclusion, tier: 'inform' } } }).entries[0].group).toBe('mustChange')
+  })
+
+  describe('修改要点 people write (UX-57)', () => {
+    const by = { by: '质量管理部', on: '2026-11-18' }
+    const person = (id: string, clause: string, text: string, from: string | null = null, to: string | null = null) => ({ id, clause, text, from, to, ...by })
+    const none = { removed: {}, added: [], comments: {}, conclusions: {} }
+    const lookup = { heading: (_: string, ref: string) => (ref === '4.2' ? '取样点' : ''), order: (_: string, ref: string) => (ref === 'header' ? -1 : Number(ref.split('.')[0]) * 100 + Number(ref.split('.')[1] ?? 0)) }
+
+    it('rewrites and takes out AI points, never rule points, and adds a person’s point on its clause', () => {
+      const entry = entryFor('STP-GY-010', { suggestedTier: 'mustChange', suggestionConfidence: 0.9 }, ai)
+      const aiId = entry.lines[0].points.find((p) => p.origin === 'ai')!.id
+      const ruleId = entry.lines[0].points.find((p) => p.origin === 'rule')!.id
+      const edits = { ...emptyPointEdits(), edited: { [aiId]: person('p1', '4.4', '转速改为 2800–3400 rpm，均质时间不变') , [ruleId]: person('p2', '4.4', '不该生效') }, added: [person('p3', '4.4', '刮壁转速 20–35 rpm')] }
+      const line = applyEdits([entry], { ...none, points: { [entry.version]: edits } }).entries[0].lines[0]
+      expect(line.points.map((p) => [p.origin, p.text || `${p.from} → ${p.to}`])).toEqual([
+        ['rule', 'RH-300 → RH-500'],
+        ['rule', 'SB-RH-01 → SB-RH-02'],
+        ['person', '转速改为 2800–3400 rpm，均质时间不变'],
+        ['person', '刮壁转速 20–35 rpm'],
+      ])
+      expect(line.points.at(-1)).toMatchObject({ by: '质量管理部', on: '2026-11-18' })
+      const deleted = applyEdits([entry], { ...none, points: { [entry.version]: { ...emptyPointEdits(), deleted: { [aiId]: by, [ruleId]: by } } } }).entries[0].lines[0]
+      expect(deleted.points.map((p) => p.origin)).toEqual(['rule', 'rule'])
+    })
+
+    it('puts a point on a clause with no line on a new line, in clause order; a 需评估 entry’s new line is 评估', () => {
+      const evaluate = entryFor('STP-GY-010', { suggestedTier: 'evaluate', suggestionConfidence: 0.9 }, null)
+      const lines = applyEdits([evaluate], { ...none, points: { [evaluate.version]: { ...emptyPointEdits(), added: [person('p1', '4.2', 'S1 改为底置均质头')] } } }, lookup).entries[0].lines
+      const at42 = lines.find((l) => l.ref === '4.2')!
+      expect(at42).toMatchObject({ heading: '取样点', conclusion: 'evaluate' })
+      expect(lines.map((l) => l.ref)).toEqual([...lines.map((l) => l.ref)].sort((a, b) => lookup.order('', a) - lookup.order('', b)))
+    })
+
+    it('holds the export while a document put on as 必须改 has no point, and counts the adjustments', () => {
+      const added = { version: 'samples/x.docx', tier: 'mustChange' as const, reason: '新设备加了在线清洗' }
+      const bare = applyEdits([], { ...none, added: [added], points: {} })
+      expect(withoutPoints(bare)).toHaveLength(1)
+      const pointEdits = { ...emptyPointEdits(), added: [person('p1', 'body', '拆卸一栏按底部出料阀重写')] }
+      const written = applyEdits([], { ...none, added: [added], points: { [added.version]: pointEdits } })
+      expect(withoutPoints(written)).toHaveLength(0)
+      expect(written.entries[0].lines[0]).toMatchObject({ ref: 'body', conclusion: 'change' })
+      expect(pointAdjustments({ ...none, added: [added], points: { [added.version]: pointEdits } })).toEqual([{ version: added.version, added: 1, edited: 0, deleted: 0 }])
+    })
   })
 })

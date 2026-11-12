@@ -3,7 +3,7 @@
 // since the new equipment cleans in place — and notes who evaluates the
 // validation protocol by when. People's words; text in demo.script.
 import { libraryModel } from '@/data/model'
-import type { AddedEntry, Decision, EvaluationConclusion } from '@/domain/assessment'
+import { emptyPointEdits, type AddedEntry, type Decision, type EntryPointEdits, type EvaluationConclusion } from '@/domain/assessment'
 import { rolloutPlan } from '@/domain/rollout'
 import { currentHolders, trainingAudiences } from '@/domain/training'
 import { DEMO } from '@/domain/settings'
@@ -18,9 +18,39 @@ export function scriptedEdits(): { removed: Record<string, Decision>; added: Add
   const validation = current('VP-QJ-003')
   return {
     removed: {},
-    added: record ? [{ version: record.key, tier: 'mustChange', note: i18n.t('demo.script.cleaningNote'), reason: i18n.t('demo.script.cleaningReason') }] : [],
+    added: record ? [{ version: record.key, tier: 'mustChange', reason: i18n.t('demo.script.cleaningReason') }] : [],
     comments: validation ? { [validation.key]: i18n.t('demo.script.validationComment') } : {},
   }
+}
+
+type ScriptedPoint = 'cleaningDisassembly' | 'cleaningDetergent' | 'validationS2' | 'validationS4' | 'validationRuns'
+
+/**
+ * The 修改要点 QA writes in the demo (UX-57): on the cleaning record it put on
+ * (11-04, in its unnumbered body), and on the validation protocol with the
+ * validation group's conclusion (11-18) — written as specific as the new
+ * equipment allows, so the drafts come out as final text.
+ */
+export function scriptedPoints(): Record<string, EntryPointEdits> {
+  const out: Record<string, EntryPointEdits> = {}
+  const add = (identity: string, on: string, points: [string, ScriptedPoint][]) => {
+    const v = current(identity)
+    if (!v) return
+    out[v.key] = {
+      ...emptyPointEdits(),
+      added: points.map(([clause, key], i) => ({ id: `person:${i + 1}`, clause, text: i18n.t(`demo.script.points.${key}`), from: null, to: null, by: TERMS.departments.qa, on })),
+    }
+  }
+  add('SOR-SC-041-R01', DEMO.startDate, [
+    ['body', 'cleaningDisassembly'],
+    ['body', 'cleaningDetergent'],
+  ])
+  add('VP-QJ-003', DEMO.evaluatedDate, [
+    ['4.2', 'validationS2'],
+    ['4.2', 'validationS4'],
+    ['4.4', 'validationRuns'],
+  ])
+  return out
 }
 
 /**
@@ -44,7 +74,7 @@ const REVISED = ['SOR-SB-021-R01', 'SOP-SC-041', 'SOR-SC-041-R01', 'STP-GY-010',
 
 /** 11-20: QA has confirmed every draft. */
 export function scriptedReviews(): Record<string, DocReview> {
-  return Object.fromEntries(REVISED.flatMap((id) => (current(id) ? [[current(id)!.key, { reviewedOn: DEMO.reviewedDate }]] : [])))
+  return Object.fromEntries(REVISED.flatMap((id) => (current(id) ? [[current(id)!.key, { reviewedOn: DEMO.reviewedDate, closures: {} }]] : [])))
 }
 
 /**

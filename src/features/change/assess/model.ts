@@ -9,6 +9,7 @@ import {
   annotationsOf,
   applyEdits,
   type ChangePoint,
+  type ClauseLookup,
   equipmentSwap,
   generatedEntry,
   type ImpactGroup,
@@ -17,7 +18,10 @@ import {
   type ReportEntry,
   unresolvedOn,
 } from '@/domain/assessment'
+import { clauseRef } from '@/domain/ai-inputs'
 import type { Change, ChangePointsSuggestion, DocumentVersion, ImpactItem, NoteConclusion } from '@/domain/model'
+import { clauseText } from '@/domain/diff'
+import { contentClauses } from '@/domain/texts'
 import { type Assessment, USER_DEPARTMENT } from '@/store/demo'
 
 export const referencesById = new Map(libraryModel.references.map((r) => [r.id, r]))
@@ -77,8 +81,34 @@ export function generatedReport(change: Change): ReportEntry[] {
   return entries
 }
 
+/** A document's clauses as 修改要点 name them ("header", "4.2", "body"), in document order, with their headings. */
+export function clausesOf(versionKey: string): { ref: string; heading: string }[] {
+  const doc = versionByKey(versionKey)?.document
+  if (!doc) return []
+  return [{ ref: 'header', heading: '' }, ...contentClauses(doc).map((c) => ({ ref: clauseRef(c), heading: c.heading }))]
+}
+
+/** The words of one clause ("header" = the header table and its fields), to check a 原文 is really there. */
+export function clauseWords(versionKey: string, ref: string): string {
+  const doc = versionByKey(versionKey)?.document
+  if (!doc) return ''
+  if (ref === 'header') return [...doc.headerTable.flat(), doc.header.correspondingDoc ?? '', doc.header.basis ?? '', ...doc.pageHeader, ...doc.footer].join('\n')
+  return contentClauses(doc)
+    .filter((c) => clauseRef(c) === ref)
+    .map(clauseText)
+    .join('\n')
+}
+
+const clauseLookup: ClauseLookup = {
+  heading: (key, ref) => clausesOf(key).find((c) => c.ref === ref)?.heading ?? '',
+  order: (key, ref) => {
+    const i = clausesOf(key).findIndex((c) => c.ref === ref)
+    return i < 0 ? Number.MAX_SAFE_INTEGER : i
+  },
+}
+
 export function reportOf(change: Change, assessment: Assessment): Report {
-  return applyEdits(generatedReport(change), assessment)
+  return applyEdits(generatedReport(change), assessment, clauseLookup)
 }
 
 /**

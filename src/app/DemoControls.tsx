@@ -18,9 +18,12 @@ import { useChangeViews } from '@/features/home/tasks'
 export function DemoControls() {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { date, setDate, reset, jumpTo, skipGeneration } = useDemo()
+  const { date, setDate, reset, jumpTo, skipGeneration, fillScriptedPoints } = useDemo()
   // AI at work somewhere (R1-02): the demo can skip the wait.
-  const working = useChangeViews().some((v) => v.ai.assess || v.ai.revise || v.ai.training)
+  const views = useChangeViews()
+  const working = views.some((v) => v.ai.assess || v.ai.revise || v.ai.training)
+  // A report still open to edits (UX-57): the scenario's 修改要点 can be written in one go, as specific as QA would write them.
+  const drafting = views.find((v) => v.stage === 'draft' && !v.ai.assess)
   const [open, setOpen] = useState(false)
 
   const restart = (run: () => void) => {
@@ -55,6 +58,11 @@ export function DemoControls() {
         {working && (
           <button type="button" onClick={skipGeneration} className="self-start rounded-md border px-2.5 py-1 text-sm hover:bg-muted">
             {t('ai.skip')}
+          </button>
+        )}
+        {drafting && (
+          <button type="button" onClick={() => fillScriptedPoints(drafting.record.id)} className="self-start rounded-md border px-2.5 py-1 text-sm hover:bg-muted">
+            {t('demo.fillPoints')}
           </button>
         )}
 

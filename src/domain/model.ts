@@ -286,6 +286,7 @@ export interface TrainingPackSuggestion {
 
 export interface RevisionDraftSuggestion {
   summary: { text: string; at: string; near?: string }[]
-  rewrites: { clause: string; block?: number; row?: number; cell?: number; text: string }[]
+  /** points: the 修改要点 (by label) each rewrite carries out, so a rewrite drops when its point is changed or taken out (UX-57). */
+  rewrites: { clause: string; block?: number; row?: number; cell?: number; text: string; points?: string[] }[]
   history: string | null
 }

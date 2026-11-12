@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { Tag } from '@/components/common'
 import { Button } from '@/components/ui/button'
 import { changeAnalysis, displayCode, versionByKey } from '@/data/model'
-import type { ReportEntry, ReportGroup, ReportLine } from '@/domain/assessment'
+import { pointAdjustments, type ReportEntry, type ReportGroup, type ReportLine } from '@/domain/assessment'
 import { TERMS } from '@/domain/source-terms'
 import { shortDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -26,6 +26,8 @@ export function ReportDocument({ view, selected, onSelect }: { view: ChangeView;
   const inGroup = (g: ReportGroup) => report.entries.filter((e) => e.group === g)
   const added = report.entries.filter((e) => e.origin === 'added')
   const concluded = report.entries.filter((e) => e.conclusion)
+  const onReport = new Set(report.entries.map((e) => e.version))
+  const pointEdits = pointAdjustments(assessment).filter((x) => onReport.has(x.version))
 
   return (
     <>
@@ -77,8 +79,8 @@ export function ReportDocument({ view, selected, onSelect }: { view: ChangeView;
         <Section title={t('assess.report.section.indirect', { count: inGroup('indirect').length })}>
           <EntryTable entries={inGroup('indirect')} kind="indirect" selected={selected} onSelect={onSelect} />
         </Section>
-        <Section title={t('assess.report.section.edits', { added: added.length, removed: report.removed.length, concluded: concluded.length })}>
-          {added.length === 0 && report.removed.length === 0 && concluded.length === 0 && <p>{t('assess.report.noEdits')}</p>}
+        <Section title={t('assess.report.section.edits', { added: added.length, removed: report.removed.length, concluded: concluded.length, points: pointEdits.length })}>
+          {added.length === 0 && report.removed.length === 0 && concluded.length === 0 && pointEdits.length === 0 && <p>{t('assess.report.noEdits')}</p>}
           {added.map((e) => {
             const v = versionByKey(e.version)
             return v ? <p key={e.version}>{t('assess.report.addedItem', { code: displayCode(v), name: v.name, tier: t(`report.group.${e.group}`), reason: e.reason })}</p> : null
@@ -98,6 +100,11 @@ export function ReportDocument({ view, selected, onSelect }: { view: ChangeView;
                 })}
               </p>
             ) : null
+          })}
+          {pointEdits.map((x) => {
+            const v = versionByKey(x.version)
+            const counts = (['added', 'edited', 'deleted'] as const).filter((k) => x[k] > 0).map((k) => t(`assess.report.pointCount.${k}`, { count: x[k] }))
+            return v ? <p key={`p-${x.version}`}>{t('assess.report.pointsItem', { code: displayCode(v), name: v.name, counts: counts.join(t('common.listSep')), department: TERMS.departments.qa })}</p> : null
           })}
           {report.removed.map(({ entry, decision }) => {
             const v = versionByKey(entry.version)
@@ -182,12 +189,11 @@ function EntryRow({ entry: e, kind, active, onSelect }: { entry: ReportEntry; ki
   const { t } = useTranslation()
   const v = versionByKey(e.version)
   if (!v) return null
-  const evaluate = e.lines.filter((l) => l.conclusion === 'evaluate').map((l) => lineText(t, l, l.note))
+  // An evaluate line says what to evaluate; a person's points on it (what to change if it must) follow.
+  const evaluate = e.lines.filter((l) => l.conclusion === 'evaluate').map((l) => lineText(t, l, [l.note, pointsText(t, { ...l, points: l.points.filter((p) => p.origin === 'person') })].filter(Boolean).join(t('common.pointSep'))))
   const change = e.lines.filter((l) => l.conclusion === 'change').map((l) => lineText(t, l, pointsText(t, l)))
   const body =
-    e.origin === 'added'
-      ? [e.note]
-      : e.conclusion
+    e.conclusion
         ? // Evaluated: what was evaluated stays on record, the conclusion under it.
           [...evaluate.map((text) => t('assess.report.evaluated', { text })), ...change]
         : kind === 'change'
@@ -227,7 +233,8 @@ function EntryRow({ entry: e, kind, active, onSelect }: { entry: ReportEntry; ki
 
 function pointsText(t: TFunction, l: ReportLine): string {
   // AI writes its own wording (「均质转速 2500–3000 → 2800–3400 rpm」); a rule point is just from → to.
-  return l.points.map((p) => p.text || t('assess.note.point', { from: p.from, to: p.to })).join(t('common.pointSep'))
+  // A person's point is named as theirs (UX-57).
+  return l.points.map((p) => (p.text || t('assess.note.point', { from: p.from, to: p.to })) + (p.origin === 'person' && p.by ? t('assess.report.byPerson', { by: p.by }) : '')).join(t('common.pointSep'))
 }
 
 /** 「§4.4 关键工艺参数 RH-300 → RH-500；均质转速 2500–3000 → 2800–3400 rpm」 */

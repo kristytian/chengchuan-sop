@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { bumpedCode, draftOperations, nextVersion } from './revision.ts'
+import { applicableRewrites, bumpedCode, draftOperations, nextVersion, pointLabel } from './revision.ts'
 import { clause, para, sourceDoc } from './test-fixtures.ts'
 
 const table = (...rows: string[][]) => ({ kind: 'table' as const, rows })
@@ -81,5 +81,25 @@ describe('the revision draft AI hands over', () => {
       ['SOP-SB-021-02', 'SOP-SB-021-03', 'code'],
       ['RH-300', 'RH-500', 'point'],
     ])
+  })
+})
+
+describe('rewrites tied to 修改要点 (UX-57)', () => {
+  const at = (clause: string, text: string, from: string | null = null, to: string | null = null) => ({ clause, text, from, to })
+
+  it('keeps a rewrite while every point it carries out is on the report at its clause', () => {
+    const rewrites = [
+      { clause: '4.2', block: 1, row: 1, cell: 1, text: '底置均质头转子 / 定子', points: ['S1 改为底置均质头'] },
+      { clause: '4.4', text: '连续 3 批', points: ['验证次数改为连续 3 批'] },
+      { clause: 'body', text: '没写依据的改写' },
+    ]
+    expect(applicableRewrites(rewrites, [at('4.2', 'S1 改为底置均质头'), at('4.4', '验证次数改为连续 3 批')]).map((r) => r.clause)).toEqual(['4.2', '4.4', 'body'])
+    // The 4.4 point was rewritten by a person, and the 4.2 one sits on another clause now: both rewrites drop.
+    expect(applicableRewrites(rewrites, [at('4.3', 'S1 改为底置均质头'), at('4.4', '验证次数改为 5 批')]).map((r) => r.clause)).toEqual(['body'])
+  })
+
+  it('labels a point by its words, or by 原文 → 改成', () => {
+    expect(pointLabel(at('4.4', '转速改为 2800–3400 rpm'))).toBe('转速改为 2800–3400 rpm')
+    expect(pointLabel(at('4.4', '', 'RH-300', 'RH-500'))).toBe('RH-300 → RH-500')
   })
 })

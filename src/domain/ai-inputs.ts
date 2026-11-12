@@ -15,7 +15,7 @@ export const PROMPT_VERSIONS: Record<AITask, string> = {
   referenceExtraction: 'extraction-v2',
   // No prompt in scripts/ai-prerun yet for these three; only hand-written examples use them so far.
   changePoints: 'points-v1',
-  revisionDraft: 'revision-v2',
+  revisionDraft: 'revision-v3',
   trainingPack: 'training-v1',
 }
 
@@ -184,7 +184,11 @@ export interface RevisionDraftInput {
   }
 }
 
-/** Input for AI's revision draft of one document; a person's own words on the report are left out, so the draft does not go stale on them. */
+/**
+ * Input for AI's revision draft of one document: the exported report's lines,
+ * people's 修改要点 included (UX-57; the report is locked by then). A person's
+ * 备注 is for the report's readers and stays out.
+ */
 export function revisionDraftInput(
   change: ImpactChangeForAI,
   version: DocumentVersion,

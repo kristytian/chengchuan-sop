@@ -4,11 +4,12 @@
 import { aiRuns, changeAnalysis, libraryModel, versionByKey } from '@/data/model'
 import type { ReportEntry } from '@/domain/assessment'
 import { lookupRun } from '@/domain/ai'
-import { impactChangeForAI, impactSubject, inputHash, revisionDraftInput } from '@/domain/ai-inputs'
+import { impactChangeForAI, impactSubject, inputHash, revisionDraftInput, stableJson } from '@/domain/ai-inputs'
 import type { DocumentVersion, RevisionDraftSuggestion } from '@/domain/model'
-import { bumpedCode, type DraftOperations, draftOperations, nextVersion } from '@/domain/revision'
-import type { DocReview } from '@/store/demo'
+import { applicableRewrites, bumpedCode, type DraftOperations, draftOperations, nextVersion, pointLabel } from '@/domain/revision'
+import { type DocReview, emptyReview } from '@/store/demo'
 import type { ChangeView } from '../view'
+import type { ReviewPoint } from './points'
 
 export interface ReviewTarget {
   entry: ReportEntry
@@ -21,11 +22,13 @@ export interface ReviewTarget {
   ops: DraftOperations
   /** AI's 修改前后总结, each with where it is. */
   summary: RevisionDraftSuggestion['summary']
+  /** The report's 修改要点 the draft is to carry out (UX-57), for 报告要点. */
+  points: ReviewPoint[]
   example: boolean
   review: DocReview
 }
 
-const EMPTY_REVIEW: DocReview = { reviewedOn: null }
+const EMPTY_REVIEW: DocReview = emptyReview()
 const made = new Map<string, Omit<ReviewTarget, 'entry' | 'review'>>()
 
 /** The documents to revise, in report order. Empty until the report is exported. */
@@ -41,7 +44,10 @@ export function reviewTargets(view: ChangeView, reviews: Readonly<Record<string,
   const targets = entries.flatMap((entry) => {
     const version = versionByKey(entry.version)
     if (!version?.document) return []
-    const key = `${view.change.id}|${version.key}`
+    // A 需评估 entry concluded 必须改 applies what its evaluated places carry too (the rule points, and people's).
+    const lines = entry.lines.filter((l) => l.conclusion === 'change' || entry.conclusion)
+    const points = lines.flatMap((l) => l.points.map((p) => ({ clause: l.ref, text: p.text, from: p.from, to: p.to, source: p.source, origin: p.origin, by: p.by })))
+    const key = `${view.change.id}|${version.key}|${stableJson(points.map(({ clause, text, from, to }) => [clause, text, from, to]))}`
     let target = made.get(key)
     if (!target) {
       const ai = draftSuggestion(view, version, entry)
@@ -53,14 +59,13 @@ export function reviewTargets(view: ChangeView, reviews: Readonly<Record<string,
         ops: draftOperations(version.document, {
           oldVersion: version.version,
           codes,
-          // A 需评估 entry concluded 必须改 applies what its evaluated places carry too (the rule points).
-          points: entry.lines.flatMap((l) =>
-            l.conclusion === 'change' || entry.conclusion ? l.points.map((p) => ({ clause: l.ref, text: p.text, from: p.from, to: p.to, source: p.source })) : [],
-          ),
-          rewrites: ai?.output.rewrites ?? [],
+          points,
+          // AI's rewrites stand while the points they carry out are on the report as they were (UX-57).
+          rewrites: applicableRewrites(ai?.output.rewrites ?? [], points),
           history: ai?.output.history ?? null,
         }),
         summary: ai?.output.summary ?? [],
+        points: points.map((p) => ({ clause: p.clause, label: pointLabel(p), origin: p.origin, ...(p.by && { by: p.by }) })),
         example: ai?.mode === 'example',
       }
       made.set(key, target)
@@ -75,8 +80,10 @@ export function reviewTargets(view: ChangeView, reviews: Readonly<Record<string,
 function draftSuggestion(view: ChangeView, version: DocumentVersion, entry: ReportEntry) {
   const input = revisionDraftInput(impactChangeForAI(view.change, changeAnalysis(view.change.id).diff, libraryModel.catalog), version, {
     tier: entry.group,
-    lines: entry.origin === 'added' ? [] : entry.lines,
+    lines: entry.lines,
   })
   const state = lookupRun<RevisionDraftSuggestion>(aiRuns, 'revisionDraft', impactSubject(view.change, version), inputHash(input))
-  return state.status === 'current' ? state.run : null
+  // A hand-written example stands for AI on the demo's report: when people's points differ, it is still used,
+  // and only its rewrites whose points are gone drop (applicableRewrites). A real AI run must be current.
+  return state.status === 'current' || (state.status === 'stale' && state.run?.mode === 'example') ? state.run : null
 }

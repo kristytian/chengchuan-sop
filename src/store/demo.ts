@@ -6,13 +6,14 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { domainChange, libraryModel, versionByKey } from '@/data/model'
-import type { AddedEntry, Decision, EvaluationConclusion } from '@/domain/assessment'
+import { emptyPointEdits, type AddedEntry, type Decision, type EntryPointEdits, type EvaluationConclusion, type PersonPoint } from '@/domain/assessment'
+import type { PointClosure } from '@/domain/revision'
 import { clearDrafts } from './drafts'
 import { clearUploads, type UploadRef } from './uploads'
 import { DEMO } from '@/domain/settings'
 import { TERMS } from '@/domain/source-terms'
 import i18n from '@/i18n'
-import { scriptedConclusions, scriptedEdits, scriptedReviews, scriptedRollout, scriptedTraining } from './demo-script'
+import { scriptedConclusions, scriptedEdits, scriptedPoints, scriptedReviews, scriptedRollout, scriptedTraining } from './demo-script'
 
 /**
  * The one user (UX-51): the product is for QA / QC and document control, so
@@ -60,15 +61,27 @@ export interface Assessment {
   comments: Record<string, string>
   /** Version key → 评估结论 on a 需评估 entry. */
   conclusions: Record<string, EvaluationConclusion>
+  /** Version key → 修改要点 people wrote, rewrote or took out (UX-57). */
+  points: Record<string, EntryPointEdits>
   exportedOn: string | null
 }
 
-export const emptyAssessment = (): Assessment => ({ removed: {}, added: [], comments: {}, conclusions: {}, exportedOn: null })
+export const emptyAssessment = (): Assessment => ({ removed: {}, added: [], comments: {}, conclusions: {}, points: {}, exportedOn: null })
 
-/** 审阅 of one document's draft (UX-50): when its drafting department confirmed it. The draft itself is a .docx working copy (store/drafts). */
+/** A 修改要点 as a person writes it: one sentence, or 原文 → 改成 (UX-57). */
+export type PointInput = Pick<PersonPoint, 'clause' | 'text' | 'from' | 'to'>
+
+/**
+ * 审阅 of one document's draft (UX-50): when QA confirmed it, and how each
+ * 修改要点 the draft did not carry out was closed (UX-57; by pointKey). The
+ * draft itself is a .docx working copy (store/drafts).
+ */
 export interface DocReview {
   reviewedOn: string | null
+  closures: Record<string, PointClosure>
 }
+
+export const emptyReview = (): DocReview => ({ reviewedOn: null, closures: {} })
 
 /**
  * 换版追踪 of one change (UX-52): what QA registered — approval per 文件组 (OA
@@ -145,12 +158,23 @@ interface DemoActions {
   addEntry: (changeId: string, entry: AddedEntry) => void
   dropAdded: (changeId: string, versionKey: string) => void
   setComment: (changeId: string, versionKey: string, comment: string) => void
+  /** 修改要点 (UX-57), written by the account's department, dated today. pointId: an AI point's id, or a person's. */
+  addPoint: (changeId: string, versionKey: string, point: PointInput) => void
+  editPoint: (changeId: string, versionKey: string, pointId: string, point: PointInput) => void
+  deletePoint: (changeId: string, versionKey: string, pointId: string) => void
+  /** Brings back AI's own point after a person rewrote or took it out. */
+  restorePoint: (changeId: string, versionKey: string, pointId: string) => void
+  /** Demo tools: the scenario's points, written in one go. */
+  fillScriptedPoints: (changeId: string) => void
   /** 评估结论 on a 需评估 entry, decided by a department (with an optional 备注), dated today. */
   concludeEntry: (changeId: string, versionKey: string, tier: EvaluationConclusion['tier'], by: string, note: string) => void
   withdrawConclusion: (changeId: string, versionKey: string) => void
   exportReport: (changeId: string) => void
   // 审阅
   setReviewed: (changeId: string, versionKey: string, reviewed: boolean) => void
+  /** A 修改要点 the draft did not carry out: done by hand, or 不按这条改 with why (UX-57). */
+  closePoint: (changeId: string, versionKey: string, key: string, state: PointClosure['state'], note: string) => void
+  reopenPoint: (changeId: string, versionKey: string, key: string) => void
   // 换版追踪
   approveGroup: (changeId: string, group: string, approvedOn: string, effectiveOn: string) => void
   withdrawApproval: (changeId: string, group: string) => void
@@ -210,7 +234,7 @@ export function scenarioRevision(): string | undefined {
   return libraryModel.changes.find((c) => c.source.kind === 'revision')?.id
 }
 
-function checkpointState(checkpoint: Checkpoint): DemoData {
+export function checkpointState(checkpoint: Checkpoint): DemoData {
   const base = initial()
   const changeId = scenarioRevision()
   if (checkpoint === 'start' || !changeId) return base
@@ -219,7 +243,7 @@ function checkpointState(checkpoint: Checkpoint): DemoData {
   const assessing = { ...base, changes: [record] }
   if (checkpoint === 'assessing') return assessing
   // 已导出: on 11-18 the two 需评估 documents have their 评估结论, so QA exports (version 1); AI's drafts wait for 审阅.
-  const report = { ...emptyAssessment(), ...scriptedEdits(), conclusions: scriptedConclusions(), exportedOn: DEMO.evaluatedDate }
+  const report = { ...emptyAssessment(), ...scriptedEdits(), conclusions: scriptedConclusions(), points: scriptedPoints(), exportedOn: DEMO.evaluatedDate }
   const exported = { ...assessing, date: DEMO.evaluatedDate, assessments: { c1: report } }
   if (checkpoint === 'exported') return exported
   // 审阅已确认: QA confirmed every draft on 11-20; OA approval is next.
@@ -254,13 +278,16 @@ const without = <T,>(record: Record<string, T>, key: string) => {
 
 const editReview = (state: DemoData, changeId: string, key: string, edit: (r: DocReview) => DocReview): Partial<DemoData> => {
   const forChange = state.reviews[changeId] ?? {}
-  return { reviews: { ...state.reviews, [changeId]: { ...forChange, [key]: edit(forChange[key] ?? { reviewedOn: null }) } } }
+  return { reviews: { ...state.reviews, [changeId]: { ...forChange, [key]: edit(forChange[key] ?? emptyReview()) } } }
 }
 
 /** Applies a change to one assessment, creating it on first touch. */
 const editAssessment = (state: DemoData, changeId: string, edit: (a: Assessment) => Assessment): Partial<DemoData> => ({
   assessments: { ...state.assessments, [changeId]: edit(state.assessments[changeId] ?? emptyAssessment()) },
 })
+
+const editPoints = (state: DemoData, changeId: string, versionKey: string, edit: (e: EntryPointEdits) => EntryPointEdits): Partial<DemoData> =>
+  editAssessment(state, changeId, (a) => ({ ...a, points: { ...a.points, [versionKey]: edit(a.points[versionKey] ?? emptyPointEdits()) } }))
 
 export const useDemo = create<DemoState>()(
   persist(
@@ -303,6 +330,41 @@ export const useDemo = create<DemoState>()(
             return { ...a, comments }
           }),
         ),
+      addPoint: (changeId, key, point) =>
+        set((s) =>
+          editPoints(s, changeId, key, (e) => {
+            const n = Math.max(0, ...e.added.map((p) => Number(p.id.split(':')[1]) || 0)) + 1
+            return { ...e, added: [...e.added, { ...point, id: `person:${n}`, by: TERMS.departments.qa, on: s.date }] }
+          }),
+        ),
+      editPoint: (changeId, key, id, point) =>
+        set((s) =>
+          editPoints(s, changeId, key, (e) => {
+            const written = { ...point, id, by: TERMS.departments.qa, on: s.date }
+            return id.startsWith('person:') ? { ...e, added: e.added.map((p) => (p.id === id ? written : p)) } : { ...e, edited: { ...e.edited, [id]: written } }
+          }),
+        ),
+      deletePoint: (changeId, key, id) =>
+        set((s) =>
+          editPoints(s, changeId, key, (e) =>
+            id.startsWith('person:')
+              ? { ...e, added: e.added.filter((p) => p.id !== id) }
+              : { ...e, edited: without(e.edited, id), deleted: { ...e.deleted, [id]: { by: TERMS.departments.qa, on: s.date } } },
+          ),
+        ),
+      restorePoint: (changeId, key, id) => set((s) => editPoints(s, changeId, key, (e) => ({ ...e, edited: without(e.edited, id), deleted: without(e.deleted, id) }))),
+      fillScriptedPoints: (changeId) =>
+        set((s) =>
+          editAssessment(s, changeId, (a) => {
+            if (a.exportedOn) return a
+            // Written now, by the account's department, in place of what the version had.
+            const today = Object.fromEntries(Object.entries(scriptedPoints()).map(([key, e]) => [key, { ...e, added: e.added.map((p) => ({ ...p, on: s.date })) }]))
+            return { ...a, points: { ...a.points, ...today } }
+          }),
+        ),
+      closePoint: (changeId, key, pointKey, state, note) =>
+        set((s) => editReview(s, changeId, key, (r) => ({ ...r, closures: { ...r.closures, [pointKey]: { state, note, by: TERMS.departments.qa, on: s.date } } }))),
+      reopenPoint: (changeId, key, pointKey) => set((s) => editReview(s, changeId, key, (r) => ({ ...r, closures: without(r.closures, pointKey) }))),
       setReviewed: (changeId, key, reviewed) => set((s) => editReview(s, changeId, key, (r) => ({ ...r, reviewedOn: reviewed ? s.date : null }))),
       concludeEntry: (changeId, key, tier, by, note) =>
         set((s) => editAssessment(s, changeId, (a) => ({ ...a, conclusions: { ...a.conclusions, [key]: { tier, by, on: s.date, note } } }))),
@@ -363,7 +425,7 @@ export const useDemo = create<DemoState>()(
     {
       name: 'chengchuan-demo',
       // Bump when DemoData changes shape; an older saved demo starts over.
-      version: 14,
+      version: 15,
       storage: createJSONStorage(() => localStorage),
       partialize: ({ date, changes, assessments, reviews, rollouts, trainings }): DemoData => ({ date, changes, assessments, reviews, rollouts, trainings }),
       migrate: () => initial(),

@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { displayCode } from '@/data/model'
+import { displayCode, versionByKey } from '@/data/model'
 import type { ImpactTier } from '@/domain/model'
 import { searchLibrary } from '@/features/library/paths'
 import { cn } from '@/lib/utils'
@@ -14,14 +15,18 @@ import { Choice } from './parts'
 
 const TIERS: readonly ImpactTier[] = ['mustChange', 'evaluate', 'inform']
 
-/** 「＋ 加一份文件」: a document AI did not list; it goes on the report marked 「人工加入」 with the person's reason. */
+/**
+ * 「＋ 加一份文件」: a document AI did not list; it goes on the report marked
+ * 「人工加入」 with the person's reason. What to change is written next, as
+ * 修改要点 on its clauses (UX-57): the dialog opens its 看原件和依据 page.
+ */
 export function AddEntryDialog({ view, onClose }: { view: ChangeView; onClose: () => void }) {
   const { t } = useTranslation()
   const addEntry = useDemo((s) => s.addEntry)
+  const navigate = useNavigate()
   const [query, setQuery] = useState('')
   const [picked, setPicked] = useState<string | null>(null)
   const [tier, setTier] = useState<ImpactTier | null>(null)
-  const [note, setNote] = useState('')
   const [reason, setReason] = useState('')
   const sourceIdentity = view.change.source.kind === 'revision' ? view.change.source.identity : ''
   const onReport = new Set([...view.report.entries.map((e) => e.version), ...view.report.removed.map((r) => r.entry.version)])
@@ -29,7 +34,7 @@ export function AddEntryDialog({ view, onClose }: { view: ChangeView; onClose: (
     () => searchLibrary(query).filter((v) => v.origin === 'library' && v.status === 'current' && v.identity !== sourceIdentity),
     [query, sourceIdentity],
   )
-  const ready = picked && tier && note.trim() && reason.trim()
+  const ready = picked && tier && reason.trim()
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
@@ -68,10 +73,6 @@ export function AddEntryDialog({ view, onClose }: { view: ChangeView; onClose: (
             <Choice label={t('assess.add.tier')} options={TIERS.map((value) => ({ value, label: t(`tier.${value}`) }))} value={tier} onChange={setTier} />
           </div>
           <label className="block">
-            <span className="text-muted-foreground">{t('assess.add.note')}</span>
-            <Textarea rows={2} value={note} onChange={(e) => setNote(e.target.value)} className="mt-1" />
-          </label>
-          <label className="block">
             <span className="text-muted-foreground">{t('assess.add.reason')}</span>
             <Textarea rows={2} value={reason} onChange={(e) => setReason(e.target.value)} className="mt-1" />
           </label>
@@ -83,8 +84,10 @@ export function AddEntryDialog({ view, onClose }: { view: ChangeView; onClose: (
           <Button
             disabled={!ready}
             onClick={() => {
-              addEntry(view.record.id, { version: picked!, tier: tier!, note: note.trim(), reason: reason.trim() })
+              addEntry(view.record.id, { version: picked!, tier: tier!, reason: reason.trim() })
               onClose()
+              const identity = versionByKey(picked!)?.identity
+              if (identity && tier !== 'inform') navigate(`/changes/${view.record.id}/assess/doc/${identity}`)
             }}
           >
             {t('assess.add.submit')}

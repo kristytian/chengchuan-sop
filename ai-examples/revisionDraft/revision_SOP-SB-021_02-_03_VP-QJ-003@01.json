@@ -1,0 +1,71 @@
+{
+  "task": "revisionDraft",
+  "subject": "revision:SOP-SB-021:02->03|VP-QJ-003@01",
+  "inputVersions": [
+    "samples/02 操作规程/SOP-SB-021-02 乳化均质机（RH-300）使用、维护保养标准操作规程.docx",
+    "scenario-inputs/SOP-SB-021-03 乳化均质机（RH-500）使用、维护保养标准操作规程.docx",
+    "samples/05 验证与培训/VP-QJ-003-01 乳化均质机（RH-300）清洁验证方案.docx"
+  ],
+  "inputHash": "5a32ce6b037cec1a",
+  "promptVersion": "revision-v3",
+  "model": "none · hand-written example",
+  "servedBy": "none · hand-written example",
+  "mode": "example",
+  "runAt": "2026-11-11T00:00:00.000Z",
+  "output": {
+    "summary": [
+      {
+        "text": "§4.2 取样点按新设备改：S1 底置均质头，S2 加 CIP 喷淋球表面，S4 改为底部出料阀阀芯及 CIP 回流口",
+        "at": "4.2",
+        "near": "CIP"
+      },
+      {
+        "text": "§4.4 设备换型后首次验证，每批另取 CIP 结束后的末次淋洗水",
+        "at": "4.4",
+        "near": "首次验证"
+      },
+      {
+        "text": "§1、§2 设备型号和编号改为 RH-500、SB-RH-02",
+        "at": "1",
+        "near": "RH-500"
+      }
+    ],
+    "rewrites": [
+      {
+        "clause": "4.2",
+        "block": 0,
+        "row": 2,
+        "cell": 1,
+        "text": "主锅锅壁（液位线附近）及 CIP 喷淋球表面（喷淋死角）",
+        "points": [
+          "S2 改为主锅锅壁及 CIP 喷淋球表面（喷淋死角）"
+        ]
+      },
+      {
+        "clause": "4.2",
+        "block": 0,
+        "row": 4,
+        "cell": 1,
+        "text": "底部出料阀阀芯及 CIP 回流口内壁",
+        "points": [
+          "S4 改为底部出料阀阀芯及 CIP 回流口内壁"
+        ]
+      },
+      {
+        "clause": "4.4",
+        "text": "验证次数：设备换型后首次验证，连续 3 批生产后的清洁；每批另取 CIP 程序结束后的末次淋洗水（S5）。",
+        "points": [
+          "设备换型后首次验证：连续 3 批，每批另取 CIP 结束后的末次淋洗水"
+        ]
+      }
+    ],
+    "history": "设备换为 RH-500（SB-RH-02），加在线清洗：按新设备修订取样点和首次验证要求"
+  },
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheReadTokens": 0,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": null
+}

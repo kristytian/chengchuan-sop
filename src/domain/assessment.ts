@@ -32,9 +32,13 @@ export interface Hit {
 }
 
 export interface ChangePoint extends PointSuggestion {
-  /** Stable within the item: `rule:<anchor>:<from>` or `ai:<anchor>:<n>`. */
+  /** Stable within the item: `rule:<anchor>:<from>`, `ai:<anchor>:<n>`, or a person's own id. */
   id: string
-  origin: 'rule' | 'ai'
+  /** rule points are locked (UX-57): never edited or deleted, always applied. */
+  origin: 'rule' | 'ai' | 'person'
+  /** A person's point: the department that wrote it, and when. */
+  by?: string
+  on?: string
 }
 
 /** One 批注: a place on the affected document where the rules (or AI) found something. */
@@ -221,8 +225,6 @@ export interface ReportEntry {
   lines: ReportLine[]
   /** AI's reason for a generated entry; the person's reason for an added one. */
   reason: string
-  /** A person's note on an added entry (要改的地方). */
-  note: string
   /** A person's 备注 on any entry, e.g. who evaluates and by when. */
   comment: string
   flags: ReportFlag[]
@@ -265,7 +267,6 @@ export function generatedEntry({ item, group, annotations, ai, unresolved }: Ent
     origin: 'generated',
     lines,
     reason: item.reason ?? '',
-    note: '',
     comment: '',
     flags,
     notFound: [...new Set(unresolved)],
@@ -274,7 +275,28 @@ export function generatedEntry({ item, group, annotations, ai, unresolved }: Ent
   }
 }
 
-/** People's edits on the generated report: entries taken off, documents put on, 备注, 评估结论. */
+/** A 修改要点 a person wrote at one clause (UX-57): one sentence, or 原文 → 改成. */
+export interface PersonPoint {
+  id: string
+  /** Clause ref as AI inputs write it: "header", "4.2", "body". */
+  clause: string
+  text: string
+  from: string | null
+  to: string | null
+  by: string
+  on: string
+}
+
+/** A person's point edits on one entry: points added, AI points rewritten (by AI point id), AI points taken out. */
+export interface EntryPointEdits {
+  added: PersonPoint[]
+  edited: Record<string, PersonPoint>
+  deleted: Record<string, { by: string; on: string }>
+}
+
+export const emptyPointEdits = (): EntryPointEdits => ({ added: [], edited: {}, deleted: {} })
+
+/** People's edits on the generated report: entries taken off, documents put on, 备注, 评估结论, 修改要点. */
 export interface ReportEdits {
   /** Version key → who decided to take it off. */
   removed: Readonly<Record<string, Decision>>
@@ -283,6 +305,8 @@ export interface ReportEdits {
   comments: Readonly<Record<string, string>>
   /** Version key → the conclusion on a 需评估 entry. */
   conclusions: Readonly<Record<string, EvaluationConclusion>>
+  /** Version key → the 修改要点 people wrote, rewrote or took out. */
+  points: Readonly<Record<string, EntryPointEdits>>
 }
 
 /**
@@ -305,11 +329,10 @@ export interface EvaluationConclusion extends Decision {
   tier: 'mustChange' | 'inform'
 }
 
+/** A document a person put on the report; what to change is written as 修改要点 at its clauses (UX-57). */
 export interface AddedEntry {
   version: string
   tier: ImpactTier
-  /** 要改的地方 / 要评估什么, as the person wrote it. */
-  note: string
   reason: string
 }
 
@@ -318,21 +341,69 @@ export interface Report {
   removed: { entry: ReportEntry; decision: Decision }[]
 }
 
-/** The report as it stands: generated entries minus the removed ones, plus the added ones, with people's 备注 and 评估结论. */
-export function applyEdits(generated: readonly ReportEntry[], edits: ReportEdits): Report {
+/** Where a clause sits on its document, for ordering lines; the heading of a clause a person added a point to. */
+export interface ClauseLookup {
+  heading: (versionKey: string, ref: string) => string
+  order: (versionKey: string, ref: string) => number
+}
+
+const noLookup: ClauseLookup = { heading: () => '', order: () => Number.MAX_SAFE_INTEGER }
+
+/** A person's point as a ChangePoint (no source clause: it is the person's own). */
+const fromPerson = (p: PersonPoint): ChangePoint => ({ id: p.id, origin: 'person', text: p.text, from: p.from, to: p.to, source: [], by: p.by, on: p.on })
+
+/**
+ * An entry's lines with people's 修改要点 applied (UX-57): AI points rewritten
+ * or taken out, rule points untouched, added points on their clause — on a
+ * new line when no line has it (a 需评估 entry's new line is 评估 too).
+ */
+export function withPointEdits(entry: ReportEntry, edits: EntryPointEdits | undefined, lookup: ClauseLookup = noLookup): ReportLine[] {
+  if (!edits) return entry.lines
+  const lines = entry.lines.map((l) => ({
+    ...l,
+    points: l.points.flatMap((p): ChangePoint[] => {
+      if (p.origin !== 'ai') return [p]
+      if (p.id in edits.deleted) return []
+      const edited = edits.edited[p.id]
+      return [edited ? { ...fromPerson(edited), id: p.id } : p]
+    }),
+  }))
+  for (const p of edits.added) {
+    const line = lines.find((l) => l.ref === p.clause)
+    if (line) line.points = [...line.points, fromPerson(p)]
+    else lines.push({ ref: p.clause, heading: lookup.heading(entry.version, p.clause), conclusion: entry.group === 'evaluate' ? 'evaluate' : 'change', points: [fromPerson(p)], note: '' })
+  }
+  return lines
+    .map((l, i) => ({ l, i }))
+    .sort((a, b) => lookup.order(entry.version, a.l.ref) - lookup.order(entry.version, b.l.ref) || a.i - b.i)
+    .map(({ l }) => l)
+}
+
+/** The report as it stands: generated entries minus the removed ones, plus the added ones, with people's 备注, 评估结论 and 修改要点. */
+export function applyEdits(generated: readonly ReportEntry[], edits: ReportEdits, lookup: ClauseLookup = noLookup): Report {
   const settle = (e: ReportEntry): ReportEntry => {
-    const withComment = { ...e, comment: edits.comments[e.version] ?? '' }
+    const withPoints = { ...e, comment: edits.comments[e.version] ?? '', lines: withPointEdits(e, edits.points[e.version], lookup) }
     const c = edits.conclusions[e.version]
-    return c && e.group === 'evaluate' ? { ...withComment, group: c.tier, conclusion: c } : withComment
+    return c && e.group === 'evaluate' ? { ...withPoints, group: c.tier, conclusion: c } : withPoints
   }
   const entries = generated.filter((e) => !(e.version in edits.removed)).map(settle)
   const removed = generated.filter((e) => e.version in edits.removed).map((entry) => ({ entry, decision: edits.removed[entry.version] }))
   const added = edits.added.map(
     (a): ReportEntry =>
-      settle({ version: a.version, group: a.tier, origin: 'added', lines: [], reason: a.reason, note: a.note, comment: '', flags: [], notFound: [], via: [], conclusion: null }),
+      settle({ version: a.version, group: a.tier, origin: 'added', lines: [], reason: a.reason, comment: '', flags: [], notFound: [], via: [], conclusion: null }),
   )
   return { entries: [...entries, ...added], removed }
 }
+
+/** Per entry, how many 修改要点 people added, rewrote and took out — for the report's 人工调整. */
+export function pointAdjustments(edits: ReportEdits): { version: string; added: number; edited: number; deleted: number }[] {
+  return Object.entries(edits.points)
+    .map(([version, e]) => ({ version, added: e.added.length, edited: Object.keys(e.edited).length, deleted: Object.keys(e.deleted).length }))
+    .filter((x) => x.added + x.edited + x.deleted > 0)
+}
+
+/** Documents put on as 必须改 with no 修改要点 yet: the draft would not know what to change, so they hold the export. */
+export const withoutPoints = (report: Report) => report.entries.filter((e) => e.origin === 'added' && e.group === 'mustChange' && e.lines.every((l) => l.points.length === 0))
 
 /** 需评估 entries still without a 评估结论: while there are any, the report cannot be exported. */
 export const unevaluated = (report: Report) => report.entries.filter((e) => e.group === 'evaluate')

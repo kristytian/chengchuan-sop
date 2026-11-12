@@ -21,6 +21,7 @@
     "note": "只在演示时用，不属于产品界面。",
     "date": "演示日期",
     "dateHint": "只影响变更这条线上的日期；文件库的问题和提醒按样本截止日 {{asOf}} 算。",
+    "fillPoints": "填入演示要点",
     "jump": "跳到某一步",
     "checkpoints": {
       "start": "开始 · 还没有变更（11-04）",
@@ -33,7 +34,6 @@
     "reset": "重置演示",
     "resetHint": "清掉这台电脑上保存的演示操作，回到开始",
     "script": {
-      "cleaningNote": "拆卸、清洁剂清洗两栏，按 03 版的底部出料阀和在线清洗重写。",
       "cleaningReason": "新设备加了在线清洗，清洁记录里的拆卸、清洗步骤要跟着改；AI 没列出这份，因为它没写设备型号，也没引用 SOP-SB-021。",
       "validationComment": "验证小组 11-18 前给出结论；结论出来前方案不动。",
       "validationConclusion": "验证小组 11-18：原方案的取样点和清洗方式不适用新设备，按新设备修订后重新验证。",
@@ -41,7 +41,14 @@
       "destructionRecord": "{{copy}} 文件销毁记录.jpg",
       "legacyNote": "乙班称已销毁，12-26 补交《文件销毁记录》，扫描件留底",
       "signInSheet": "{{role}} 培训签到表.jpg",
-      "examRecord": "{{role}} 培训考核记录.jpg"
+      "examRecord": "{{role}} 培训考核记录.jpg",
+      "points": {
+        "cleaningDisassembly": "拆卸一栏改为拆底部出料阀阀芯、取样阀，底置均质头不拆",
+        "cleaningDetergent": "清洁剂清洗一栏加上经 CIP 喷淋球喷淋",
+        "validationS2": "S2 改为主锅锅壁及 CIP 喷淋球表面（喷淋死角）",
+        "validationS4": "S4 改为底部出料阀阀芯及 CIP 回流口内壁",
+        "validationRuns": "设备换型后首次验证：连续 3 批，每批另取 CIP 结束后的末次淋洗水"
+      }
     },
     "source": "源代码（AGPL-3.0）"
   },
@@ -437,7 +444,6 @@
       "file": "文件",
       "search": "输入编号或名称",
       "tier": "档位",
-      "note": "要改的地方 / 要评估什么",
       "reason": "为什么加入",
       "submit": "加入",
       "inReport": "已在报告里",
@@ -446,7 +452,8 @@
     "confirm": {
       "button": "确认并导出",
       "hint": "确认后锁定，审阅和换版按这份报告走",
-      "blocked": "还有 {{count}} 份需评估没给评估结论，给完才能导出"
+      "blocked": "还有 {{count}} 份需评估没给评估结论，给完才能导出",
+      "blockedPoints": "还有 {{count}} 份人工加入的文件没写修改要点，写完才能导出"
     },
     "detail": {
       "open": "看原件和依据",
@@ -460,6 +467,26 @@
       "aiMarker": "灰字是 AI 的判断",
       "aiMarkerExample": "灰字是 AI 的判断（示例）",
       "noteSuffix": "：{{note}}"
+    },
+    "points": {
+      "add": "＋ 加要点",
+      "addPlace": "＋ 加一处",
+      "pickPlace": "选一条",
+      "edit": "改",
+      "delete": "删",
+      "restore": "恢复",
+      "restoreAi": "恢复 AI 的",
+      "modeText": "一句话",
+      "modeReplace": "原文 → 改成",
+      "text": "要点",
+      "from": "原文",
+      "to": "改成",
+      "save": "保存",
+      "cancel": "取消",
+      "notInClause": "这一条里没有这段原文",
+      "personPlace": "{{by}}加的一处",
+      "deleted": "已删（{{by}} · {{date}}）",
+      "by": "{{by}} · {{date}}"
     },
     "note": {
       "header": "文头",
@@ -532,7 +559,7 @@
         "evaluate": "二　需评估（{{count}} 份）",
         "inform": "三　仅告知（{{count}} 份）",
         "indirect": "四　间接相关，仅供参考（{{count}} 份）",
-        "edits": "五　人工调整（加入 {{added}} 份 · 移出 {{removed}} 份 · 评估结论 {{concluded}} 份）"
+        "edits": "五　人工调整（加入 {{added}} 份 · 移出 {{removed}} 份 · 评估结论 {{concluded}} 份 · 修改要点 {{points}} 份）"
       },
       "col": {
         "file": "文件",
@@ -560,7 +587,14 @@
       "printDraft": "导出草稿 PDF",
       "printDraftHint": "草稿可以随时导出，拿去讨论；文头写「草稿」，不锁定。用浏览器打印，选「存储为 PDF」",
       "noEntries": "无。",
-      "pageFooterDraft": "{{no}}　变更影响评估报告　草稿"
+      "pageFooterDraft": "{{no}}　变更影响评估报告　草稿",
+      "pointsItem": "修改要点 {{code}} {{name}}：{{counts}}（{{department}}）",
+      "pointCount": {
+        "added": "加 {{count}} 条",
+        "edited": "改 {{count}} 条",
+        "deleted": "删 {{count}} 条"
+      },
+      "byPerson": "（{{by}}）"
     },
     "action": {
       "open": "看原件和依据",
@@ -762,10 +796,30 @@
       "open": "审阅 →",
       "view": "查看 →",
       "back": "全部修订稿",
-      "concludedTag": "需评估 → 必须改"
+      "concludedTag": "需评估 → 必须改",
+      "pointsOpen": "未改到 {{count}}",
+      "pointsDeclined": "不按要点改 {{count}}"
     },
     "whyConcluded": "评估后改为必须改（{{by}}决定）{{note}}",
-    "whyConcludedNote": "：{{note}}"
+    "whyConcludedNote": "：{{note}}",
+    "points": {
+      "summary": "报告要点 {{total}} 条 · 已改 {{changed}} · 未改到 {{open}}",
+      "declinedCount": " · 不按要点改 {{count}}",
+      "status": {
+        "changed": "已改",
+        "open": "未改到",
+        "done": "已改（手动）",
+        "declined": "不按这条改"
+      },
+      "markDone": "已改",
+      "decline": "不按这条改",
+      "reason": "原因",
+      "save": "确定",
+      "cancel": "取消",
+      "undo": "撤回",
+      "declinedWhy": "原因：{{note}}",
+      "blocked": "还有 {{count}} 条要点未改到"
+    }
   },
   "rollout": {
     "title": "换版追踪",
@@ -1072,7 +1126,9 @@
       "closeTitle": "四　关闭",
       "closeText": "换版和培训均已完成，系统判断本变更可关闭。关闭由 QA 负责人在变更控制单上签字确认；本总览作为附件。",
       "head": "QA 负责人：",
-      "date": "日期："
+      "date": "日期：",
+      "reviseDeclined": "；不按报告要点改 {{count}} 条：{{lines}}",
+      "declinedLine": "{{code}} {{place}}「{{point}}」（{{note}}）"
     }
   },
   "ai": {

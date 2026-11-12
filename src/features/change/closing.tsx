@@ -7,6 +7,7 @@ import { displayCode } from '@/data/model'
 import { shortDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { useDemo } from '@/store/demo'
+import { plannedStatuses } from './review/points'
 import { reviewTargets } from './review/model'
 import { effectiveDate, planOf } from './rollout/model'
 import { packsOf } from './training/model'
@@ -89,9 +90,16 @@ export function ClosingSummary({ view }: { view: ChangeView }) {
   const effective = effectiveDate(view)
   const sep = t('common.listSep')
   const legacy = plan.legacy.map((l) => t('closing.sum.legacyLine', { copy: l.copyNo, holder: l.holder, note: view.rollout.notes[l.copyNo] ?? (returns[l.copyNo] ? t('closing.sum.legacyReturned', { date: shortDate(returns[l.copyNo].on) }) : t('closing.sum.legacyOpen')) }))
+  // Where a draft departs from the signed report, QA 负责人 sees it here (UX-57).
+  const declined = targets.flatMap((x) =>
+    plannedStatuses(x.points, x.ops, x.review.closures)
+      .filter((p) => p.status === 'declined')
+      .map((p) => t('closing.sum.declinedLine', { code: displayCode(x.version), place: p.clause === 'header' ? t('assess.note.header') : p.clause === 'body' ? t('assess.note.body') : t('doc.place.clause', { number: p.clause }), point: p.label, note: p.closure?.note ?? '' })),
+  )
+  const declinedText = declined.length > 0 ? t('closing.sum.reviseDeclined', { count: declined.length, lines: declined.join(sep) }) : ''
   const rows: [StationId, string][] = [
     ['assess', t('closing.sum.assess', { count: view.report.entries.length, date: shortDate(view.assessment.exportedOn ?? '') })],
-    ['revise', t('closing.sum.revise', { count: targets.length, reviewed: rangeText(reviewedOn), approved: rangeText(approvedOn) })],
+    ['revise', t('closing.sum.revise', { count: targets.length, reviewed: rangeText(reviewedOn), approved: rangeText(approvedOn) }) + declinedText],
     [
       'rollout',
       t('closing.sum.rollout', { groups: plan.groups.length, departments: plan.departments.length, copies: plan.copies.length, last: shortDate(lastReturn) }) +
