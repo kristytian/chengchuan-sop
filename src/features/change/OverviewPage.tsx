@@ -6,7 +6,7 @@ import { NotThisRound, Tag } from '@/components/common'
 import { shortDate } from '@/lib/format'
 import { Closing, ClosingSummary } from './closing'
 import { effectiveDate, rolloutOpen, summaryOf } from './rollout/model'
-import { trainingOpen, trainingSummary } from './training/model'
+import { trainingOpen, trainingSkipped, trainingSummary } from './training/model'
 import { type ChangeView, changeNumber, closable, sourceLabel, stationDone } from './view'
 
 /** 概览: what was filed at 发起, one line per station (03 画面 4), and 收尾 — 可关闭 and the 收尾总览 to print (画面 23). */
@@ -72,7 +72,7 @@ export function OverviewPage() {
               <StationRow
                 name={t('overview.row.training')}
                 summary={view.ai.training ? t('station.training.ai', { ...view.ai.training }) : trainingSummaryText(t, view)}
-                state={t(!trainingOpen(view) ? 'overview.state.notStarted' : stationDone(view, 'training') ? 'overview.state.done' : 'overview.state.inProgress')}
+                state={t(trainingSkipped(view) && stationDone(view, 'training') ? 'overview.state.done' : !trainingOpen(view) ? 'overview.state.notStarted' : stationDone(view, 'training') ? 'overview.state.done' : 'overview.state.inProgress')}
                 to={`${base}/training`}
               />
             </ul>
@@ -86,6 +86,7 @@ export function OverviewPage() {
 }
 
 function trainingSummaryText(t: TFunction, view: ChangeView): string {
+  if (trainingSkipped(view)) return t('station.training.skipped')
   if (!trainingOpen(view)) return t('overview.row.trainingSummary')
   return t('overview.row.trainingProgress', trainingSummary(view))
 }

@@ -17,6 +17,7 @@ import { AddEntryDialog } from './AddEntryDialog'
 import { canEditReport, departments, entryAnchor } from './model'
 import { AssessGenerating } from './Generating'
 import { SourceCheckRow } from './SourceCheck'
+import { TrainingChoice } from './TrainingChoice'
 import { ReportDocument } from './ReportView'
 
 /**
@@ -107,6 +108,7 @@ export function AssessPage() {
             {/* Every evaluate entry needs its conclusion before the report can go out. */}
             {view.unevaluated > 0 && <p className="mb-2 text-xs text-muted-foreground">{t('assess.confirm.blocked', { count: view.unevaluated })}</p>}
             {view.withoutPoints > 0 && <p className="mb-2 text-xs text-muted-foreground">{t('assess.confirm.blockedPoints', { count: view.withoutPoints })}</p>}
+            <TrainingChoice view={view} />
             <div className="flex items-center gap-2">
               <Button size="sm" variant="outline" onClick={() => setAdding(true)}>
                 {t('assess.add.button')}
@@ -114,8 +116,16 @@ export function AssessPage() {
               <Button
                 size="sm"
                 className="ml-auto"
-                disabled={view.unevaluated > 0 || view.withoutPoints > 0}
-                title={view.unevaluated > 0 ? t('assess.confirm.blocked', { count: view.unevaluated }) : view.withoutPoints > 0 ? t('assess.confirm.blockedPoints', { count: view.withoutPoints }) : t('assess.confirm.hint')}
+                disabled={view.unevaluated > 0 || view.withoutPoints > 0 || view.trainingUndecided}
+                title={
+                  view.unevaluated > 0
+                    ? t('assess.confirm.blocked', { count: view.unevaluated })
+                    : view.withoutPoints > 0
+                      ? t('assess.confirm.blockedPoints', { count: view.withoutPoints })
+                      : view.trainingUndecided
+                        ? t('assess.confirm.blockedTraining')
+                        : t('assess.confirm.hint')
+                }
                 onClick={() => exportReport(view.record.id)}
               >
                 {t('assess.confirm.button')}

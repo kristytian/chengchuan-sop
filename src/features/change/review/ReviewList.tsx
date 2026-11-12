@@ -130,10 +130,10 @@ export function ReviewList({ targets, onOpen, progress }: { targets: ReviewTarge
 /** 「未改到 1 · 不按要点改 1」 under the places: the report's 修改要点 the draft does not carry out (UX-57). */
 function PointCounts({ target }: { target: ReviewTarget }) {
   const { t } = useTranslation()
-  const states = plannedStatuses(target.points, target.ops, target.review.closures)
+  const states = plannedStatuses(target.points, target.ops, target.review.closures, target.review.settled)
   const open = states.filter((s) => s.status === 'open').length
   const declined = states.filter((s) => s.status === 'declined').length
-  const openChecks = plannedCheckStatuses(target.checks, target.ops, target.review.closures).filter((c) => c.status === 'open').length
+  const openChecks = plannedCheckStatuses(target.checks, target.ops, target.review.closures, target.review.settled).filter((c) => c.status === 'open').length
   if (open + declined + openChecks === 0) return null
   return (
     <span className="mt-0.5 block text-xs">

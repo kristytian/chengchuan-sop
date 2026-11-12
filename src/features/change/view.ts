@@ -9,7 +9,7 @@ import { shortDate } from '@/lib/format'
 import { type AiStage, type Assessment, type ChangeRecord, type DocReview, emptyRollout, type PackRecord, type Rollout } from '@/store/demo'
 import { reportOf } from './assess/model'
 import { rolloutOpen, summaryOf } from './rollout/model'
-import { audiencesOf, trainingDone, trainingOpen, trainingSummary } from './training/model'
+import { audiencesOf, trainingDone, trainingOpen, trainingSkipped, trainingSummary } from './training/model'
 import { type AiClock, type AiProgress, aiProgress } from './ai-progress'
 
 /** The five tabs of a change (UX-47); the third is 审阅 since UX-50, route still `revise`. */
@@ -37,6 +37,8 @@ export interface ChangeView {
   unevaluated: number
   /** Documents put on as 必须改 with no 修改要点 yet (UX-57): they hold the export too. */
   withoutPoints: number
+  /** Whether training is needed is not decided yet (UX-59): it holds the export. */
+  trainingUndecided: boolean
   /** Clause and header changes between the two versions. */
   changeCount: number
   /** The station work is at now. */
@@ -89,6 +91,7 @@ export function changeView(
     report,
     unevaluated: unevaluated(report).length,
     withoutPoints: withoutPoints(report).length,
+    trainingUndecided: !assessment.training,
     changeCount: (diff?.header.length ?? 0) + (diff?.clauses.length ?? 0),
     current: stage !== 'exported' ? 'assess' : allReviewed ? 'rollout' : 'revise',
     stage,
@@ -187,6 +190,7 @@ export function stationLine(t: TFunction, view: ChangeView, station: StationId):
       return t('station.rollout.done', { copies: s.copies })
     }
     case 'training': {
+      if (trainingSkipped(view)) return t('station.training.skipped')
       if (!trainingOpen(view)) return t('station.training.waiting')
       if (view.ai.training) return t('station.training.ai', { ...view.ai.training })
       const s = trainingSummary(view)

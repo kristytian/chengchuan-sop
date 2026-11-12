@@ -25,6 +25,8 @@ export const TERMS = {
   /** 起草检查 (UX-58): words that leave a quantity (E1) or a time and frequency (E2) for the operator to guess. */
   vagueAmount: ['适量', '适当', '少量', '若干', '左右'],
   vagueTiming: ['定期', '及时', '必要时', '一般'],
+  /** A version as text says it (第 03 版): a number, not something an operator does (UX-59). */
+  versionWords: /第\s*\d+\s*版/g,
   /** Equipment model in an equipment SOP's name: 乳化均质机（RH-300）使用…. */
   modelInName: /^(.*?)（([A-Z]{1,4}-\d{2,4}[A-Z]?)）/,
   /** Departments as printed (起草部门, 分发部门, ledger 持有部门); the four demo accounts are these. */

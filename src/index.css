@@ -158,6 +158,12 @@
   background-color: var(--mark) !important;
 }
 
+/* The caret is drawn by the editor, under a pixel wide once the page is zoomed to fit: wide and blue, so it shows between struck and inserted text. */
+.draft-host .sd-v2-local-selection-caret {
+  width: 2px !important;
+  background-color: #2563eb !important;
+}
+
 /* 审阅 toolbar: room for 「本文件格式」 and a size like 10.5. */
 .draft-toolbar .sd-toolbar-item:has([data-item='btn-doc-format']) {
   width: auto !important;

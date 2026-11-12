@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 import { citation } from '../citations'
 import type { ChangeView } from '../view'
 import { deadlineText, packLink, questionOrigin } from './labels'
-import { packsOf, TRAINING_RULE, trainingOpen, type Pack } from './model'
+import { packsOf, TRAINING_RULE, trainingOpen, trainingSkipped, type Pack } from './model'
 import { AiItemState } from '../AiWorking'
 import { PackPage } from './PackPage'
 import { PackStatus, RecordList } from './parts'
@@ -14,6 +14,15 @@ export function TrainingPage() {
   const { t } = useTranslation()
   const view = useOutletContext<ChangeView>()
   const [params] = useSearchParams()
+  // QA decided at 影响评估 that this change needs no training (UX-59).
+  const decision = view.assessment.training
+  if (trainingSkipped(view) && decision)
+    return (
+      <div className="mx-auto max-w-3xl p-10 text-center text-sm">
+        <p className="font-medium">{t('training.skipped')}</p>
+        <p className="mt-1 text-muted-foreground">{t('training.skippedWhy', { note: decision.note, by: decision.by, date: decision.on })}</p>
+      </div>
+    )
   if (!trainingOpen(view))
     return (
       <div className="mx-auto max-w-3xl p-10 text-center text-sm text-muted-foreground">

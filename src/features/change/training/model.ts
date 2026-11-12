@@ -36,7 +36,11 @@ export const TRAINING_RULE = findClause(TERMS.trainingRule)
 const audiences = new Map<string, Audience[]>()
 
 /** Who is trained on this change: the duty holders who carry out the new version (rules). */
+/** QA decided this change needs no training (UX-59): the station is done as soon as the report is out. */
+export const trainingSkipped = (view: ChangeView) => view.assessment.training?.needed === false
+
 export function audiencesOf(view: ChangeView): Audience[] {
+  if (trainingSkipped(view)) return []
   let found = audiences.get(view.change.id)
   if (!found) {
     found = view.newVersion.document ? trainingAudiences(view.newVersion.document, currentHolders(view.oldVersion)) : []
@@ -82,6 +86,7 @@ export function trainingSummary(view: ChangeView) {
 }
 
 export function trainingDone(view: ChangeView): boolean {
+  if (trainingSkipped(view)) return view.stage === 'exported'
   const s = trainingSummary(view)
   return trainingOpen(view) && s.packs > 0 && s.trained === s.packs
 }

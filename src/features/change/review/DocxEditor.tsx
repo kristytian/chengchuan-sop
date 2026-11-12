@@ -6,7 +6,7 @@ import { loadDraft, saveDraft } from '@/store/drafts'
 import { BASE, loadSuperDoc } from './superdoc'
 import { type DocFormat, lineTwips, referenceOf, twips } from './formats'
 import { AI_AUTHOR, formattedOf, type TrackedChange } from './reasons'
-import { sameFormatting, type Segment, undoneEdits } from './tidy'
+import { type Segment, undoneEdits } from './tidy'
 
 /** The slice of SuperDoc's API the page uses (superdoc@2 Document API). */
 interface Match {
@@ -215,11 +215,6 @@ async function tidy(doc: DocApi): Promise<boolean> {
   const mine = (await doc.trackChanges.list({ in: 'all' })).items.filter((c) => c.author && c.author !== AI_AUTHOR)
   if (mine.length === 0) return false
   const undo = new Set<string>()
-  for (const c of mine) {
-    if (c.type !== 'formatting') continue
-    const { before, after } = await doc.trackChanges.get({ id: c.id })
-    if (sameFormatting(before?.formatting?.properties, after?.formatting?.properties)) undo.add(c.id)
-  }
   const ids = new Set(mine.map((c) => c.id))
   const blocks = new Set(
     mine.flatMap((c) => (c.type !== 'formatting' && c.navigationTarget?.blockId && c.navigationTarget.story?.storyType === 'body' ? [c.navigationTarget.blockId] : [])),
@@ -374,6 +369,21 @@ export function DocxEditor({
       await saveDraft(draftKey, await sd.export({ exportType: ['docx'], triggerDownload: false }))
     }
 
+    // Pasted text takes the format where it lands: a web page's size and colour are left behind,
+    // so text copied from a suggestion reads like the paragraph it goes into.
+    const plainPaste = (e: ClipboardEvent) => {
+      const data = e.clipboardData
+      if (!editable || !data?.types.includes('text/html') || (e as ClipboardEvent & { plain?: boolean }).plain) return
+      e.preventDefault()
+      e.stopImmediatePropagation()
+      const text = new DataTransfer()
+      text.setData('text/plain', data.getData('text/plain'))
+      const again = Object.assign(new ClipboardEvent('paste', { clipboardData: text, bubbles: true, cancelable: true }), { plain: true })
+      e.target?.dispatchEvent(again)
+    }
+    const hostEl = host.current
+    hostEl?.addEventListener('paste', plainPaste, true)
+
     const open = async () => {
       const SuperDoc = await loadSuperDoc()
       const saved = loadDraft(draftKey)
@@ -447,6 +457,7 @@ export function DocxEditor({
 
     return () => {
       cancelled = true
+      hostEl?.removeEventListener('paste', plainPaste, true)
       clearTimeout(timer)
       unsubscribe?.()
       // Keep what was typed in the last moment before leaving the document.

@@ -19,3 +19,12 @@ describe('起草检查 in 审阅 (UX-58)', () => {
     expect(plannedCheckStatuses([finding], ops, {})[0].status).toBe('fixed')
   })
 })
+
+describe('起草检查 once confirmed', () => {
+  it('stands as it stood at confirming, a word the reviewer typed away included', () => {
+    const f: DraftFinding = { id: 'E2:4.3.3:一般', rule: 'E2', clause: '4.3.3', word: '一般', excerpt: '…', origin: 'rule', suggestion: null }
+    const ops = { replacements: [], historyRow: null }
+    expect(plannedCheckStatuses([f], ops, {})[0].status).toBe('open')
+    expect(plannedCheckStatuses([f], ops, {}, { 'check|E2:4.3.3:一般': 'fixed' })[0].status).toBe('fixed')
+  })
+})

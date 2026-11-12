@@ -4,7 +4,8 @@
 // to every duty holder who is also an 执行人 — the people who carry the
 // procedure out; a supervisor (班组长) is not one.
 import type { Clause, SourceDocument } from '../data/schema.ts'
-import type { DocumentVersion } from './model.ts'
+import { findCodes } from './codes.ts'
+import type { DocumentDiff, DocumentVersion } from './model.ts'
 import { TERMS } from './source-terms.ts'
 
 export interface Audience {
@@ -56,3 +57,21 @@ export function trainingAudiences(doc: SourceDocument, holders: readonly string[
     return [{ ...d, executor, departments }]
   })
 }
+
+/**
+ * Whether a revision calls for training (UX-59), as a suggestion for QA: not
+ * when all it changes is numbers — document numbers, the version, the
+ * effective date — so the procedure reads the same to whoever carries it out;
+ * otherwise yes.
+ */
+export function trainingSuggestion(diff: DocumentDiff | null): 'needed' | 'notNeeded' {
+  if (!diff) return 'needed'
+  if (diff.header.some((h) => h.field !== 'version' && h.field !== 'effectiveDate')) return 'needed'
+  const plain = (text: string | null) => {
+    let out = text ?? ''
+    for (const { code } of findCodes(out)) out = out.replace(code, '#')
+    return out.replace(/\d{4}-\d{2}-\d{2}/g, '#').replace(TERMS.versionWords, '#').replace(/\s+/g, '')
+  }
+  return diff.clauses.every((c) => c.oldText !== null && c.newText !== null && plain(c.oldText) === plain(c.newText)) ? 'notNeeded' : 'needed'
+}
+

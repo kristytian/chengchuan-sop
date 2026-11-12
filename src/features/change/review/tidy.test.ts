@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { sameFormatting, type Segment, undoneEdits } from './tidy'
+import { type Segment, undoneEdits } from './tidy'
 
 const text = (t: string): Segment => ({ kind: 'text', text: t })
 const del = (id: string, t: string): Segment => ({ kind: 'del', id, text: t })
@@ -21,12 +21,5 @@ describe('edits that end where they began', () => {
     expect(undoneEdits([del('p1', '检查'), text('效果'), ins('p2', '检查')], mine)).toEqual([])
     expect(undoneEdits([del('ai1', 'RH-300'), ins('ai1', 'RH-300')], mine)).toEqual([])
     expect(undoneEdits([ins('p1', '新加的一句')], mine)).toEqual([])
-  })
-
-  it('treats no underline and an underline taken off as the same', () => {
-    expect(sameFormatting({ bold: false, fontSize: '21', font: '宋体' }, { bold: false, fontSize: '21', font: '宋体', underline: 'none' })).toBe(true)
-    expect(sameFormatting({ bold: false, fontSize: '21' }, { bold: true, fontSize: '21' })).toBe(false)
-    expect(sameFormatting({ fontSize: '21' }, { fontSize: '23' })).toBe(false)
-    expect(sameFormatting(undefined, { bold: true })).toBe(false)
   })
 })

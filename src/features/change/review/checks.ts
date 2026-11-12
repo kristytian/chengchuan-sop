@@ -28,11 +28,18 @@ export function checkStatuses(findings: readonly DraftFinding[], changes: readon
 }
 
 /** The same before the editor is open (the review list): 已改 when AI's operations already take the words out. */
-export function plannedCheckStatuses(findings: readonly DraftFinding[], ops: DraftOperations, closures: Readonly<Record<string, PointClosure>>): CheckState[] {
+export function plannedCheckStatuses(
+  findings: readonly DraftFinding[],
+  ops: DraftOperations,
+  closures: Readonly<Record<string, PointClosure>>,
+  settled?: Readonly<Record<string, string>>,
+): CheckState[] {
   return findings.map((f) => {
     const key = checkKey(f)
     const closure = closures[key] ?? null
     const fixed = ops.replacements.some((r) => r.find.includes(f.word) && !r.replace.includes(f.word))
-    return { ...f, key, status: fixed ? 'fixed' : (closure?.state ?? 'open'), change: null, closure }
+    // Once confirmed, the finding stands as it stood then — a word the reviewer typed away included.
+    const kept = settled?.[key] as CheckStatus | undefined
+    return { ...f, key, status: kept ?? (fixed ? 'fixed' : (closure?.state ?? 'open')), change: null, closure }
   })
 }

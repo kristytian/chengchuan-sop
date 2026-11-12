@@ -1,8 +1,10 @@
 // A person's edits that end where they began leave no mark (UX-50): text
-// deleted and typed back the same, underline put on and taken off. The
-// editor would keep them as tracked changes that change nothing; these
-// helpers tell which, and the editor rejects them, which restores exactly
-// what is there already.
+// deleted and typed back the same. The editor would keep them as tracked
+// changes that change nothing; this tells which, and the editor rejects them,
+// which restores exactly what is there already. Formatting changes are not
+// judged this way: the editor reports one formatting change over a whole
+// paragraph with the before and after of its first run only, so a change
+// that fixes later runs could look like nothing and be thrown away.
 
 /** A paragraph as its redline reads: plain text, and each tracked piece with its change id. */
 export type Segment = { kind: 'text'; text: string } | { kind: 'ins' | 'del'; id: string; text: string }
@@ -28,14 +30,4 @@ export function undoneEdits(segments: readonly Segment[], mine: (id: string) => 
   }
   close()
   return [...ids]
-}
-
-/** Values that all mean "not set": no underline is 「none」 once toggled off, and absent before. */
-const UNSET = new Set<unknown>([undefined, null, false, '', 'none', 'false', 'off', '0'])
-const norm = (v: unknown) => (UNSET.has(v) ? null : String(v))
-
-/** A formatting change that ends as it began. */
-export function sameFormatting(before: Readonly<Record<string, unknown>> | undefined, after: Readonly<Record<string, unknown>> | undefined): boolean {
-  if (!before || !after) return false
-  return [...new Set([...Object.keys(before), ...Object.keys(after)])].every((k) => norm(before[k]) === norm(after[k]))
 }

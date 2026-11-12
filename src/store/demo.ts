@@ -65,7 +65,17 @@ export interface Assessment {
   points: Record<string, EntryPointEdits>
   /** 起草检查 of the source's new version (UX-58), by finding id: sent back to its drafter, or kept with why. */
   sourceChecks: Record<string, SourceCheck>
+  /** Whether this change calls for training (UX-59): QA decides before the report goes out. */
+  training: TrainingDecision | null
   exportedOn: string | null
+}
+
+export interface TrainingDecision {
+  needed: boolean
+  /** Why not, when not needed. */
+  note: string
+  by: string
+  on: string
 }
 
 /** Where a finding on the source's new version went: the draft came from Word, so it is changed there or kept. */
@@ -76,7 +86,7 @@ export interface SourceCheck {
   on: string
 }
 
-export const emptyAssessment = (): Assessment => ({ removed: {}, added: [], comments: {}, conclusions: {}, points: {}, sourceChecks: {}, exportedOn: null })
+export const emptyAssessment = (): Assessment => ({ removed: {}, added: [], comments: {}, conclusions: {}, points: {}, sourceChecks: {}, training: null, exportedOn: null })
 
 /** A 修改要点 as a person writes it: one sentence, or 原文 → 改成 (UX-57). */
 export type PointInput = Pick<PersonPoint, 'clause' | 'text' | 'from' | 'to'>
@@ -89,6 +99,12 @@ export type PointInput = Pick<PersonPoint, 'clause' | 'text' | 'from' | 'to'>
 export interface DocReview {
   reviewedOn: string | null
   closures: Record<string, PointClosure>
+  /**
+   * How each 报告要点 and 起草检查 stood when the draft was confirmed (by key):
+   * the confirmed draft shows its changes accepted, so what a person typed
+   * can no longer be told from it.
+   */
+  settled?: Record<string, 'changed' | 'fixed' | 'done' | 'declined'>
 }
 
 export const emptyReview = (): DocReview => ({ reviewedOn: null, closures: {} })
@@ -179,12 +195,15 @@ interface DemoActions {
   /** 起草检查 of the source's new version (UX-58). */
   setSourceCheck: (changeId: string, findingId: string, state: SourceCheck['state'], note: string) => void
   clearSourceCheck: (changeId: string, findingId: string) => void
+  /** 培训：需要 / 不需要 (UX-59), null to undo. */
+  setTraining: (changeId: string, decision: { needed: boolean; note: string } | null) => void
   /** 评估结论 on a 需评估 entry, decided by a department (with an optional 备注), dated today. */
   concludeEntry: (changeId: string, versionKey: string, tier: EvaluationConclusion['tier'], by: string, note: string) => void
   withdrawConclusion: (changeId: string, versionKey: string) => void
   exportReport: (changeId: string) => void
   // 审阅
-  setReviewed: (changeId: string, versionKey: string, reviewed: boolean) => void
+  /** Confirmed with how its points and checks stood (settled); withdrawn clears it. */
+  setReviewed: (changeId: string, versionKey: string, reviewed: boolean, settled?: DocReview['settled']) => void
   /** A 修改要点 the draft did not carry out: done by hand, or 不按这条改 with why (UX-57). */
   closePoint: (changeId: string, versionKey: string, key: string, state: PointClosure['state'], note: string) => void
   reopenPoint: (changeId: string, versionKey: string, key: string) => void
@@ -256,7 +275,7 @@ export function checkpointState(checkpoint: Checkpoint): DemoData {
   const assessing = { ...base, changes: [record] }
   if (checkpoint === 'assessing') return assessing
   // 已导出: on 11-18 the two 需评估 documents have their 评估结论, so QA exports (version 1); AI's drafts wait for 审阅.
-  const report = { ...emptyAssessment(), ...scriptedEdits(), conclusions: scriptedConclusions(), points: scriptedPoints(), exportedOn: DEMO.evaluatedDate }
+  const report = { ...emptyAssessment(), ...scriptedEdits(), conclusions: scriptedConclusions(), points: scriptedPoints(), training: { needed: true, note: '', by: TERMS.departments.qa, on: DEMO.evaluatedDate }, exportedOn: DEMO.evaluatedDate }
   const exported = { ...assessing, date: DEMO.evaluatedDate, assessments: { c1: report } }
   if (checkpoint === 'exported') return exported
   // 审阅已确认: QA confirmed every draft on 11-20; OA approval is next.
@@ -378,10 +397,13 @@ export const useDemo = create<DemoState>()(
       setSourceCheck: (changeId, id, state, note) =>
         set((s) => editAssessment(s, changeId, (a) => ({ ...a, sourceChecks: { ...a.sourceChecks, [id]: { state, note, by: TERMS.departments.qa, on: s.date } } }))),
       clearSourceCheck: (changeId, id) => set((s) => editAssessment(s, changeId, (a) => ({ ...a, sourceChecks: without(a.sourceChecks, id) }))),
+      setTraining: (changeId, decision) =>
+        set((s) => editAssessment(s, changeId, (a) => ({ ...a, training: decision ? { ...decision, by: TERMS.departments.qa, on: s.date } : null }))),
       closePoint: (changeId, key, pointKey, state, note) =>
         set((s) => editReview(s, changeId, key, (r) => ({ ...r, closures: { ...r.closures, [pointKey]: { state, note, by: TERMS.departments.qa, on: s.date } } }))),
       reopenPoint: (changeId, key, pointKey) => set((s) => editReview(s, changeId, key, (r) => ({ ...r, closures: without(r.closures, pointKey) }))),
-      setReviewed: (changeId, key, reviewed) => set((s) => editReview(s, changeId, key, (r) => ({ ...r, reviewedOn: reviewed ? s.date : null }))),
+      setReviewed: (changeId, key, reviewed, settled) =>
+        set((s) => editReview(s, changeId, key, (r) => ({ ...r, reviewedOn: reviewed ? s.date : null, settled: reviewed ? settled : undefined }))),
       concludeEntry: (changeId, key, tier, by, note) =>
         set((s) => editAssessment(s, changeId, (a) => ({ ...a, conclusions: { ...a.conclusions, [key]: { tier, by, on: s.date, note } } }))),
       withdrawConclusion: (changeId, key) =>
@@ -441,7 +463,7 @@ export const useDemo = create<DemoState>()(
     {
       name: 'chengchuan-demo',
       // Bump when DemoData changes shape; an older saved demo starts over.
-      version: 16,
+      version: 17,
       storage: createJSONStorage(() => localStorage),
       partialize: ({ date, changes, assessments, reviews, rollouts, trainings }): DemoData => ({ date, changes, assessments, reviews, rollouts, trainings }),
       migrate: () => initial(),

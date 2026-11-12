@@ -8,6 +8,7 @@ import { pointAdjustments, type ReportEntry, type ReportGroup, type ReportLine }
 import { TERMS } from '@/domain/source-terms'
 import { shortDate } from '@/lib/format'
 import { cn } from '@/lib/utils'
+import { audiencesOf } from '../training/model'
 import { type ChangeView, changeNumber } from '../view'
 import { entryAnchor } from './model'
 
@@ -78,6 +79,9 @@ export function ReportDocument({ view, selected, onSelect }: { view: ChangeView;
         </Section>
         <Section title={t('assess.report.section.indirect', { count: inGroup('indirect').length })}>
           <EntryTable entries={inGroup('indirect')} kind="indirect" selected={selected} onSelect={onSelect} />
+        </Section>
+        <Section title={t('assess.report.section.training')}>
+          <p>{trainingLine(t, view)}</p>
         </Section>
         <Section title={t('assess.report.section.edits', { added: added.length, removed: report.removed.length, concluded: concluded.length, points: pointEdits.length })}>
           {added.length === 0 && report.removed.length === 0 && concluded.length === 0 && pointEdits.length === 0 && <p>{t('assess.report.noEdits')}</p>}
@@ -229,6 +233,15 @@ function EntryRow({ entry: e, kind, active, onSelect }: { entry: ReportEntry; ki
       </td>
     </tr>
   )
+}
+
+/** 「需要。培训对象：乳化岗位操作人员、设备工程部」, 「不需要：只改了编号」, or 待定 (UX-59). */
+function trainingLine(t: TFunction, view: ChangeView): string {
+  const d = view.assessment.training
+  if (!d) return t('assess.report.trainingPending')
+  if (!d.needed) return t('assess.report.trainingNot', { note: d.note })
+  const who = audiencesOf(view).map((a) => a.role)
+  return who.length > 0 ? t('assess.report.trainingNeeded', { who: who.join(t('common.listSep')) }) : t('assess.report.trainingNeededNone')
 }
 
 function pointsText(t: TFunction, l: ReportLine): string {

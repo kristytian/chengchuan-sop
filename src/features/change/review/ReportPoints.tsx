@@ -20,12 +20,29 @@ import type { TrackedChange } from './reasons'
  * document's 备注 and 评估结论 stand above them. Opens by itself while any
  * point is still 未改到.
  */
-export function ReportPoints({ view, target, states, checks, editable, onGo }: { view: ChangeView; target: ReviewTarget; states: PointState[]; checks: CheckState[]; editable: boolean; onGo: (c: TrackedChange) => void }) {
+export function ReportPoints({
+  view,
+  target,
+  states,
+  checks,
+  editable,
+  final,
+  onGo,
+}: {
+  view: ChangeView
+  target: ReviewTarget
+  states: PointState[]
+  checks: CheckState[]
+  editable: boolean
+  /** A confirmed draft: the list is a record now, folded away until asked for. */
+  final: boolean
+  onGo: (c: TrackedChange) => void
+}) {
   const { t } = useTranslation()
   const { closePoint, reopenPoint } = useDemo()
   const open = states.filter((s) => s.status === 'open').length
   const openChecks = checks.filter((c) => c.status === 'open').length
-  const [shown, setShown] = useState(open + openChecks > 0)
+  const [shown, setShown] = useState(!final && open + openChecks > 0)
   const [declining, setDeclining] = useState<string | null>(null)
   const [reason, setReason] = useState('')
   const id = view.record.id

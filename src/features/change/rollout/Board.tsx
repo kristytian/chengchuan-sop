@@ -31,7 +31,8 @@ export function Board({ view }: { view: ChangeView }) {
   const plan = planOf(view)
   const summary = summaryOf(view)
   const [selected, setSelected] = useState<Selected | null>(null)
-  const [approving, setApproving] = useState(false)
+  // 登记批准: from the bar (every group OA has approved), or from one group's head or cell (that group).
+  const [approving, setApproving] = useState<{ only: string | null } | null>(null)
   const unreviewed = view.toRevise - view.reviewed
   const anyIssued = Object.keys(view.rollout.issued).length > 0
   const hasLegacy = plan.legacy.length > 0
@@ -57,7 +58,7 @@ export function Board({ view }: { view: ChangeView }) {
             </Link>
           </p>
         )}
-        <ApprovalBar view={view} onApprove={() => setApproving(true)} />
+        <ApprovalBar view={view} onApprove={() => setApproving({ only: null })} />
 
         <table className="mt-4 w-full table-fixed border-collapse bg-background text-sm">
           <colgroup>
@@ -73,7 +74,7 @@ export function Board({ view }: { view: ChangeView }) {
                 <span className="block font-medium">{t('rollout.col.department')}</span>
               </th>
               {plan.groups.map((g) => (
-                <GroupHead key={g.id} view={view} group={g} showDate={effective.size > 1} />
+                <GroupHead key={g.id} view={view} group={g} showDate={effective.size > 1} onApprove={() => setApproving({ only: g.id })} />
               ))}
               {hasLegacy && (
                 <th className="border px-2.5 py-2 text-left align-top font-normal">
@@ -115,8 +116,8 @@ export function Board({ view }: { view: ChangeView }) {
           </tbody>
         </table>
       </div>
-      {selected && <CellPanel view={view} selected={selected} onClose={() => setSelected(null)} />}
-      {approving && <ApproveDialog view={view} onClose={() => setApproving(false)} />}
+      {selected && <CellPanel view={view} selected={selected} onClose={() => setSelected(null)} onApprove={(group) => setApproving({ only: group })} />}
+      {approving && <ApproveDialog view={view} only={approving.only} onClose={() => setApproving(null)} />}
     </div>
   )
 }
@@ -168,7 +169,10 @@ function ApprovalBar({ view, onApprove }: { view: ChangeView; onApprove: () => v
 }
 
 /** 「SOP-SB-021 组」 or the document's name, and the members with their new versions. */
-function GroupHead({ view, group, showDate }: { view: ChangeView; group: RolloutGroup; showDate: boolean }) {
+/** Waiting for its 登记批准: every member reviewed, no approval yet. */
+const awaitingApproval = (view: ChangeView, group: RolloutGroup) => group.members.every((m) => m.ready) && !view.rollout.approvals[group.id]
+
+function GroupHead({ view, group, showDate, onApprove }: { view: ChangeView; group: RolloutGroup; showDate: boolean; onApprove: () => void }) {
   const { t } = useTranslation()
   const approval = view.rollout.approvals[group.id]
   const single = group.members.length === 1
@@ -184,6 +188,11 @@ function GroupHead({ view, group, showDate }: { view: ChangeView; group: Rollout
       ))}
       {/* Only when groups take effect on different days; otherwise the date is above the board. */}
       {showDate && approval && <span className="mt-1 block text-xs text-muted-foreground">{t('rollout.head.effective', { date: shortDate(approval.effectiveOn) })}</span>}
+      {awaitingApproval(view, group) && (
+        <button type="button" onClick={onApprove} className="mt-1 text-xs font-medium underline-offset-2 hover:underline">
+          {t('rollout.approval.registerGroup')}
+        </button>
+      )}
     </th>
   )
 }
@@ -279,7 +288,7 @@ function LegacyCell({ view, holder, active, onClick }: { view: ChangeView; holde
  * new copies issued (one sheet for all its groups), each old copy back with
  * its scan, notes — and see the deadline. The department's sheet is a link away.
  */
-function CellPanel({ view, selected, onClose }: { view: ChangeView; selected: Selected; onClose: () => void }) {
+function CellPanel({ view, selected, onClose, onApprove }: { view: ChangeView; selected: Selected; onClose: () => void; onApprove: (group: string) => void }) {
   const { t } = useTranslation()
   const plan = planOf(view)
   const { holder, group } = selected
@@ -310,7 +319,16 @@ function CellPanel({ view, selected, onClose }: { view: ChangeView; selected: Se
                 ))}
             </ul>
           </Block>
-          <Deadline view={view} holder={holder} group={g} />
+          {/* Before approval there is nothing to issue or return, so no deadline: the way to approve this group instead. */}
+          {view.rollout.approvals[g.id] ? (
+            <Deadline view={view} holder={holder} group={g} />
+          ) : awaitingApproval(view, g) ? (
+            <div className="border-b px-4 py-3">
+              <Button size="sm" onClick={() => onApprove(g.id)}>
+                {t('rollout.approval.registerGroup')}
+              </Button>
+            </div>
+          ) : null}
         </>
       ) : (
         <Block title={t('rollout.register.returnTitle')}>
@@ -340,9 +358,7 @@ function Deadline({ view, holder, group }: { view: ChangeView; holder: string; g
     <dl className="grid grid-cols-[3rem_1fr] gap-y-1.5 border-b px-4 py-3">
       <dt className="text-muted-foreground">{t('rollout.info.due')}</dt>
       <dd title={RETURN_RULE ? t('rollout.slip.paper.basisValue', { rule: citation(RETURN_RULE), text: RETURN_RULE.text }) : undefined}>
-        {!due ? (
-          t('rollout.info.dueTbd', { days: RETURN_WORKDAYS })
-        ) : (
+        {!due ? null : (
           <>
             {t('rollout.info.dueOn', { date: shortDate(due) })}
             {late > 0 && open && record.issued[holder] && <span className="ml-2 rounded-sm bg-foreground px-1 text-background">{t('rollout.info.overdue', { days: late })}</span>}
@@ -353,16 +369,23 @@ function Deadline({ view, holder, group }: { view: ChangeView; holder: string; g
   )
 }
 
-/** 登记批准: OA's approval date and the effective date — the whole change by default; untick groups OA has not approved yet. */
-function ApproveDialog({ view, onClose }: { view: ChangeView; onClose: () => void }) {
+/**
+ * 登记批准: OA's approval date, and each group's effective date — the same
+ * for all by default, set one by one where OA gave different days. Opened
+ * from the bar with every group OA has approved ticked, or from one group
+ * with only that one.
+ */
+function ApproveDialog({ view, only, onClose }: { view: ChangeView; only: string | null; onClose: () => void }) {
   const { t } = useTranslation()
   const approveGroup = useDemo((s) => s.approveGroup)
-  const candidates = planOf(view).groups.filter((g) => g.members.every((m) => m.ready) && !view.rollout.approvals[g.id])
-  const [picked, setPicked] = useState(() => new Set(candidates.map((g) => g.id)))
+  const candidates = planOf(view).groups.filter((g) => awaitingApproval(view, g))
+  const [picked, setPicked] = useState(() => new Set(only ? [only] : candidates.map((g) => g.id)))
   const [approvedOn, setApprovedOn] = useState(view.today)
-  const [effectiveOn, setEffectiveOn] = useState('')
-  const bad = !!effectiveOn && !!approvedOn && effectiveOn < approvedOn
-  const ready = picked.size > 0 && approvedOn && effectiveOn && !bad
+  const [dates, setDates] = useState<Record<string, string>>({})
+  const chosen = candidates.filter((g) => picked.has(g.id))
+  const early = (d: string | undefined) => !!d && !!approvedOn && d < approvedOn
+  const bad = chosen.some((g) => early(dates[g.id]))
+  const ready = chosen.length > 0 && !!approvedOn && chosen.every((g) => dates[g.id]) && !bad
   const toggle = (id: string, on: boolean) =>
     setPicked((s) => {
       const next = new Set(s)
@@ -370,10 +393,13 @@ function ApproveDialog({ view, onClose }: { view: ChangeView; onClose: () => voi
       else next.delete(id)
       return next
     })
+  const setAll = (date: string) => setDates((d) => ({ ...d, ...Object.fromEntries(chosen.map((g) => [g.id, date])) }))
+  const shared = chosen.length > 0 && chosen.every((g) => dates[g.id] === dates[chosen[0].id]) ? (dates[chosen[0].id] ?? '') : ''
+  const rule = RETURN_RULE ? t('rollout.approve.rule', { days: RETURN_WORKDAYS, rule: citation(RETURN_RULE) }) : t('rollout.approve.ruleNoCite', { days: RETURN_WORKDAYS })
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
-      <DialogContent aria-describedby={undefined} className="max-w-lg">
+      <DialogContent aria-describedby={undefined} className="max-w-2xl sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>{t('rollout.approve.title')}</DialogTitle>
         </DialogHeader>
@@ -383,25 +409,37 @@ function ApproveDialog({ view, onClose }: { view: ChangeView; onClose: () => voi
               <span className="text-muted-foreground">{t('rollout.approve.approvedOn')}</span>
               <Input type="date" value={approvedOn} onChange={(e) => setApprovedOn(e.target.value)} className="mt-1" />
             </label>
-            <label className="block">
-              <span className="text-muted-foreground" title={RETURN_RULE ? t('rollout.approve.rule', { days: RETURN_WORKDAYS, rule: citation(RETURN_RULE) }) : t('rollout.approve.ruleNoCite', { days: RETURN_WORKDAYS })}>
-                {t('rollout.approve.effectiveOn')}
-              </span>
-              <Input type="date" value={effectiveOn} onChange={(e) => setEffectiveOn(e.target.value)} className="mt-1" aria-invalid={bad} />
-            </label>
+            {chosen.length > 1 && (
+              <label className="block">
+                <span className="text-muted-foreground" title={rule}>
+                  {t('rollout.approve.effectiveAll')}
+                </span>
+                <Input type="date" value={shared} onChange={(e) => setAll(e.target.value)} className="mt-1" />
+              </label>
+            )}
           </div>
           {bad && <p className="text-xs text-destructive">{t('rollout.approve.badDates')}</p>}
           <div>
             <span className="text-muted-foreground">{t('rollout.approve.groups', { picked: picked.size, total: candidates.length })}</span>
-            <ul className="mt-1 max-h-48 divide-y overflow-auto rounded-md border">
+            <ul className="mt-1 max-h-64 divide-y overflow-auto rounded-md border">
               {candidates.map((g) => (
-                <li key={g.id}>
-                  <label className="flex cursor-pointer items-start gap-2.5 px-3 py-2 hover:bg-muted/60">
-                    <Checkbox checked={picked.has(g.id)} onCheckedChange={(v) => toggle(g.id, v === true)} className="mt-0.5" />
-                    <span className="min-w-0">
-                      <span className="block font-medium">{g.members.length === 1 ? g.members[0].old.name : t('rollout.col.group', { id: g.id })}</span>
-                      <span className="block truncate font-mono text-[11px] text-muted-foreground">{g.members.map((m) => `${m.old.identity} → ${m.newVersion}`).join(', ')}</span>
-                    </span>
+                <li key={g.id} className="flex items-start gap-2.5 px-3 py-2">
+                  <Checkbox aria-label={g.members.length === 1 ? g.members[0].old.name : t('rollout.col.group', { id: g.id })} checked={picked.has(g.id)} onCheckedChange={(v) => toggle(g.id, v === true)} className="mt-0.5" />
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-medium">{g.members.length === 1 ? g.members[0].old.name : t('rollout.col.group', { id: g.id })}</span>
+                    <span className="block truncate font-mono text-[11px] text-muted-foreground">{g.members.map((m) => `${m.old.identity} → ${m.newVersion}`).join(', ')}</span>
+                  </span>
+                  <label className="shrink-0 text-xs">
+                    <span className="sr-only">{t('rollout.approve.effectiveOn')}</span>
+                    <Input
+                      type="date"
+                      title={rule}
+                      disabled={!picked.has(g.id)}
+                      value={dates[g.id] ?? ''}
+                      onChange={(e) => setDates((d) => ({ ...d, [g.id]: e.target.value }))}
+                      aria-invalid={early(dates[g.id])}
+                      className="h-8 w-36"
+                    />
                   </label>
                 </li>
               ))}
@@ -415,7 +453,7 @@ function ApproveDialog({ view, onClose }: { view: ChangeView; onClose: () => voi
           <Button
             disabled={!ready}
             onClick={() => {
-              for (const id of picked) approveGroup(view.record.id, id, approvedOn, effectiveOn)
+              for (const g of chosen) approveGroup(view.record.id, g.id, approvedOn, dates[g.id])
               onClose()
             }}
           >

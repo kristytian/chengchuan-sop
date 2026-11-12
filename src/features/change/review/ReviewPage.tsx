@@ -110,17 +110,18 @@ function Review({
   }
   const confirm = async () => {
     await api.current?.flush()
-    setReviewed(id, target.version.key, true)
+    setReviewed(id, target.version.key, true, Object.fromEntries([...points, ...checks].map((x) => [x.key, x.status as 'changed' | 'fixed' | 'done' | 'declined'])))
     // The last draft confirmed opens 培训: AI starts on the training packs (R1-02).
-    if (view.reviewed + 1 === view.toRevise && !useDemo.getState().generating[`${id}:training`]) startGeneration(id, 'training')
+    if (view.reviewed + 1 === view.toRevise && view.assessment.training?.needed !== false && !useDemo.getState().generating[`${id}:training`]) startGeneration(id, 'training')
   }
   const current = changes.find((c) => c.id === active)
   // 确认审阅 waits until every 修改要点 is carried out or closed by hand (UX-57).
-  // A confirmed draft shows its changes accepted, so its points are read from what AI planned.
-  const points = final ? plannedStatuses(target.points, target.ops, target.review.closures) : pointStatuses(target.points, target.ops, changes, target.review.closures)
+  // A confirmed draft shows its points as they stood at confirming; before the editor is ready, as AI planned them.
+  const settledAt = target.review.settled
+  const points = final || !ready ? plannedStatuses(target.points, target.ops, target.review.closures, settledAt) : pointStatuses(target.points, target.ops, changes, target.review.closures)
   const openPoints = points.filter((p) => p.status === 'open').length
   // 起草检查 (UX-58): the same rule — every finding fixed in the draft, or closed by hand.
-  const checks = final ? plannedCheckStatuses(target.checks, target.ops, target.review.closures) : checkStatuses(target.checks, changes, target.review.closures)
+  const checks = final || !ready ? plannedCheckStatuses(target.checks, target.ops, target.review.closures, settledAt) : checkStatuses(target.checks, changes, target.review.closures)
   const openChecks = checks.filter((c) => c.status === 'open').length
 
   return (
@@ -159,7 +160,7 @@ function Review({
           )}
         </span>
       </div>
-      <ReportPoints key={target.version.key} view={view} target={target} states={points} checks={checks} editable={editable} onGo={goTo} />
+      <ReportPoints key={`${target.version.key}|${final}`} view={view} target={target} states={points} checks={checks} editable={editable && ready} final={final} onGo={goTo} />
 
       {/* Word's toolbar, for the draft, across both columns */}
       {editable && <div ref={setToolbar} className="draft-toolbar h-10 shrink-0 border-b bg-background" />}

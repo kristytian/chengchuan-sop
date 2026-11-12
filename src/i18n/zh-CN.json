@@ -141,7 +141,8 @@
       "confirming": "待确认 · 已确认 {{confirmed}} / {{packs}} 个包",
       "recording": "已确认 · 培训记录 {{trained}} / {{packs}}",
       "done": "培训已完成 · {{packs}} 个包",
-      "ai": "AI 出包中 · {{done}} / {{total}}"
+      "ai": "AI 出包中 · {{done}} / {{total}}",
+      "skipped": "不需要培训"
     }
   },
   "change": {
@@ -454,7 +455,8 @@
       "button": "确认并导出",
       "hint": "确认后锁定，审阅和换版按这份报告走",
       "blocked": "还有 {{count}} 份需评估没给评估结论，给完才能导出",
-      "blockedPoints": "还有 {{count}} 份人工加入的文件没写修改要点，写完才能导出"
+      "blockedPoints": "还有 {{count}} 份人工加入的文件没写修改要点，写完才能导出",
+      "blockedTraining": "还没定这次变更要不要培训"
     },
     "detail": {
       "open": "看原件和依据",
@@ -560,7 +562,8 @@
         "evaluate": "二　需评估（{{count}} 份）",
         "inform": "三　仅告知（{{count}} 份）",
         "indirect": "四　间接相关，仅供参考（{{count}} 份）",
-        "edits": "五　人工调整（加入 {{added}} 份 · 移出 {{removed}} 份 · 评估结论 {{concluded}} 份 · 修改要点 {{points}} 份）"
+        "edits": "六　人工调整（加入 {{added}} 份 · 移出 {{removed}} 份 · 评估结论 {{concluded}} 份 · 修改要点 {{points}} 份）",
+        "training": "五　培训"
       },
       "col": {
         "file": "文件",
@@ -595,7 +598,11 @@
         "edited": "改 {{count}} 条",
         "deleted": "删 {{count}} 条"
       },
-      "byPerson": "（{{by}}）"
+      "byPerson": "（{{by}}）",
+      "trainingNeeded": "需要。培训对象：{{who}}",
+      "trainingNeededNone": "需要",
+      "trainingNot": "不需要：{{note}}",
+      "trainingPending": "待定"
     },
     "action": {
       "open": "看原件和依据",
@@ -625,6 +632,15 @@
       "by": "{{by}}决定 · {{date}}",
       "department": "决定部门",
       "notePlaceholder": "备注（选填）"
+    },
+    "training": {
+      "label": "培训",
+      "needed": "需要",
+      "notNeeded": "不需要",
+      "suggested": "建议：{{choice}}",
+      "reason": "原因",
+      "save": "确定",
+      "change": "改"
     }
   },
   "report": {
@@ -870,7 +886,6 @@
       "due": "期限",
       "dueOn": "{{date}} 前",
       "overdue": "超期 {{days}} 天",
-      "dueTbd": "生效后 {{days}} 个工作日内",
       "slipLink": "{{holder}}的签收单 →"
     },
     "approve": {
@@ -882,7 +897,8 @@
       "submit": "登记",
       "cancel": "取消",
       "rule": "旧版在新版生效后 {{days}} 个工作日内交回（{{rule}}）",
-      "ruleNoCite": "旧版在新版生效后 {{days}} 个工作日内交回"
+      "ruleNoCite": "旧版在新版生效后 {{days}} 个工作日内交回",
+      "effectiveAll": "生效日期（全部）"
     },
     "dept": {
       "reviewing": "审阅中",
@@ -978,7 +994,8 @@
       "pending": "还有 {{count}} 组没登记批准",
       "register": "登记批准",
       "withdraw": "撤销批准",
-      "withdrawHint": "已有部门登记发放，不能撤销"
+      "withdrawHint": "已有部门登记发放，不能撤销",
+      "registerGroup": "登记批准这一组"
     }
   },
   "files": {
@@ -1089,7 +1106,9 @@
       "answer": "答案",
       "clause": "对应条款",
       "clauseValue": "§{{clause}}"
-    }
+    },
+    "skipped": "这次变更不需要培训",
+    "skippedWhy": "{{note}}（{{by}} · {{date}}）"
   },
   "closing": {
     "closableTag": "可关闭",
@@ -1129,7 +1148,8 @@
       "head": "QA 负责人：",
       "date": "日期：",
       "reviseDeclined": "；不按报告要点改 {{count}} 条：{{lines}}",
-      "declinedLine": "{{code}} {{place}}「{{point}}」（{{note}}）"
+      "declinedLine": "{{code}} {{place}}「{{point}}」（{{note}}）",
+      "trainingSkipped": "不需要培训：{{note}}"
     }
   },
   "ai": {

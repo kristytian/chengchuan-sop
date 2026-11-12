@@ -52,12 +52,19 @@ const carries = (r: ReturnType<typeof reasonOf> | DraftReplacement['why'], label
  * The same, before the editor is open (the review list, 收尾): a point counts
  * as 已改 when AI made an operation for it — a rejection only shows in the editor.
  */
-export function plannedStatuses(points: readonly ReviewPoint[], ops: DraftOperations, closures: Readonly<Record<string, PointClosure>>): PointState[] {
+export function plannedStatuses(
+  points: readonly ReviewPoint[],
+  ops: DraftOperations,
+  closures: Readonly<Record<string, PointClosure>>,
+  settled?: Readonly<Record<string, string>>,
+): PointState[] {
   return points.map((p) => {
     const key = pointKey(p)
     const closure = closures[key] ?? null
     const planned = ops.replacements.some((r) => carries(r.why, p.label))
-    return { ...p, key, status: planned ? 'changed' : (closure?.state ?? 'open'), change: null, closure }
+    // Once confirmed, the point stands as it stood then.
+    const kept = settled?.[key] as PointStatus | undefined
+    return { ...p, key, status: kept ?? (planned ? 'changed' : (closure?.state ?? 'open')), change: null, closure }
   })
 }
 

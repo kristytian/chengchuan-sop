@@ -92,7 +92,7 @@ export function ClosingSummary({ view }: { view: ChangeView }) {
   const legacy = plan.legacy.map((l) => t('closing.sum.legacyLine', { copy: l.copyNo, holder: l.holder, note: view.rollout.notes[l.copyNo] ?? (returns[l.copyNo] ? t('closing.sum.legacyReturned', { date: shortDate(returns[l.copyNo].on) }) : t('closing.sum.legacyOpen')) }))
   // Where a draft departs from the signed report, QA 负责人 sees it here (UX-57).
   const declined = targets.flatMap((x) =>
-    plannedStatuses(x.points, x.ops, x.review.closures)
+    plannedStatuses(x.points, x.ops, x.review.closures, x.review.settled)
       .filter((p) => p.status === 'declined')
       .map((p) => t('closing.sum.declinedLine', { code: displayCode(x.version), place: p.clause === 'header' ? t('assess.note.header') : p.clause === 'body' ? t('assess.note.body') : t('doc.place.clause', { number: p.clause }), point: p.label, note: p.closure?.note ?? '' })),
   )
@@ -107,12 +107,14 @@ export function ClosingSummary({ view }: { view: ChangeView }) {
     ],
     [
       'training',
-      t('closing.sum.training', {
-        count: packs.length,
-        packs: packs.map((p) => p.audience.role).join(sep),
-        records: records.length,
-        last: shortDate(lastRecord),
-      }),
+      view.assessment.training?.needed === false
+        ? t('closing.sum.trainingSkipped', { note: view.assessment.training.note })
+        : t('closing.sum.training', {
+            count: packs.length,
+            packs: packs.map((p) => p.audience.role).join(sep),
+            records: records.length,
+            last: shortDate(lastRecord),
+          }),
     ],
   ]
   // As numbered with the version, records too (SOR-SB-021-R01-03).
