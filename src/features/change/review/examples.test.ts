@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { aiRuns, changeAnalysis, libraryModel } from '@/data/model'
-import { impactChangeForAI, impactSubject, inputHash, PROMPT_VERSIONS, revisionDraftInput } from '@/domain/ai-inputs'
+import { draftCheckInput, draftCheckSubject, impactChangeForAI, impactSubject, inputHash, PROMPT_VERSIONS, revisionDraftInput } from '@/domain/ai-inputs'
+import { DRAFT_RULES_VERSION } from '@/domain/draft-check'
 import { checkpointState } from '@/store/demo'
 import { changeView } from '../view'
 import { reviewTargets } from './model'
@@ -27,5 +28,14 @@ describe('revision draft examples', () => {
     })
     expect(found.length).toBeGreaterThan(0)
     for (const f of found) expect({ subject: f.subject, hash: f.hash, prompt: f.prompt }).toEqual({ subject: f.subject, ...f.want })
+  })
+
+  it('起草检查 examples are current on their documents (UX-58)', () => {
+    const runs = aiRuns.filter((r) => r.task === 'draftCheck')
+    expect(runs.length).toBeGreaterThan(0)
+    for (const run of runs) {
+      const v = libraryModel.catalog.versions.find((x) => draftCheckSubject(x) === run.subject)!
+      expect({ subject: run.subject, hash: run.inputHash, prompt: run.promptVersion }).toEqual({ subject: run.subject, hash: inputHash(draftCheckInput(v, DRAFT_RULES_VERSION)), prompt: PROMPT_VERSIONS.draftCheck })
+    }
   })
 })

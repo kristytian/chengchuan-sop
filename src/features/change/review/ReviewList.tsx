@@ -7,6 +7,7 @@ import type { AiProgress } from '../ai-progress'
 import { AiItemState } from '../AiWorking'
 import { concludedText, reportPlaces } from './labels'
 import type { ReviewTarget } from './model'
+import { plannedCheckStatuses } from './checks'
 import { plannedStatuses } from './points'
 
 const COLS = ['file', 'places', 'summary', 'status', 'action'] as const
@@ -132,10 +133,13 @@ function PointCounts({ target }: { target: ReviewTarget }) {
   const states = plannedStatuses(target.points, target.ops, target.review.closures)
   const open = states.filter((s) => s.status === 'open').length
   const declined = states.filter((s) => s.status === 'declined').length
-  if (open + declined === 0) return null
+  const openChecks = plannedCheckStatuses(target.checks, target.ops, target.review.closures).filter((c) => c.status === 'open').length
+  if (open + declined + openChecks === 0) return null
   return (
     <span className="mt-0.5 block text-xs">
-      {[open > 0 && t('review.list.pointsOpen', { count: open }), declined > 0 && t('review.list.pointsDeclined', { count: declined })].filter(Boolean).join(t('common.pointSep'))}
+      {[open > 0 && t('review.list.pointsOpen', { count: open }), declined > 0 && t('review.list.pointsDeclined', { count: declined }), openChecks > 0 && t('draftCheck.listOpen', { count: openChecks })]
+        .filter(Boolean)
+        .join(t('common.pointSep'))}
     </span>
   )
 }

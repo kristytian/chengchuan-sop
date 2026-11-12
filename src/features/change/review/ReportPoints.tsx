@@ -10,6 +10,7 @@ import { useDemo } from '@/store/demo'
 import type { ChangeView } from '../view'
 import { whyLine } from './labels'
 import type { ReviewTarget } from './model'
+import type { CheckState } from './checks'
 import type { PointState } from './points'
 import type { TrackedChange } from './reasons'
 
@@ -19,11 +20,12 @@ import type { TrackedChange } from './reasons'
  * document's 备注 and 评估结论 stand above them. Opens by itself while any
  * point is still 未改到.
  */
-export function ReportPoints({ view, target, states, editable, onGo }: { view: ChangeView; target: ReviewTarget; states: PointState[]; editable: boolean; onGo: (c: TrackedChange) => void }) {
+export function ReportPoints({ view, target, states, checks, editable, onGo }: { view: ChangeView; target: ReviewTarget; states: PointState[]; checks: CheckState[]; editable: boolean; onGo: (c: TrackedChange) => void }) {
   const { t } = useTranslation()
   const { closePoint, reopenPoint } = useDemo()
   const open = states.filter((s) => s.status === 'open').length
-  const [shown, setShown] = useState(open > 0)
+  const openChecks = checks.filter((c) => c.status === 'open').length
+  const [shown, setShown] = useState(open + openChecks > 0)
   const [declining, setDeclining] = useState<string | null>(null)
   const [reason, setReason] = useState('')
   const id = view.record.id
@@ -42,7 +44,13 @@ export function ReportPoints({ view, target, states, editable, onGo }: { view: C
             {count('declined') > 0 && t('review.points.declinedCount', { count: count('declined') })}
           </span>
         )}
-        <ChevronDown className={cn('size-3.5 shrink-0 transition-transform', states.length === 0 && 'ml-auto', shown && 'rotate-180')} />
+        {checks.length > 0 && (
+          <span className={cn('shrink-0', states.length === 0 && 'ml-auto', openChecks > 0 && 'font-medium')}>
+            {t('draftCheck.count', { count: checks.length })}
+            {openChecks > 0 && t('draftCheck.openCount', { count: openChecks })}
+          </span>
+        )}
+        <ChevronDown className={cn('size-3.5 shrink-0 transition-transform', states.length === 0 && checks.length === 0 && 'ml-auto', shown && 'rotate-180')} />
       </button>
       {shown && (
         <div className="max-h-60 space-y-1 overflow-auto border-t bg-background px-5 py-2">
@@ -112,8 +120,91 @@ export function ReportPoints({ view, target, states, editable, onGo }: { view: C
               ))}
             </tbody>
           </table>
+          {checks.length > 0 && <CheckRows view={view} target={target} checks={checks} editable={editable} onGo={onGo} />}
         </div>
       )}
+    </div>
+  )
+}
+
+/** 起草检查 of the version being revised (UX-58): fixed when the draft takes the words out, or closed by hand. */
+function CheckRows({ view, target, checks, editable, onGo }: { view: ChangeView; target: ReviewTarget; checks: CheckState[]; editable: boolean; onGo: (c: TrackedChange) => void }) {
+  const { t } = useTranslation()
+  const { closePoint, reopenPoint } = useDemo()
+  const [declining, setDeclining] = useState<string | null>(null)
+  const [reason, setReason] = useState('')
+  const id = view.record.id
+  const key = target.version.key
+  const link = 'underline-offset-2 hover:underline'
+  return (
+    <div className="border-t pt-1.5">
+      <p className="font-medium">{t('draftCheck.title')}</p>
+      <table className="w-full">
+        <tbody>
+          {checks.map((c) => (
+            <tr key={c.key} className="align-top">
+              <td className="w-24 py-1 pr-3 whitespace-nowrap text-muted-foreground">{c.clause === 'body' ? t('assess.note.body') : t('doc.place.clause', { number: c.clause })}</td>
+              <td className="py-1 pr-3">
+                <span title={t(`draftCheck.ruleFull.${c.rule}`)}>{t(`draftCheck.rule.${c.rule}`)}</span>
+                <span className="ml-2 text-muted-foreground">{c.excerpt}</span>
+                {c.suggestion && <p className="text-ai">{t('draftCheck.suggestion', { text: c.suggestion })}</p>}
+                {c.status === 'declined' && c.closure?.note && <p className="text-muted-foreground">{t('draftCheck.why', { note: c.closure.note })}</p>}
+                {declining === c.key && (
+                  <div className="mt-1 flex items-center gap-1.5">
+                    <Input aria-label={t('draftCheck.reason')} value={reason} onChange={(e) => setReason(e.target.value)} className="h-7 text-xs" />
+                    <Button
+                      size="sm"
+                      disabled={!reason.trim()}
+                      onClick={() => {
+                        closePoint(id, key, c.key, 'declined', reason.trim())
+                        setDeclining(null)
+                        setReason('')
+                      }}
+                    >
+                      {t('draftCheck.save')}
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={() => setDeclining(null)}>
+                      {t('draftCheck.cancel')}
+                    </Button>
+                  </div>
+                )}
+              </td>
+              <td className="w-56 py-1 text-right whitespace-nowrap">
+                {c.status === 'fixed' && c.change ? (
+                  <button type="button" className={link} onClick={() => onGo(c.change!)}>
+                    {t('draftCheck.state.fixed')} →
+                  </button>
+                ) : c.status === 'fixed' ? (
+                  t('draftCheck.state.fixed')
+                ) : c.status === 'open' ? (
+                  <span className="inline-flex items-center gap-2">
+                    <Tag tone="strong">{t('draftCheck.state.open')}</Tag>
+                    {editable && declining !== c.key && (
+                      <>
+                        <button type="button" className={link} onClick={() => closePoint(id, key, c.key, 'done', '')}>
+                          {t('draftCheck.markDone')}
+                        </button>
+                        <button type="button" className={link} onClick={() => setDeclining(c.key)}>
+                          {t('draftCheck.keepAction')}
+                        </button>
+                      </>
+                    )}
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-2">
+                    {t(`draftCheck.state.${c.status}`)}
+                    {editable && (
+                      <button type="button" className={cn(link, 'text-muted-foreground')} onClick={() => reopenPoint(id, key, c.key)}>
+                        {t('draftCheck.undo')}
+                      </button>
+                    )}
+                  </span>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   )
 }

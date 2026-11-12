@@ -180,7 +180,7 @@ export interface ImpactItem {
 
 export type AIStatus = 'missing' | 'current' | 'stale'
 
-export type AITask = 'impactAnalysis' | 'referenceSuggestion' | 'referenceExtraction' | 'changePoints' | 'revisionDraft' | 'trainingPack'
+export type AITask = 'impactAnalysis' | 'referenceSuggestion' | 'referenceExtraction' | 'changePoints' | 'revisionDraft' | 'trainingPack' | 'draftCheck'
 
 /**
  * AIRun: one cached AI result (ai-cache/<task>/…json), or a hand-written
@@ -290,3 +290,14 @@ export interface RevisionDraftSuggestion {
   rewrites: { clause: string; block?: number; row?: number; cell?: number; text: string; points?: string[] }[]
   history: string | null
 }
+
+/**
+ * AI's part of the 起草检查 of one SOP (UX-58): a suggested wording for what
+ * the rules found (E1 量, E2 频次, E4 引用), and what only a reading finds
+ * (E3 判断没有标准, E5 一步几个动作, E6 记录没写记在哪). `word` is the
+ * text as written, to find it in the clause.
+ */
+export interface DraftCheckSuggestion {
+  findings: { rule: string; clause: string; word: string; suggestion: string }[]
+}
+

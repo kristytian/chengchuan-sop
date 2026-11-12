@@ -1,6 +1,7 @@
 import { createHashRouter, Navigate } from 'react-router'
 import { AssessPage } from '@/features/change/assess/AssessPage'
 import { ComparePage } from '@/features/change/assess/ComparePage'
+import { SourceCheckPage } from '@/features/change/assess/SourceCheck'
 import { ItemDetail } from '@/features/change/assess/ItemDetail'
 import { ChangeLayout } from '@/features/change/ChangeLayout'
 import { ChangeListPage } from '@/features/change/ChangeListPage'
@@ -35,6 +36,7 @@ export const router = createHashRouter([
           { path: 'overview', Component: OverviewPage },
           { path: 'assess', Component: AssessPage },
           { path: 'assess/compare', Component: ComparePage },
+          { path: 'assess/check', Component: SourceCheckPage },
           { path: 'assess/doc/:identity', Component: ItemDetail },
           { path: 'revise', Component: ReviewPage },
           { path: 'rollout', Component: RolloutPage },

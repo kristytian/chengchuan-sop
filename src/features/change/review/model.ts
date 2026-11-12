@@ -9,6 +9,8 @@ import type { DocumentVersion, RevisionDraftSuggestion } from '@/domain/model'
 import { applicableRewrites, bumpedCode, type DraftOperations, draftOperations, nextVersion, pointLabel } from '@/domain/revision'
 import { type DocReview, emptyReview } from '@/store/demo'
 import type { ChangeView } from '../view'
+import type { DraftFinding } from '@/domain/draft-check'
+import { draftCheckOf } from '../draft-check'
 import type { ReviewPoint } from './points'
 
 export interface ReviewTarget {
@@ -24,6 +26,8 @@ export interface ReviewTarget {
   summary: RevisionDraftSuggestion['summary']
   /** The report's 修改要点 the draft is to carry out (UX-57), for 报告要点. */
   points: ReviewPoint[]
+  /** 起草检查 of the version being revised (UX-58). */
+  checks: DraftFinding[]
   example: boolean
   review: DocReview
 }
@@ -66,6 +70,7 @@ export function reviewTargets(view: ChangeView, reviews: Readonly<Record<string,
         }),
         summary: ai?.output.summary ?? [],
         points: points.map((p) => ({ clause: p.clause, label: pointLabel(p), origin: p.origin, ...(p.by && { by: p.by }) })),
+        checks: draftCheckOf(version).findings,
         example: ai?.mode === 'example',
       }
       made.set(key, target)

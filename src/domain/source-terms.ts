@@ -22,6 +22,9 @@ export const TERMS = {
   generalChapters: /通则\s*(\d{4}(?:\s*[、，,和及与]\s*\d{4})*)/g,
   /** References without a number: 相关清洁规程, 各品种质量标准. */
   implicitReference: /(?:相关|各)[^\s，。；、：（）()]{0,8}?(?:规程|标准)/g,
+  /** 起草检查 (UX-58): words that leave a quantity (E1) or a time and frequency (E2) for the operator to guess. */
+  vagueAmount: ['适量', '适当', '少量', '若干', '左右'],
+  vagueTiming: ['定期', '及时', '必要时', '一般'],
   /** Equipment model in an equipment SOP's name: 乳化均质机（RH-300）使用…. */
   modelInName: /^(.*?)（([A-Z]{1,4}-\d{2,4}[A-Z]?)）/,
   /** Departments as printed (起草部门, 分发部门, ledger 持有部门); the four demo accounts are these. */

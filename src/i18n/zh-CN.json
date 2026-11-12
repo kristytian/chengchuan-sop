@@ -48,7 +48,8 @@
         "validationS2": "S2 改为主锅锅壁及 CIP 喷淋球表面（喷淋死角）",
         "validationS4": "S4 改为底部出料阀阀芯及 CIP 回流口内壁",
         "validationRuns": "设备换型后首次验证：连续 3 批，每批另取 CIP 结束后的末次淋洗水"
-      }
+      },
+      "checkKept": "本次换版只改设备相关内容；淋洗次数的写法在下次定期回顾时修订"
     },
     "source": "源代码（AGPL-3.0）"
   },
@@ -1148,5 +1149,50 @@
       "waiting": "排队中"
     },
     "skip": "跳过 AI 等待"
+  },
+  "draftCheck": {
+    "title": "起草检查",
+    "rule": {
+      "E1": "量没写清",
+      "E2": "频次、时机没写清",
+      "E3": "判断没有标准",
+      "E4": "引用没写编号",
+      "E5": "一步不止一个动作",
+      "E6": "没写记在哪"
+    },
+    "ruleFull": {
+      "E1": "E1 量要写数值、范围和单位",
+      "E2": "E2 频次、时机要写清",
+      "E3": "E3 判断要有标准：正常是什么、不正常做什么",
+      "E4": "E4 指到别的文件写编号",
+      "E5": "E5 一步一个动作，动词开头",
+      "E6": "E6 要记录的写明记在哪份记录、哪一栏"
+    },
+    "count": "起草检查 {{count}} 条",
+    "openCount": " · 未处理 {{count}}",
+    "suggestion": "建议写法：{{text}}",
+    "aiMarker": "灰字是 AI 的建议",
+    "aiMarkerExample": "灰字是 AI 的建议（示例）",
+    "none": "没有发现",
+    "state": {
+      "returned": "已退回起草人",
+      "kept": "不改",
+      "fixed": "已改",
+      "open": "未处理",
+      "done": "已改（手动）",
+      "declined": "不改"
+    },
+    "returnAction": "退回起草人",
+    "keepAction": "不改",
+    "markDone": "已改",
+    "reason": "原因",
+    "save": "确定",
+    "cancel": "取消",
+    "undo": "撤回",
+    "why": "原因：{{note}}",
+    "by": "{{by}} · {{date}}",
+    "blocked": "还有 {{count}} 条起草检查未处理",
+    "listOpen": "起草检查未处理 {{count}}",
+    "sourceTitle": "起草检查 · {{code}}"
   }
 }

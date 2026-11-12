@@ -63,10 +63,20 @@ export interface Assessment {
   conclusions: Record<string, EvaluationConclusion>
   /** Version key → 修改要点 people wrote, rewrote or took out (UX-57). */
   points: Record<string, EntryPointEdits>
+  /** 起草检查 of the source's new version (UX-58), by finding id: sent back to its drafter, or kept with why. */
+  sourceChecks: Record<string, SourceCheck>
   exportedOn: string | null
 }
 
-export const emptyAssessment = (): Assessment => ({ removed: {}, added: [], comments: {}, conclusions: {}, points: {}, exportedOn: null })
+/** Where a finding on the source's new version went: the draft came from Word, so it is changed there or kept. */
+export interface SourceCheck {
+  state: 'returned' | 'kept'
+  note: string
+  by: string
+  on: string
+}
+
+export const emptyAssessment = (): Assessment => ({ removed: {}, added: [], comments: {}, conclusions: {}, points: {}, sourceChecks: {}, exportedOn: null })
 
 /** A 修改要点 as a person writes it: one sentence, or 原文 → 改成 (UX-57). */
 export type PointInput = Pick<PersonPoint, 'clause' | 'text' | 'from' | 'to'>
@@ -166,6 +176,9 @@ interface DemoActions {
   restorePoint: (changeId: string, versionKey: string, pointId: string) => void
   /** Demo tools: the scenario's points, written in one go. */
   fillScriptedPoints: (changeId: string) => void
+  /** 起草检查 of the source's new version (UX-58). */
+  setSourceCheck: (changeId: string, findingId: string, state: SourceCheck['state'], note: string) => void
+  clearSourceCheck: (changeId: string, findingId: string) => void
   /** 评估结论 on a 需评估 entry, decided by a department (with an optional 备注), dated today. */
   concludeEntry: (changeId: string, versionKey: string, tier: EvaluationConclusion['tier'], by: string, note: string) => void
   withdrawConclusion: (changeId: string, versionKey: string) => void
@@ -362,6 +375,9 @@ export const useDemo = create<DemoState>()(
             return { ...a, points: { ...a.points, ...today } }
           }),
         ),
+      setSourceCheck: (changeId, id, state, note) =>
+        set((s) => editAssessment(s, changeId, (a) => ({ ...a, sourceChecks: { ...a.sourceChecks, [id]: { state, note, by: TERMS.departments.qa, on: s.date } } }))),
+      clearSourceCheck: (changeId, id) => set((s) => editAssessment(s, changeId, (a) => ({ ...a, sourceChecks: without(a.sourceChecks, id) }))),
       closePoint: (changeId, key, pointKey, state, note) =>
         set((s) => editReview(s, changeId, key, (r) => ({ ...r, closures: { ...r.closures, [pointKey]: { state, note, by: TERMS.departments.qa, on: s.date } } }))),
       reopenPoint: (changeId, key, pointKey) => set((s) => editReview(s, changeId, key, (r) => ({ ...r, closures: without(r.closures, pointKey) }))),
@@ -425,7 +441,7 @@ export const useDemo = create<DemoState>()(
     {
       name: 'chengchuan-demo',
       // Bump when DemoData changes shape; an older saved demo starts over.
-      version: 15,
+      version: 16,
       storage: createJSONStorage(() => localStorage),
       partialize: ({ date, changes, assessments, reviews, rollouts, trainings }): DemoData => ({ date, changes, assessments, reviews, rollouts, trainings }),
       migrate: () => initial(),

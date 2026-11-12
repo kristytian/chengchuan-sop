@@ -13,10 +13,11 @@ export const PROMPT_VERSIONS: Record<AITask, string> = {
   impactAnalysis: 'impact-v1',
   referenceSuggestion: 'reference-v1',
   referenceExtraction: 'extraction-v2',
-  // No prompt in scripts/ai-prerun yet for these three; only hand-written examples use them so far.
+  // No prompt in scripts/ai-prerun yet for these four; only hand-written examples use them so far.
   changePoints: 'points-v1',
   revisionDraft: 'revision-v3',
   trainingPack: 'training-v1',
+  draftCheck: 'draft-check-v1',
 }
 
 /** Clause id in AI inputs and outputs: its number, or "body" for an unnumbered body. */
@@ -242,3 +243,16 @@ export function inputHash(value: unknown): string {
   }
   return a.toString(16).padStart(8, '0') + b.toString(16).padStart(8, '0')
 }
+
+/** Input for AI's 起草检查 of one SOP (UX-58): the rule table it reads by, and the document. */
+export interface DraftCheckInput {
+  rules: string
+  document: DocumentForAI
+}
+
+export const draftCheckSubject = (v: DocumentVersion) => `draftCheck|${v.identity}@${v.version}`
+
+export function draftCheckInput(v: DocumentVersion, rules: string): DraftCheckInput {
+  return { rules, document: documentForAI(v) }
+}
+

@@ -16,6 +16,7 @@ import { type ChangeView, sourceLabel } from '../view'
 import { AddEntryDialog } from './AddEntryDialog'
 import { canEditReport, departments, entryAnchor } from './model'
 import { AssessGenerating } from './Generating'
+import { SourceCheckRow } from './SourceCheck'
 import { ReportDocument } from './ReportView'
 
 /**
@@ -50,6 +51,7 @@ export function AssessPage() {
             {t('assess.compareLink')}
           </Link>
         </div>
+        <SourceCheckRow view={view} />
         <div className="border-b px-4 py-2.5">
           <p className="flex items-baseline gap-2">
             <span className="font-semibold">{t('assess.listTitle')}</span>

@@ -7,6 +7,8 @@ import { emptyPointEdits, type AddedEntry, type Decision, type EntryPointEdits, 
 import { rolloutPlan } from '@/domain/rollout'
 import { currentHolders, trainingAudiences } from '@/domain/training'
 import { DEMO } from '@/domain/settings'
+import { draftCheckOf } from '@/features/change/draft-check'
+import { checkKey } from '@/features/change/review/checks'
 import { TERMS } from '@/domain/source-terms'
 import i18n from '@/i18n'
 import { type DocReview, emptyPack, type PackRecord, type Rollout, type RolloutLogEntry } from './demo'
@@ -74,7 +76,12 @@ const REVISED = ['SOR-SB-021-R01', 'SOP-SC-041', 'SOR-SC-041-R01', 'STP-GY-010',
 
 /** 11-20: QA has confirmed every draft. */
 export function scriptedReviews(): Record<string, DocReview> {
-  return Object.fromEntries(REVISED.flatMap((id) => (current(id) ? [[current(id)!.key, { reviewedOn: DEMO.reviewedDate, closures: {} }]] : [])))
+  const reviews: Record<string, DocReview> = Object.fromEntries(REVISED.flatMap((id) => (current(id) ? [[current(id)!.key, { reviewedOn: DEMO.reviewedDate, closures: {} }]] : [])))
+  // 起草检查 (UX-58): QA kept the cleaning SOP's 「一般不少于 3 次」 this time, with why.
+  const cleaning = current('SOP-SC-041')
+  const vague = cleaning && draftCheckOf(cleaning).findings.find((f) => f.rule === 'E2')
+  if (cleaning && vague && reviews[cleaning.key]) reviews[cleaning.key].closures[checkKey(vague)] = { state: 'declined', note: i18n.t('demo.script.checkKept'), by: TERMS.departments.qa, on: DEMO.reviewedDate }
+  return reviews
 }
 
 /**

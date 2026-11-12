@@ -16,6 +16,7 @@ import type { ChangeView } from '../view'
 import { DocxEditor, DocxOriginal, type DraftApi } from './DocxEditor'
 import { originalDocx } from './docx'
 import { docFormats } from './formats'
+import { checkStatuses, plannedCheckStatuses } from './checks'
 import { allSettled, plannedStatuses, pointStatuses } from './points'
 import { ReportPoints } from './ReportPoints'
 import { approvedEffective } from '../rollout/model'
@@ -118,6 +119,9 @@ function Review({
   // A confirmed draft shows its changes accepted, so its points are read from what AI planned.
   const points = final ? plannedStatuses(target.points, target.ops, target.review.closures) : pointStatuses(target.points, target.ops, changes, target.review.closures)
   const openPoints = points.filter((p) => p.status === 'open').length
+  // 起草检查 (UX-58): the same rule — every finding fixed in the draft, or closed by hand.
+  const checks = final ? plannedCheckStatuses(target.checks, target.ops, target.review.closures) : checkStatuses(target.checks, changes, target.review.closures)
+  const openChecks = checks.filter((c) => c.status === 'open').length
 
   return (
     <div className="flex h-full flex-col">
@@ -149,13 +153,13 @@ function Review({
               {t('review.undo')}
             </Button>
           ) : (
-            <Button size="sm" disabled={!ready || !allSettled(points)} title={openPoints > 0 ? t('review.points.blocked', { count: openPoints }) : undefined} onClick={() => void confirm()}>
+            <Button size="sm" disabled={!ready || !allSettled(points) || openChecks > 0} title={[openPoints > 0 && t('review.points.blocked', { count: openPoints }), openChecks > 0 && t('draftCheck.blocked', { count: openChecks })].filter(Boolean).join('\n') || undefined} onClick={() => void confirm()}>
               {t('review.confirm')}
             </Button>
           )}
         </span>
       </div>
-      <ReportPoints key={target.version.key} view={view} target={target} states={points} editable={editable} onGo={goTo} />
+      <ReportPoints key={target.version.key} view={view} target={target} states={points} checks={checks} editable={editable} onGo={goTo} />
 
       {/* Word's toolbar, for the draft, across both columns */}
       {editable && <div ref={setToolbar} className="draft-toolbar h-10 shrink-0 border-b bg-background" />}

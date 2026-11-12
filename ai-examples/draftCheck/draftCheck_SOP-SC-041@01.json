@@ -1,0 +1,30 @@
+{
+  "task": "draftCheck",
+  "subject": "draftCheck|SOP-SC-041@01",
+  "inputVersions": [
+    "samples/02 操作规程/SOP-SC-041-01 乳化均质机清洁标准操作规程.docx"
+  ],
+  "inputHash": "877b630ec6b3e6e1",
+  "promptVersion": "draft-check-v1",
+  "model": "none · hand-written example",
+  "servedBy": "none · hand-written example",
+  "mode": "example",
+  "runAt": "2026-11-11T00:00:00.000Z",
+  "output": {
+    "findings": [
+      {
+        "rule": "E2",
+        "clause": "4.3.3",
+        "word": "一般",
+        "suggestion": "用纯化水冲洗至淋洗水 pH 与纯化水一致，且不少于 3 次"
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheReadTokens": 0,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": null
+}

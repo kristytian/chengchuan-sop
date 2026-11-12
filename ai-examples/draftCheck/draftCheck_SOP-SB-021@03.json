@@ -1,0 +1,36 @@
+{
+  "task": "draftCheck",
+  "subject": "draftCheck|SOP-SB-021@03",
+  "inputVersions": [
+    "scenario-inputs/SOP-SB-021-03 乳化均质机（RH-500）使用、维护保养标准操作规程.docx"
+  ],
+  "inputHash": "893c4d60079ed94b",
+  "promptVersion": "draft-check-v1",
+  "model": "none · hand-written example",
+  "servedBy": "none · hand-written example",
+  "mode": "example",
+  "runAt": "2026-11-11T00:00:00.000Z",
+  "output": {
+    "findings": [
+      {
+        "rule": "E1",
+        "clause": "4.5",
+        "word": "适量",
+        "suggestion": "水箱液位低于下限刻度时，补加纯化水至上限刻度（刻度位置按设备说明书，待补依据）"
+      },
+      {
+        "rule": "E3",
+        "clause": "4.5",
+        "word": "是否正常",
+        "suggestion": "写明冷却水正常的判断标准（压力或流量范围按设备说明书，待补依据）；不正常时停机，通知设备工程部"
+      }
+    ]
+  },
+  "usage": {
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheReadTokens": 0,
+    "cacheWriteTokens": 0
+  },
+  "stopReason": null
+}
