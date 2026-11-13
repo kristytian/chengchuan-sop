@@ -109,13 +109,22 @@ export function AssessPage() {
             {view.unevaluated > 0 && <p className="mb-2 text-xs text-muted-foreground">{t('assess.confirm.blocked', { count: view.unevaluated })}</p>}
             {view.withoutPoints > 0 && <p className="mb-2 text-xs text-muted-foreground">{t('assess.confirm.blockedPoints', { count: view.withoutPoints })}</p>}
             <TrainingChoice view={view} />
-            <div className="flex items-center gap-2">
-              <Button size="sm" variant="outline" onClick={() => setAdding(true)}>
-                {t('assess.add.button')}
-              </Button>
+            <Button size="sm" variant="outline" onClick={() => setAdding(true)}>
+              {t('assess.add.button')}
+            </Button>
+          </div>
+        )}
+      </aside>
+
+      <section className="min-w-0 flex-1 overflow-auto bg-canvas py-6 print:overflow-visible print:bg-transparent print:py-0">
+        <ReportDocument
+          view={view}
+          selected={selected}
+          onSelect={select}
+          confirm={
+            editable && (
               <Button
                 size="sm"
-                className="ml-auto"
                 disabled={view.unevaluated > 0 || view.withoutPoints > 0 || view.trainingUndecided}
                 title={
                   view.unevaluated > 0
@@ -130,13 +139,9 @@ export function AssessPage() {
               >
                 {t('assess.confirm.button')}
               </Button>
-            </div>
-          </div>
-        )}
-      </aside>
-
-      <section className="min-w-0 flex-1 overflow-auto bg-canvas py-6 print:overflow-visible print:bg-transparent print:py-0">
-        <ReportDocument view={view} selected={selected} onSelect={select} />
+            )
+          }
+        />
       </section>
       {adding && <AddEntryDialog view={view} onClose={() => setAdding(false)} />}
     </div>

@@ -535,10 +535,10 @@ function Switcher({ view, targets, at, go }: { view: ChangeView; targets: Review
   )
 }
 
-/** AI 修改总结, floating bottom right over the draft; each item goes to its place; collapses to a small pill. */
+/** AI 修改总结: a small pill bottom right over the draft, opened when asked for; each item goes to its place. */
 function Summary({ target, onJump }: { target: ReviewTarget; onJump: (item: ReviewTarget['summary'][number]) => void }) {
   const { t } = useTranslation()
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useState(false)
   if (target.summary.length === 0) return null
   const label = t(target.example ? 'review.summaryExample' : 'review.summary')
   if (!open)

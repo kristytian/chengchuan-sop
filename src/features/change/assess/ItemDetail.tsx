@@ -101,9 +101,13 @@ function Detail({ view, version, context }: { view: ChangeView; version: Documen
         ) : item.level === 'indirect' ? (
           <p className="text-xs text-muted-foreground">{t('assess.detail.indirect', { source: view.change.source.kind === 'revision' ? view.change.source.identity : '', via: item.via.join(t('common.listSep')) })}</p>
         ) : item.reason ? (
-          <p className="text-xs">
-            <span className="text-muted-foreground">{t('assess.detail.basis')}</span> <span className="text-ai">{item.reason}</span>
-          </p>
+          // AI's conclusion for the whole document is the cards on the right, place by place; only a
+          // document with no place to show takes it up here.
+          cards.length === 0 && (
+            <p className="text-xs">
+              <span className="text-muted-foreground">{t('assess.detail.basis')}</span> <span className="text-ai">{item.reason}</span>
+            </p>
+          )
         ) : (
           <p className="text-xs text-muted-foreground">{t('assess.detail.noAI')}</p>
         )}
