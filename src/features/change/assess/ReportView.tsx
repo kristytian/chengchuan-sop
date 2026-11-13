@@ -15,20 +15,9 @@ import { entryAnchor } from './model'
 /**
  * 变更影响评估报告 (UX-50; layout of 03 画面 14): written by AI and the rules,
  * edited by people, confirmed once. The report is only the document: clicking
- * an entry selects it in the list on the left, where its actions are. The
- * two ways out of it — the draft PDF and 确认并导出 — sit together above it.
+ * an entry selects it in the list on the left, where its actions are.
  */
-export function ReportDocument({
-  view,
-  selected,
-  onSelect,
-  confirm,
-}: {
-  view: ChangeView
-  selected: string | null
-  onSelect: (version: string) => void
-  confirm?: ReactNode
-}) {
+export function ReportDocument({ view, selected, onSelect }: { view: ChangeView; selected: string | null; onSelect: (version: string) => void }) {
   const { t } = useTranslation()
   const diff = changeAnalysis(view.change.id).diff
   const { record, assessment, report } = view
@@ -56,7 +45,6 @@ export function ReportDocument({
         >
           {t(exported ? 'assess.report.print' : 'assess.report.printDraft')}
         </Button>
-        {confirm}
       </div>
       <article className="mx-auto w-[760px] bg-paper px-12 py-9 font-song text-[12.5px] leading-[1.8] shadow-sm ring-1 ring-border print:w-auto print:shadow-none print:ring-0">
         <p className="border-b border-foreground/50 pb-1 text-[10.5px] text-muted-foreground">{t('assess.report.company')}</p>
@@ -247,11 +235,11 @@ function EntryRow({ entry: e, kind, active, onSelect }: { entry: ReportEntry; ki
   )
 }
 
-/** 「需要。培训对象：乳化岗位操作人员、设备工程部」, 「不需要：只改了编号」, or 待定 (UX-59). */
+/** 「需要。培训对象：乳化岗位操作人员、设备工程部」, 「不需要」, or 待定 (UX-59). */
 function trainingLine(t: TFunction, view: ChangeView): string {
   const d = view.assessment.training
   if (!d) return t('assess.report.trainingPending')
-  if (!d.needed) return t('assess.report.trainingNot', { note: d.note })
+  if (!d.needed) return t('assess.report.trainingNot')
   const who = audiencesOf(view).map((a) => a.role)
   return who.length > 0 ? t('assess.report.trainingNeeded', { who: who.join(t('common.listSep')) }) : t('assess.report.trainingNeededNone')
 }

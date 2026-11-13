@@ -601,7 +601,7 @@
       "byPerson": "（{{by}}）",
       "trainingNeeded": "需要。培训对象：{{who}}",
       "trainingNeededNone": "需要",
-      "trainingNot": "不需要：{{note}}",
+      "trainingNot": "不需要",
       "trainingPending": "待定"
     },
     "action": {
@@ -638,8 +638,6 @@
       "needed": "需要",
       "notNeeded": "不需要",
       "suggested": "建议：{{choice}}",
-      "reason": "原因",
-      "save": "确定",
       "change": "改"
     }
   },
@@ -1108,7 +1106,7 @@
       "clauseValue": "§{{clause}}"
     },
     "skipped": "这次变更不需要培训",
-    "skippedWhy": "{{note}}（{{by}} · {{date}}）"
+    "skippedBy": "{{by}}决定 · {{date}}"
   },
   "closing": {
     "closableTag": "可关闭",
@@ -1149,7 +1147,7 @@
       "date": "日期：",
       "reviseDeclined": "；不按报告要点改 {{count}} 条：{{lines}}",
       "declinedLine": "{{code}} {{place}}「{{point}}」（{{note}}）",
-      "trainingSkipped": "不需要培训：{{note}}"
+      "trainingSkipped": "不需要培训"
     }
   },
   "ai": {

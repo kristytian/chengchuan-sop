@@ -69,12 +69,15 @@ export function OverviewPage() {
                 to={`${base}/revise`}
               />
               <StationRow name={t('overview.row.rollout')} summary={rolloutSummaryText(t, view)} state={t(!rolloutOpen(view) ? 'overview.state.notStarted' : stationDone(view, 'rollout') ? 'overview.state.done' : 'overview.state.inProgress')} to={`${base}/rollout`} />
-              <StationRow
-                name={t('overview.row.training')}
-                summary={view.ai.training ? t('station.training.ai', { ...view.ai.training }) : trainingSummaryText(t, view)}
-                state={t(trainingSkipped(view) && stationDone(view, 'training') ? 'overview.state.done' : !trainingOpen(view) ? 'overview.state.notStarted' : stationDone(view, 'training') ? 'overview.state.done' : 'overview.state.inProgress')}
-                to={`${base}/training`}
-              />
+              {/* No training row when QA decided this change needs none (UX-62); the reason is in the report and the closing summary. */}
+              {!trainingSkipped(view) && (
+                <StationRow
+                  name={t('overview.row.training')}
+                  summary={view.ai.training ? t('station.training.ai', { ...view.ai.training }) : trainingSummaryText(t, view)}
+                  state={t(!trainingOpen(view) ? 'overview.state.notStarted' : stationDone(view, 'training') ? 'overview.state.done' : 'overview.state.inProgress')}
+                  to={`${base}/training`}
+                />
+              )}
             </ul>
           </section>
           <Closing view={view} />
@@ -86,7 +89,6 @@ export function OverviewPage() {
 }
 
 function trainingSummaryText(t: TFunction, view: ChangeView): string {
-  if (trainingSkipped(view)) return t('station.training.skipped')
   if (!trainingOpen(view)) return t('overview.row.trainingSummary')
   return t('overview.row.trainingProgress', trainingSummary(view))
 }

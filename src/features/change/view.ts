@@ -20,6 +20,11 @@ export type StationId = (typeof STATIONS)[number]
 export const PROGRESS_STATIONS = ['assess', 'revise', 'rollout', 'training'] as const
 export type ProgressStation = (typeof PROGRESS_STATIONS)[number]
 
+/** The steps this change goes through: no 培训 when QA decided it needs none (UX-59, UX-62). */
+export function stepsOf(view: ChangeView): ProgressStation[] {
+  return PROGRESS_STATIONS.filter((s) => s !== 'training' || !trainingSkipped(view))
+}
+
 /** Where 影响评估 stands: AI's report waiting for QA, or exported (locked, version 1). */
 export type AssessStage = 'draft' | 'exported'
 
@@ -109,8 +114,8 @@ export function changeView(
     revise: stage === 'exported' ? aiProgress(clock, record.id, 'revise', toRevise.length) : null,
     training: allReviewed ? aiProgress(clock, record.id, 'training', audiencesOf(view).length) : null,
   }
-  // Every old copy back: the change moves on to 培训.
-  if (view.current === 'rollout' && rolloutDone(view)) view.current = 'training'
+  // Every old copy back: the change moves on to 培训, if it has that step.
+  if (view.current === 'rollout' && rolloutDone(view) && !trainingSkipped(view)) view.current = 'training'
   return view
 }
 

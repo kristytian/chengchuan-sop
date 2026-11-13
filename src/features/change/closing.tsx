@@ -11,7 +11,7 @@ import { plannedStatuses } from './review/points'
 import { reviewTargets } from './review/model'
 import { effectiveDate, planOf } from './rollout/model'
 import { packsOf } from './training/model'
-import { type ChangeView, changeNumber, closable, STATIONS, stationDone, type StationId, stationLine } from './view'
+import { type ChangeView, changeNumber, closable, stationDone, type StationId, stationLine, stepsOf } from './view'
 
 /**
  * 收尾 (03 画面 23): when every station is done the change shows 可关闭 —
@@ -24,7 +24,8 @@ export function Closing({ view }: { view: ChangeView }) {
   const reopenChange = useDemo((s) => s.reopenChange)
   const [on, setOn] = useState(view.today)
   const { record } = view
-  const open = STATIONS.filter((s) => s !== 'overview' && !stationDone(view, s))
+  // Only the steps this change has: no 培训 when it needs none (UX-62).
+  const open = stepsOf(view).filter((s) => !stationDone(view, s))
 
   return (
     <section className="rounded-lg border bg-background">
@@ -108,7 +109,7 @@ export function ClosingSummary({ view }: { view: ChangeView }) {
     [
       'training',
       view.assessment.training?.needed === false
-        ? t('closing.sum.trainingSkipped', { note: view.assessment.training.note })
+        ? t('closing.sum.trainingSkipped')
         : t('closing.sum.training', {
             count: packs.length,
             packs: packs.map((p) => p.audience.role).join(sep),

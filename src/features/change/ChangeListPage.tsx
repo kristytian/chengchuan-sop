@@ -7,7 +7,7 @@ import { MiniProgress } from '@/components/MiniProgress'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { useChangeViews } from '@/features/home/tasks'
 import { cn } from '@/lib/utils'
-import { changeNumber, sourceLabel, stationLine } from './view'
+import { changeNumber, sourceLabel, stationLine, stepsOf } from './view'
 
 /** 变更列表 with 「发起变更 ▾」 (03 画面 1). Only 修订一份文件 is built this round. */
 export function ChangeListPage() {
@@ -77,7 +77,7 @@ export function ChangeListPage() {
                   </td>
                   <td className="px-3 py-2.5 whitespace-nowrap">{t('overview.typeRevision')}</td>
                   <td className="px-3 py-2.5 whitespace-nowrap">
-                    <MiniProgress current={v.current} />
+                    <MiniProgress current={v.current} stations={stepsOf(v)} />
                   </td>
                   <td className="px-3 py-2.5 whitespace-nowrap">{v.record.closedOn ? t('changes.closedOn', { date: v.record.closedOn }) : stationLine(t, v, v.current)}</td>
                   <td className="px-3 py-2.5 whitespace-nowrap font-mono text-xs">{sourceLabel(v)}</td>

@@ -1,6 +1,6 @@
 import type { TFunction } from 'i18next'
 import { MessageSquare } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useOutletContext } from 'react-router'
 import { Tag } from '@/components/common'
@@ -109,22 +109,14 @@ export function AssessPage() {
             {view.unevaluated > 0 && <p className="mb-2 text-xs text-muted-foreground">{t('assess.confirm.blocked', { count: view.unevaluated })}</p>}
             {view.withoutPoints > 0 && <p className="mb-2 text-xs text-muted-foreground">{t('assess.confirm.blockedPoints', { count: view.withoutPoints })}</p>}
             <TrainingChoice view={view} />
-            <Button size="sm" variant="outline" onClick={() => setAdding(true)}>
-              {t('assess.add.button')}
-            </Button>
-          </div>
-        )}
-      </aside>
-
-      <section className="min-w-0 flex-1 overflow-auto bg-canvas py-6 print:overflow-visible print:bg-transparent print:py-0">
-        <ReportDocument
-          view={view}
-          selected={selected}
-          onSelect={select}
-          confirm={
-            editable && (
+            {/* The confirm button stays here, in the column that does not scroll with the report (UX-62). */}
+            <div className="flex items-center gap-2">
+              <Button size="sm" variant="outline" onClick={() => setAdding(true)}>
+                {t('assess.add.button')}
+              </Button>
               <Button
                 size="sm"
+                className="ml-auto"
                 disabled={view.unevaluated > 0 || view.withoutPoints > 0 || view.trainingUndecided}
                 title={
                   view.unevaluated > 0
@@ -139,9 +131,13 @@ export function AssessPage() {
               >
                 {t('assess.confirm.button')}
               </Button>
-            )
-          }
-        />
+            </div>
+          </div>
+        )}
+      </aside>
+
+      <section className="min-w-0 flex-1 overflow-auto bg-canvas py-6 print:overflow-visible print:bg-transparent print:py-0">
+        <ReportDocument view={view} selected={selected} onSelect={select} />
       </section>
       {adding && <AddEntryDialog view={view} onClose={() => setAdding(false)} />}
     </div>
@@ -194,110 +190,141 @@ function RowActions({ view, entry, identity, removal, editable }: { view: Change
   const { removeEntry, restoreEntry, dropAdded, setComment, concludeEntry, withdrawConclusion } = useDemo()
   const [mode, setMode] = useState<'idle' | 'comment' | 'remove' | 'conclude'>('idle')
   const [text, setText] = useState('')
+  // 备注 typed and then clicked away from is kept for the next 写备注, until saved or cancelled.
+  const typed = useRef(false)
+  const form = useRef<HTMLDivElement>(null)
   const id = view.record.id
   const removed = removal !== undefined
   const conclusion = entry.conclusion
-  const link = 'text-xs font-medium hover:underline'
+  const idle = () => {
+    typed.current = false
+    setMode('idle')
+  }
+
+  // A click anywhere outside the open form folds it back into the row's buttons (UX-62).
+  useEffect(() => {
+    if (mode === 'idle') return
+    const away = (e: PointerEvent) => {
+      if (!form.current?.contains(e.target as Node)) setMode('idle')
+    }
+    document.addEventListener('pointerdown', away)
+    return () => document.removeEventListener('pointerdown', away)
+  }, [mode])
+
+  const notes = [
+    !removed && needsLook(entry) && <p key="look" className="text-muted-foreground">{lookReasons(t, entry)}</p>,
+    removal && <DecisionNote key="removed" title={t('assess.decision.removed')} decision={removal} />,
+    entry.origin === 'added' && <p key="added">{t('assess.action.addedReason', { reason: entry.reason })}</p>,
+    !removed && entry.comment && mode !== 'comment' && (
+      <p key="comment" className="border-l-2 border-foreground/60 pl-1.5">
+        {entry.comment}
+      </p>
+    ),
+    conclusion && <DecisionNote key="conclusion" title={t('assess.conclude.moved', { tier: t(`report.group.${conclusion.tier}`) })} decision={conclusion} />,
+  ].filter(Boolean)
 
   return (
-    <div className="space-y-2 px-4 pb-3 text-xs">
-      {!removed && needsLook(entry) && <p className="text-muted-foreground">{lookReasons(t, entry)}</p>}
-      {removal && <DecisionNote title={t('assess.decision.removed')} decision={removal} />}
-      {entry.origin === 'added' && <p>{t('assess.action.addedReason', { reason: entry.reason })}</p>}
-      {!removed && entry.comment && mode !== 'comment' && <p className="border-l-2 border-foreground/60 pl-1.5">{entry.comment}</p>}
-      {conclusion && <DecisionNote title={t('assess.conclude.moved', { tier: t(`report.group.${conclusion.tier}`) })} decision={conclusion} />}
-      {mode === 'idle' && (
-        <div className="flex flex-wrap gap-x-3 gap-y-1">
+    <div className="px-4 pb-3 text-xs">
+      {notes.length > 0 && <div className="space-y-1.5">{notes}</div>}
+      {mode === 'idle' ? (
+        // The row's buttons, apart from what is written about it: open the page first, the removing ones last.
+        <div className={cn('flex flex-wrap items-center gap-1.5', notes.length > 0 && 'mt-2.5')}>
           {/* A document put on by hand has the page too: its change points are written there (UX-57). */}
           {(entry.origin === 'generated' || !removed) && (
-            <Link to={`doc/${identity}`} className={link}>
-              {t('assess.action.open')}
-            </Link>
+            <Button asChild size="xs" variant="outline">
+              <Link to={`doc/${identity}`}>{t('assess.action.open')}</Link>
+            </Button>
           )}
           {editable && !removed && (
-            <button
-              type="button"
-              className={link}
+            <Button
+              size="xs"
+              variant="outline"
               onClick={() => {
-                setText(entry.comment)
+                if (!typed.current) setText(entry.comment)
                 setMode('comment')
               }}
             >
               {t(entry.comment ? 'assess.action.editComment' : 'assess.action.comment')}
-            </button>
+            </Button>
           )}
           {editable && !removed && entry.group === 'evaluate' && (
-            <button type="button" className={link} onClick={() => setMode('conclude')}>
+            <Button size="xs" variant="outline" onClick={() => setMode('conclude')}>
               {t('assess.conclude.action')}
-            </button>
+            </Button>
           )}
           {editable && conclusion && (
-            <button type="button" className={cn(link, 'text-muted-foreground')} onClick={() => withdrawConclusion(id, entry.version)}>
+            <Button size="xs" variant="ghost" className="text-muted-foreground" onClick={() => withdrawConclusion(id, entry.version)}>
               {t('assess.conclude.withdraw')}
-            </button>
+            </Button>
           )}
           {editable && !removed && entry.origin === 'generated' && (
-            <button type="button" className={cn(link, 'text-muted-foreground')} onClick={() => setMode('remove')}>
+            <Button size="xs" variant="ghost" className="ml-auto text-muted-foreground" onClick={() => setMode('remove')}>
               {t('assess.action.remove')}
-            </button>
+            </Button>
           )}
           {editable && entry.origin === 'added' && (
-            <button type="button" className={cn(link, 'text-muted-foreground')} onClick={() => dropAdded(id, entry.version)}>
+            <Button size="xs" variant="ghost" className="ml-auto text-muted-foreground" onClick={() => dropAdded(id, entry.version)}>
               {t('assess.action.undoAdd')}
-            </button>
+            </Button>
           )}
           {editable && removed && (
-            <button type="button" className={link} onClick={() => restoreEntry(id, entry.version)}>
+            <Button size="xs" variant="outline" onClick={() => restoreEntry(id, entry.version)}>
               {t('assess.action.restore')}
-            </button>
+            </Button>
           )}
         </div>
-      )}
-      {mode === 'conclude' && (
-        <DecisionForm
-          choices={['mustChange', 'inform']}
-          save={t('assess.conclude.save')}
-          onCancel={() => setMode('idle')}
-          onSave={(by, note, tier) => {
-            concludeEntry(id, entry.version, tier ?? 'mustChange', by, note)
-            setMode('idle')
-          }}
-        />
-      )}
-      {mode === 'remove' && (
-        <DecisionForm
-          save={t('assess.action.removeConfirm')}
-          onCancel={() => setMode('idle')}
-          onSave={(by, note) => {
-            removeEntry(id, entry.version, by, note)
-            setMode('idle')
-          }}
-        />
-      )}
-      {mode === 'comment' && (
-        <div className="space-y-1.5">
-          <Textarea
-            autoFocus
-            rows={2}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder={t('assess.action.commentPlaceholder')}
-            className="min-h-0 bg-background text-sm"
-          />
-          <div className="flex justify-end gap-2">
-            <Button size="sm" variant="ghost" onClick={() => setMode('idle')}>
-              {t('assess.action.cancel')}
-            </Button>
-            <Button
-              size="sm"
-              onClick={() => {
-                setComment(id, entry.version, text.trim())
-                setMode('idle')
+      ) : (
+        <div ref={form} className={cn('rounded-md border bg-background p-2', notes.length > 0 && 'mt-2.5')}>
+          {mode === 'conclude' && (
+            <DecisionForm
+              choices={['mustChange', 'inform']}
+              save={t('assess.conclude.save')}
+              onCancel={idle}
+              onSave={(by, note, tier) => {
+                concludeEntry(id, entry.version, tier ?? 'mustChange', by, note)
+                idle()
               }}
-            >
-              {t('assess.action.save')}
-            </Button>
-          </div>
+            />
+          )}
+          {mode === 'remove' && (
+            <DecisionForm
+              save={t('assess.action.removeConfirm')}
+              onCancel={idle}
+              onSave={(by, note) => {
+                removeEntry(id, entry.version, by, note)
+                idle()
+              }}
+            />
+          )}
+          {mode === 'comment' && (
+            <div className="space-y-1.5">
+              <Textarea
+                autoFocus
+                rows={2}
+                value={text}
+                onChange={(e) => {
+                  typed.current = true
+                  setText(e.target.value)
+                }}
+                placeholder={t('assess.action.commentPlaceholder')}
+                className="min-h-0 bg-background text-sm"
+              />
+              <div className="flex justify-end gap-2">
+                <Button size="sm" variant="ghost" onClick={idle}>
+                  {t('assess.action.cancel')}
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    setComment(id, entry.version, text.trim())
+                    idle()
+                  }}
+                >
+                  {t('assess.action.save')}
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils'
 import { useAssessment, useChangeRecord, useDemo, useReviews, useRollout, useTraining } from '@/store/demo'
 import { useAiClock } from './ai-progress'
 import { CHANGE_SIDE } from './layout'
-import { type ChangeView, changeView, STATIONS, stationDone, stationLine } from './view'
+import { type ChangeView, changeView, stationDone, stationLine, stepsOf } from './view'
 
 /**
  * A change (R1-03, 11-10): 概览 is the change's home and the four stations
@@ -27,7 +27,7 @@ export function ChangeLayout() {
   const clock = useAiClock()
   const view = record ? changeView(record, assessment, reviews, rollout, today, training, clock) : null
   if (!view) return <p className="p-8 text-sm text-muted-foreground">{t('change.notFound')}</p>
-  const steps = STATIONS.filter((s) => s !== 'overview')
+  const steps = stepsOf(view)
   const active = 'bg-muted shadow-[inset_0_-2px_0_var(--foreground)]'
 
   return (

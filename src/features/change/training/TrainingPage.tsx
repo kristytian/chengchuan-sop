@@ -20,7 +20,7 @@ export function TrainingPage() {
     return (
       <div className="mx-auto max-w-3xl p-10 text-center text-sm">
         <p className="font-medium">{t('training.skipped')}</p>
-        <p className="mt-1 text-muted-foreground">{t('training.skippedWhy', { note: decision.note, by: decision.by, date: decision.on })}</p>
+        <p className="mt-1 text-muted-foreground">{t('training.skippedBy', { by: decision.by, date: decision.on })}</p>
       </div>
     )
   if (!trainingOpen(view))

@@ -8,7 +8,7 @@ import { displayCode, libraryModel, versionByKey } from '@/data/model'
 import { fixOf, type IssueFix } from '@/domain/issues'
 import { documentPath } from '@/features/library/paths'
 import { useDemo } from '@/store/demo'
-import { type ChangeView, changeNumber, stationLine } from '@/features/change/view'
+import { type ChangeView, changeNumber, stationLine, stepsOf } from '@/features/change/view'
 import { type Task, useChangeViews, useMyTasks } from './tasks'
 
 const FIXES: IssueFix[] = ['reviseDocument', 'fixLedger', 'review']
@@ -109,7 +109,7 @@ export function HomePage() {
                     </Link>
                   </td>
                   <td className="px-4 py-2.5">
-                    <MiniProgress current={v.current} />
+                    <MiniProgress current={v.current} stations={stepsOf(v)} />
                   </td>
                   <td className="px-4 py-2.5">{stationLine(t, v, v.current)}</td>
                   <td className="px-4 py-2.5 text-muted-foreground">
